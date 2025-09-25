@@ -1,6 +1,6 @@
 # 🚀 Polyglot Code Sampler
 
-[![CI](https://github.com/yourusername/polyglot-code-sampler/workflows/CI/badge.svg)](https://github.com/yourusername/polyglot-code-sampler/actions)
+[![CI](https://github.com/TUNEZILLA-zz/polygot-code-sampler/workflows/CI/badge.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
