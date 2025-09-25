@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function typed_sum_reduction(): number {
+  const result = (Array.from({length: (10 - 0)}, (_, i) => i + 0)).filter((x) => x % 2 == 0).map((x) => x).reduce((a,b)=>a+b,0);
+  return result;
+}

@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function typed_list_squares(): Array<number> {
+  const result = (Array.from({length: (10 - 0)}, (_, i) => i + 0)).map((x) => x ** 2);
+  return result;
+}

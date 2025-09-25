@@ -48,6 +48,44 @@ class IRComp:
                 return obj
         return json.dumps(to_dict(self), indent=2)
 
+@dataclass
+class TypeInfo:
+    """Type information for generated code"""
+    rust_type: str
+    ts_type: str
+    is_inferred: bool = True
+    
+    @classmethod
+    def unknown(cls) -> 'TypeInfo':
+        return cls("_", "any", False)
+    
+    @classmethod
+    def int_type(cls, rust_int: str = "i64") -> 'TypeInfo':
+        return cls(rust_int, "number", True)
+    
+    @classmethod
+    def bool_type(cls) -> 'TypeInfo':
+        return cls("bool", "boolean", True)
+    
+    @classmethod
+    def tuple_type(cls, types: List['TypeInfo']) -> 'TypeInfo':
+        rust_types = ", ".join(t.rust_type for t in types)
+        ts_types = " | ".join(t.ts_type for t in types)
+        return cls(f"({rust_types})", f"[{ts_types}]", True)
+    
+    @classmethod
+    def vec_type(cls, element_type: 'TypeInfo') -> 'TypeInfo':
+        return cls(f"Vec<{element_type.rust_type}>", f"Array<{element_type.ts_type}>", True)
+    
+    @classmethod
+    def hashmap_type(cls, key_type: 'TypeInfo', val_type: 'TypeInfo') -> 'TypeInfo':
+        return cls(f"HashMap<{key_type.rust_type}, {val_type.rust_type}>", 
+                  f"Map<{key_type.ts_type}, {val_type.ts_type}>", True)
+    
+    @classmethod
+    def hashset_type(cls, element_type: 'TypeInfo') -> 'TypeInfo':
+        return cls(f"HashSet<{element_type.rust_type}>", f"Set<{element_type.ts_type}>", True)
+
 class PyToIR(ast.NodeVisitor):
     def __init__(self):
         self.comp: Optional[IRComp] = None
@@ -128,6 +166,68 @@ class PyToIR(ast.NodeVisitor):
         provenance = {"origin": "python", "pattern": "dict_nested" if len(gens) > 1 else "dict"}
         return IRComp(kind="dict", generators=gens, key_expr=key_src, val_expr=val_src, reduce=reduce_, provenance=provenance)
 
+def infer_types(ir: IRComp, int_type: str = "i64") -> TypeInfo:
+    """Infer types for an IRComp based on heuristics"""
+    
+    def infer_expr_type(expr: str) -> TypeInfo:
+        """Infer type from a Python expression"""
+        if not expr:
+            return TypeInfo.unknown()
+        
+        # Numeric literals and arithmetic
+        if re.match(r'^\d+$', expr.strip()):
+            return TypeInfo.int_type(int_type)
+        
+        # Range variables (from range(...))
+        if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', expr.strip()):
+            return TypeInfo.int_type(int_type)
+        
+        # Arithmetic operations
+        if any(op in expr for op in ['+', '-', '*', '//', '%', '**']):
+            return TypeInfo.int_type(int_type)
+        
+        # Boolean operations
+        if any(op in expr for op in ['==', '!=', '<', '>', '<=', '>=', ' and ', ' or ', ' not ']):
+            return TypeInfo.bool_type()
+        
+        # Tuple expressions
+        if expr.strip().startswith('(') and expr.strip().endswith(')'):
+            # Simple tuple like (i, j) - assume both are ints
+            return TypeInfo.tuple_type([TypeInfo.int_type(int_type), TypeInfo.int_type(int_type)])
+        
+        # Fallback to unknown
+        return TypeInfo.unknown()
+    
+    # Handle reductions first
+    if ir.reduce:
+        if ir.reduce.kind in ['sum', 'prod', 'max', 'min']:
+            return TypeInfo.int_type(int_type)
+        elif ir.reduce.kind in ['any', 'all']:
+            return TypeInfo.bool_type()
+    
+    # Handle different comprehension types
+    if ir.kind == "list":
+        if ir.element:
+            element_type = infer_expr_type(ir.element)
+            return TypeInfo.vec_type(element_type)
+        else:
+            return TypeInfo.vec_type(TypeInfo.unknown())
+    
+    elif ir.kind == "set":
+        if ir.element:
+            element_type = infer_expr_type(ir.element)
+            return TypeInfo.hashset_type(element_type)
+        else:
+            return TypeInfo.hashset_type(TypeInfo.unknown())
+    
+    elif ir.kind == "dict":
+        key_type = infer_expr_type(ir.key_expr) if ir.key_expr else TypeInfo.unknown()
+        val_type = infer_expr_type(ir.val_expr) if ir.val_expr else TypeInfo.unknown()
+        return TypeInfo.hashmap_type(key_type, val_type)
+    
+    # Fallback
+    return TypeInfo.unknown()
+
 def py_expr_boolish_to_ts(expr: str) -> str:
     out = expr
     for pat, repl in [(r"\\band\\b","&&"),(r"\\bor\\b","||"),(r"\\bnot\\b","!"),(r"\\bTrue\\b","true"),(r"\\bFalse\\b","false")]:
@@ -148,7 +248,7 @@ def range_to_ts(r: IRRange) -> str:
     else:
         length = f"Math.ceil(({r.stop} - {r.start}) / {r.step})"; return f"Array.from({{length: {length}}}, (_, i) => {r.start} + i*{r.step})"
 
-def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64", parallel: bool = False) -> str:
+def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64", parallel: bool = False, type_info: Optional[TypeInfo] = None) -> str:
     def py_expr_to_rust(expr: str) -> str:
         out = expr
         for pat, repl in [(r"\\band\\b","&&"),(r"\\bor\\b","||"),(r"\\bnot\\b","!"),(r"\\bTrue\\b","true"),(r"\\bFalse\\b","false")]:
@@ -187,21 +287,43 @@ def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", r
     uses, ret_type, trailer = [], "", ""
     if parallel:
         uses.append("use rayon::prelude::*;")
-    if ir.reduce:
-        k=ir.reduce.kind
-        if k=="sum": trailer=f".sum::<{reduce_int}>()"; ret_type=reduce_int
-        elif k=="prod": trailer=f".product::<{reduce_int}>()"; ret_type=reduce_int
-        elif k=="any": trailer=".any(|x| x)"; ret_type="bool"
-        elif k=="all": trailer=".all(|x| x)"; ret_type="bool"
-        elif k in ("max","min"):
-            method = ".max()" if k=="max" else ".min()"; trailer=f"{method}.unwrap_or(0)"; ret_type=reduce_int
+    
+    # Use type_info if provided, otherwise fall back to legacy behavior
+    if type_info:
+        ret_type = type_info.rust_type
+        if ir.reduce:
+            k=ir.reduce.kind
+            if k=="sum": trailer=f".sum::<{reduce_int}>()"
+            elif k=="prod": trailer=f".product::<{reduce_int}>()"
+            elif k=="any": trailer=".any(|x| x)"
+            elif k=="all": trailer=".all(|x| x)"
+            elif k in ("max","min"):
+                method = ".max()" if k=="max" else ".min()"; trailer=f"{method}.unwrap_or(0)"
+        else:
+            if ir.kind=="list": trailer=".collect::<Vec<_>>()"
+            elif ir.kind=="set": 
+                uses.append("use std::collections::HashSet;")
+                trailer=".collect::<HashSet<_>>()"
+            else: 
+                uses.append("use std::collections::HashMap;")
+                trailer=".collect::<HashMap<_, _>>()"
     else:
-        if ir.kind=="list": trailer=".collect::<Vec<_>>()"; ret_type="Vec<_>"
-        elif ir.kind=="set": uses.append("use std::collections::HashSet;"); trailer=".collect::<HashSet<_>>()"; ret_type="HashSet<_>"
-        else: uses.append("use std::collections::HashMap;"); trailer=".collect::<HashMap<_, _>>()"; ret_type="HashMap<_, _>"
+        # Legacy behavior
+        if ir.reduce:
+            k=ir.reduce.kind
+            if k=="sum": trailer=f".sum::<{reduce_int}>()"; ret_type=reduce_int
+            elif k=="prod": trailer=f".product::<{reduce_int}>()"; ret_type=reduce_int
+            elif k=="any": trailer=".any(|x| x)"; ret_type="bool"
+            elif k=="all": trailer=".all(|x| x)"; ret_type="bool"
+            elif k in ("max","min"):
+                method = ".max()" if k=="max" else ".min()"; trailer=f"{method}.unwrap_or(0)"; ret_type=reduce_int
+        else:
+            if ir.kind=="list": trailer=".collect::<Vec<_>>()"; ret_type="Vec<_>"
+            elif ir.kind=="set": uses.append("use std::collections::HashSet;"); trailer=".collect::<HashSet<_>>()"; ret_type="HashSet<_>"
+            else: uses.append("use std::collections::HashMap;"); trailer=".collect::<HashMap<_, _>>()"; ret_type="HashMap<_, _>"
     return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", *uses, f"pub fn {func_name}() -> {ret_type} {{", f"    let result = {body}{trailer};", "    result", "}"])
 
-def render_ts(ir: IRComp, func_name: str = "program") -> str:
+def render_ts(ir: IRComp, func_name: str = "program", type_info: Optional[TypeInfo] = None) -> str:
     def render_gen(idx: int) -> str:
         gen = ir.generators[idx]; v=gen.var
         src = range_to_ts(gen.source) if isinstance(gen.source, IRRange) else gen.source
@@ -213,21 +335,40 @@ def render_ts(ir: IRComp, func_name: str = "program") -> str:
             return chain
         else: return chain + f".flatMap(({v}) => {render_gen(idx+1)})"
     body = render_gen(0)
-    if ir.reduce:
-        k=ir.reduce.kind
-        if k=="sum": trailer=".reduce((a,b)=>a+b,0)"
-        elif k=="prod": trailer=".reduce((a,b)=>a*b,1)"
-        elif k=="any": trailer=".some(x=>x)"
-        elif k=="all": trailer=".every(x=>x)"
-        elif k=="max": trailer=".reduce((a,b)=>a>b?a:b, Number.NEGATIVE_INFINITY)"
-        elif k=="min": trailer=".reduce((a,b)=>a<b?a:b, Number.POSITIVE_INFINITY)"
-        ret="number|boolean"
-        return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {body}{trailer};", "  return result;", "}"])
+    # Use type_info if provided, otherwise fall back to legacy behavior
+    if type_info:
+        ret = type_info.ts_type
+        if ir.reduce:
+            k=ir.reduce.kind
+            if k=="sum": trailer=".reduce((a,b)=>a+b,0)"
+            elif k=="prod": trailer=".reduce((a,b)=>a*b,1)"
+            elif k=="any": trailer=".some(x=>x)"
+            elif k=="all": trailer=".every(x=>x)"
+            elif k=="max": trailer=".reduce((a,b)=>a>b?a:b, Number.NEGATIVE_INFINITY)"
+            elif k=="min": trailer=".reduce((a,b)=>a<b?a:b, Number.POSITIVE_INFINITY)"
+            return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {body}{trailer};", "  return result;", "}"])
+        else:
+            if ir.kind=="list": result=body
+            elif ir.kind=="set": result=f"new Set({body})"
+            else: result=f"new Map({body})"
+            return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {result};", "  return result;", "}"])
     else:
-        if ir.kind=="list": ret="any[]"; result=body
-        elif ir.kind=="set": ret="Set<any>"; result=f"new Set({body})"
-        else: ret="Map<any, any>"; result=f"new Map({body})"
-        return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {result};", "  return result;", "}"])
+        # Legacy behavior
+        if ir.reduce:
+            k=ir.reduce.kind
+            if k=="sum": trailer=".reduce((a,b)=>a+b,0)"
+            elif k=="prod": trailer=".reduce((a,b)=>a*b,1)"
+            elif k=="any": trailer=".some(x=>x)"
+            elif k=="all": trailer=".every(x=>x)"
+            elif k=="max": trailer=".reduce((a,b)=>a>b?a:b, Number.NEGATIVE_INFINITY)"
+            elif k=="min": trailer=".reduce((a,b)=>a<b?a:b, Number.POSITIVE_INFINITY)"
+            ret="number|boolean"
+            return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {body}{trailer};", "  return result;", "}"])
+        else:
+            if ir.kind=="list": ret="any[]"; result=body
+            elif ir.kind=="set": ret="Set<any>"; result=f"new Set({body})"
+            else: ret="Map<any, any>"; result=f"new Map({body})"
+            return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", f"export function {func_name}(): {ret} {{", f"  const result = {result};", "  return result;", "}"])
 
 DEMO_CASES=[("m = { i: i*i for i in range(1,6) if i % 2 == 1 }","map_odds"),
 ("s = { (i, j) for i in range(0,3) for j in range(0,3) if i != j }","pairs_set"),
@@ -235,10 +376,15 @@ DEMO_CASES=[("m = { i: i*i for i in range(1,6) if i % 2 == 1 }","map_odds"),
 ("best = max(i*j for i in range(1,5) for j in range(1,4))","max_prod"),
 ("import math\np = math.prod(x for x in range(1,5) if x != 3)","prod_simple")]
 
-def run_demo(target="rust", parallel=False):
+def run_demo(target="rust", parallel=False, int_type="i64"):
     parser=PyToIR(); outs=[]
     for code,name in DEMO_CASES:
-        ir=parser.parse(code); out = render_rust(ir, func_name=name, parallel=parallel) if target=="rust" else render_ts(ir, func_name=name)
+        ir=parser.parse(code)
+        type_info = infer_types(ir, int_type=int_type)
+        if target=="rust":
+            out = render_rust(ir, func_name=name, int_type=int_type, parallel=parallel, type_info=type_info)
+        else:
+            out = render_ts(ir, func_name=name, type_info=type_info)
         outs.append({"python": code, "ir_json": json.loads(ir.to_json()), target: out})
     return outs
 
@@ -248,9 +394,11 @@ def cli():
     ap.add_argument("--name","-n",type=str,default="program"); ap.add_argument("--emit-ir",action="store_true")
     ap.add_argument("--target","-t",type=str,default="rust",choices=["rust","ts"]); ap.add_argument("--out","-o",type=str)
     ap.add_argument("--parallel",action="store_true",help="Enable Rayon parallel iterators (Rust only)")
+    ap.add_argument("--int-type",type=str,default="i64",choices=["i32","i64"],help="Rust integer type (default: i64)")
+    ap.add_argument("--strict-types",action="store_true",help="Error if type inference fails instead of falling back")
     args=ap.parse_args()
     if args.file is None and args.code is None:
-        dr=run_demo("rust"); dt=run_demo("ts")
+        dr=run_demo("rust", int_type=args.int_type); dt=run_demo("ts", int_type=args.int_type)
         for i,d in enumerate(dr,1):
             print("="*80); print(f"DEMO {i} — Python:\\n{d['python']}"); print("\\nIR (JSON):"); print(json.dumps(d["ir_json"], indent=2))
             print("\\nRust:"); print(d["rust"]); print("\\nTypeScript:"); print(dt[i-1]["ts"])
@@ -258,7 +406,17 @@ def cli():
     src = args.code if args.code else Path(args.file).read_text()
     ir=PyToIR().parse(src)
     if args.emit_ir: print("=== IR (JSON) ==="); print(ir.to_json()); print()
-    out = render_rust(ir, func_name=args.name, parallel=args.parallel) if args.target=="rust" else render_ts(ir, func_name=args.name)
+    
+    # Infer types
+    type_info = infer_types(ir, int_type=args.int_type)
+    if args.strict_types and not type_info.is_inferred:
+        print(f"Error: Type inference failed for expression. Use --int-type to specify types.")
+        sys.exit(1)
+    
+    if args.target=="rust":
+        out = render_rust(ir, func_name=args.name, int_type=args.int_type, parallel=args.parallel, type_info=type_info)
+    else:
+        out = render_ts(ir, func_name=args.name, type_info=type_info)
     print(out); 
     if args.out: Path(args.out).write_text(out); print(f"\\n[Saved to] {args.out}")
 

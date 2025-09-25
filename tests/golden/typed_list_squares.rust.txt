@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+pub fn typed_list_squares() -> Vec<i64> {
+    let result = (0..10).map(move |x| x ** 2).collect::<Vec<_>>();
+    result
+}

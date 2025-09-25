@@ -1,0 +1,25 @@
+{
+  "kind": "set",
+  "generators": [
+    {
+      "var": "x",
+      "source": {
+        "start": 0,
+        "stop": 10,
+        "step": 1
+      },
+      "filters": [
+        "x % 2 == 0"
+      ]
+    }
+  ],
+  "element": "x",
+  "key_expr": null,
+  "val_expr": null,
+  "reduce": null,
+  "provenance": {
+    "origin": "python",
+    "pattern": "set"
+  },
+  "__type__": "IRComp"
+}

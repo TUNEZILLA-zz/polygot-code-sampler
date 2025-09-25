@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function typed_dict_odds(): Map<number, number> {
+  const result = new Map((Array.from({length: (6 - 1)}, (_, i) => i + 1)).filter((i) => i % 2 == 1).map((i) => [ i, i * i ]));
+  return result;
+}

@@ -22,6 +22,12 @@
 ### ⚡ **Advanced Reductions**
 - `sum()`, `math.prod()`, `any()`, `all()`, `max()`, `min()`
 
+### 🎯 **Type Inference & Annotations**
+- **Smart type inference** from Python expressions
+- **Rust**: `HashMap<i64, i64>`, `HashSet<i64>`, `Vec<i64>`, `i64`, `bool`
+- **TypeScript**: `Map<number, number>`, `Set<number>`, `Array<number>`, `number`, `boolean`
+- **CLI configuration**: `--int-type i32|i64`, `--strict-types`
+
 ### 🛡️ **Production Testing**
 - **Golden file snapshots** for IR, Rust, and TypeScript outputs
 - **Regression protection** with pytest
@@ -170,6 +176,16 @@ python pcs_step3_ts.py --code "data = {x: x*2 for x in range(5)}" --emit-ir
 
 # TypeScript output
 python pcs_step3_ts.py --code "data = {x: x*2 for x in range(5)}" --target ts
+
+# Type inference examples (default: i64)
+python pcs_step3_ts.py --code "odds = {i: i*i for i in range(1,6) if i % 2 == 1}" --target rust
+python pcs_step3_ts.py --code "evens = {x for x in range(0,10) if x % 2 == 0}" --target ts
+
+# Use i32 types instead of i64
+python pcs_step3_ts.py --code "squares = [x**2 for x in range(10)]" --target rust --int-type i32
+
+# Parallel processing with types
+python pcs_step3_ts.py --code "total = sum(x for x in range(1,1000) if x % 2 == 0)" --target rust --parallel
 ```
 
 ## 🚀 Roadmap
@@ -184,6 +200,7 @@ python pcs_step3_ts.py --code "data = {x: x*2 for x in range(5)}" --target ts
 - [x] Multi-OS CI/CD pipeline
 - [x] Rayon parallel mode with `--parallel` flag
 - [x] Code coverage reporting with Codecov integration
+- [x] **Type inference & annotations** - Rust `HashMap<K,V>`/`HashSet<T>` and TypeScript `Map<number,number>`/`Set<number>`
 
 ### 🎯 **Next Targets**
 - [ ] **Type Annotations** - Explicit Rust key/value types for HashMap, HashSet
