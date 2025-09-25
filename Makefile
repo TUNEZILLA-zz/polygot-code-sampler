@@ -53,12 +53,20 @@ clean: ## Clean up generated files
 	rm -rf .coverage htmlcov/
 
 coverage: ## Run tests with coverage
-	python3 -m pytest tests/ --cov=. --cov-report=html --cov-report=term
+	python3 -m pytest tests/ --cov=. --cov-report=html --cov-report=term --cov-report=xml
+
+coverage-html: ## Generate HTML coverage report
+	python3 -m pytest tests/ --cov=. --cov-report=html
+	@echo "📊 Coverage report generated in htmlcov/index.html"
+
+coverage-xml: ## Generate XML coverage report for CI
+	python3 -m pytest tests/ --cov=. --cov-report=xml
 
 ci: ## Run CI checks locally
 	$(MAKE) format-check
 	$(MAKE) lint
 	$(MAKE) test
+	$(MAKE) coverage
 
 all: ## Run all checks (format, lint, test)
 	$(MAKE) format-check

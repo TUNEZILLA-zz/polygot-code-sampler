@@ -1,6 +1,7 @@
 # 🚀 Polyglot Code Sampler
 
 [![CI](https://github.com/TUNEZILLA-zz/polygot-code-sampler/workflows/CI/badge.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler/actions)
+[![codecov](https://codecov.io/gh/TUNEZILLA-zz/polygot-code-sampler/branch/main/graph/badge.svg)](https://codecov.io/gh/TUNEZILLA-zz/polygot-code-sampler)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -26,6 +27,7 @@
 - **Regression protection** with pytest
 - **Multi-OS CI/CD** (Ubuntu, macOS, Windows)
 - **Python 3.9-3.12** compatibility
+- **Code coverage reporting** with Codecov integration
 
 ## 🚀 Quick Start
 
@@ -55,6 +57,12 @@ python -m pytest tests/ -v
 
 # Generate golden files (first run)
 python -m pytest tests/test_golden.py --update-golden -v
+
+# Run tests with coverage
+python -m pytest tests/ --cov=. --cov-report=html --cov-report=term
+
+# Generate HTML coverage report
+make coverage-html
 
 # Run specific test
 python -m pytest tests/test_golden.py::test_golden_files -v
@@ -174,13 +182,16 @@ python pcs_step3_ts.py --code "data = {x: x*2 for x in range(5)}" --target ts
 - [x] Production-ready pytest test suite
 - [x] Golden file snapshots
 - [x] Multi-OS CI/CD pipeline
+- [x] Rayon parallel mode with `--parallel` flag
+- [x] Code coverage reporting with Codecov integration
 
 ### 🎯 **Next Targets**
-- [ ] **Rayon Parallel Mode** - `--parallel` flag with `.into_par_iter()` chains
 - [ ] **Type Annotations** - Explicit Rust key/value types for HashMap, HashSet
+- [ ] **TS Typing** - Narrower TypeScript generics (Map<number, number>)
+- [ ] **Static Analysis** - Pre-commit hooks with ruff, black, mypy
+- [ ] **Performance Benchmarks** - Compare generated code performance
 - [ ] **Additional Languages** - Go, SQL, WASM backends
 - [ ] **IDE Integration** - VS Code extension for inline transformations
-- [ ] **Performance Benchmarks** - Compare generated code performance
 
 ## 🤝 Contributing
 
