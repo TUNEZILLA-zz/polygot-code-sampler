@@ -1,0 +1,6 @@
+// Rendered from IR (origin: python)
+use std::collections::HashMap;
+pub fn dict_odds_squares() -> HashMap<_, _> {
+    let result = (1..6).filter(|&i| i % 2 == 1).map(move |i| (i, i * i)).collect::<HashMap<_, _>>();
+    result
+}

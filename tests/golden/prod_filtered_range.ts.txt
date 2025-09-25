@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function prod_filtered_range(): number|boolean {
+  const result = (Array.from({length: (6 - 1)}, (_, i) => i + 1)).filter((x) => x != 3).map((x) => x).reduce((a,b)=>a*b,1);
+  return result;
+}

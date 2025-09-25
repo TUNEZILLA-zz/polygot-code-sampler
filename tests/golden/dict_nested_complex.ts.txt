@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function dict_nested_complex(): Map<any, any> {
+  const result = new Map((Array.from({length: (4 - 1)}, (_, i) => i + 1)).flatMap((i) => (Array.from({length: (4 - 1)}, (_, i) => i + 1)).filter((j) => i != j).map((j) => [ i, j ])));
+  return result;
+}

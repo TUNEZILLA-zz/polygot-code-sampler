@@ -1,0 +1,34 @@
+{
+  "kind": "dict",
+  "generators": [
+    {
+      "var": "i",
+      "source": {
+        "start": 1,
+        "stop": 4,
+        "step": 1
+      },
+      "filters": []
+    },
+    {
+      "var": "j",
+      "source": {
+        "start": 1,
+        "stop": 4,
+        "step": 1
+      },
+      "filters": [
+        "i != j"
+      ]
+    }
+  ],
+  "element": null,
+  "key_expr": "i",
+  "val_expr": "j",
+  "reduce": null,
+  "provenance": {
+    "origin": "python",
+    "pattern": "dict_nested"
+  },
+  "__type__": "IRComp"
+}

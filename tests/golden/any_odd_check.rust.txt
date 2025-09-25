@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+pub fn any_odd_check() -> bool {
+    let result = (1..10).map(move |x| x % 2 == 1).any(|x| x);
+    result
+}

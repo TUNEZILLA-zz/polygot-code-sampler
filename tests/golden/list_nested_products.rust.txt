@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+pub fn list_nested_products() -> Vec<_> {
+    let result = (1..4).flat_map(move |i| (1..4).map(move |j| i * j)).collect::<Vec<_>>();
+    result
+}

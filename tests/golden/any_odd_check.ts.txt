@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function any_odd_check(): number|boolean {
+  const result = (Array.from({length: (10 - 1)}, (_, i) => i + 1)).map((x) => x % 2 == 1).some(x=>x);
+  return result;
+}

@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function set_nested_pairs(): Set<any> {
+  const result = new Set((Array.from({length: (3 - 0)}, (_, i) => i + 0)).flatMap((i) => (Array.from({length: (3 - 0)}, (_, i) => i + 0)).filter((j) => i != j).map((j) => (i, j))));
+  return result;
+}

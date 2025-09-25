@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+pub fn all_even_check() -> bool {
+    let result = (2..10).map(move |x| x % 2 == 0).all(|x| x);
+    result
+}

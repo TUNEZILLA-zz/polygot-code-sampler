@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function min_squares(): number|boolean {
+  const result = (Array.from({length: (6 - 1)}, (_, i) => i + 1)).map((x) => x ** 2).reduce((a,b)=>a<b?a:b, Number.POSITIVE_INFINITY);
+  return result;
+}
