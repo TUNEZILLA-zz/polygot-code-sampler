@@ -1,0 +1,6 @@
+// Rendered from IR (origin: python)
+use rayon::prelude::*;
+pub fn par_sum_evens() -> i64 {
+    let result = (1..1000).into_par_iter().filter(|&x| x % 2 == 0).map(move |x| x).sum::<i64>();
+    result
+}

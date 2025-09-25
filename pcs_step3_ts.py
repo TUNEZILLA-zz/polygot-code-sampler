@@ -148,7 +148,7 @@ def range_to_ts(r: IRRange) -> str:
     else:
         length = f"Math.ceil(({r.stop} - {r.start}) / {r.step})"; return f"Array.from({{length: {length}}}, (_, i) => {r.start} + i*{r.step})"
 
-def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64") -> str:
+def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64", parallel: bool = False) -> str:
     def py_expr_to_rust(expr: str) -> str:
         out = expr
         for pat, repl in [(r"\\band\\b","&&"),(r"\\bor\\b","||"),(r"\\bnot\\b","!"),(r"\\bTrue\\b","true"),(r"\\bFalse\\b","false")]:
@@ -159,12 +159,24 @@ def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", r
                 out = f"(if {c} {{ {a} }} else {{ {b} }})"
             except Exception: pass
         return out
-    def range_to_rust(r: IRRange) -> str:
-        base = f"({r.start}..{r.stop})"; return base + (f".step_by({r.step}usize)" if r.step != 1 else "")
+    def range_to_rust(r: IRRange, is_outermost: bool = False) -> str:
+        base = f"({r.start}..{r.stop})"
+        if parallel and is_outermost:  # Only parallelize outermost generator
+            base += ".into_par_iter()"
+            if r.step != 1:
+                # For parallel mode with step != 1, we'll use filter instead of step_by
+                return base
+        else:
+            base += (f".step_by({r.step}usize)" if r.step != 1 else "")
+        return base
     def render_gen(idx: int) -> str:
         gen = ir.generators[idx]; var = gen.var
-        src = range_to_rust(gen.source) if isinstance(gen.source, IRRange) else gen.source
+        is_outermost = (idx == 0)
+        src = range_to_rust(gen.source, is_outermost) if isinstance(gen.source, IRRange) else gen.source
         chain = src
+        # Add step filter for parallel mode with step != 1
+        if parallel and is_outermost and isinstance(gen.source, IRRange) and gen.source.step != 1:
+            chain += f".filter(|&{var}| ({var} - {gen.source.start}) % {gen.source.step} == 0)"
         for pred in gen.filters: chain += f".filter(|&{var}| {py_expr_to_rust(pred)})"
         if idx == len(ir.generators)-1:
             if ir.kind == "dict": chain += f".map(move |{var}| ({py_expr_to_rust(ir.key_expr)}, {py_expr_to_rust(ir.val_expr)}))"
@@ -173,6 +185,8 @@ def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", r
         else: return f"{chain}.flat_map(move |{var}| {render_gen(idx+1)})"
     body = render_gen(0)
     uses, ret_type, trailer = [], "", ""
+    if parallel:
+        uses.append("use rayon::prelude::*;")
     if ir.reduce:
         k=ir.reduce.kind
         if k=="sum": trailer=f".sum::<{reduce_int}>()"; ret_type=reduce_int
@@ -221,10 +235,10 @@ DEMO_CASES=[("m = { i: i*i for i in range(1,6) if i % 2 == 1 }","map_odds"),
 ("best = max(i*j for i in range(1,5) for j in range(1,4))","max_prod"),
 ("import math\np = math.prod(x for x in range(1,5) if x != 3)","prod_simple")]
 
-def run_demo(target="rust"):
+def run_demo(target="rust", parallel=False):
     parser=PyToIR(); outs=[]
     for code,name in DEMO_CASES:
-        ir=parser.parse(code); out = render_rust(ir, func_name=name) if target=="rust" else render_ts(ir, func_name=name)
+        ir=parser.parse(code); out = render_rust(ir, func_name=name, parallel=parallel) if target=="rust" else render_ts(ir, func_name=name)
         outs.append({"python": code, "ir_json": json.loads(ir.to_json()), target: out})
     return outs
 
@@ -233,6 +247,7 @@ def cli():
     ap.add_argument("--file","-f",type=str); ap.add_argument("--code","-c",type=str)
     ap.add_argument("--name","-n",type=str,default="program"); ap.add_argument("--emit-ir",action="store_true")
     ap.add_argument("--target","-t",type=str,default="rust",choices=["rust","ts"]); ap.add_argument("--out","-o",type=str)
+    ap.add_argument("--parallel",action="store_true",help="Enable Rayon parallel iterators (Rust only)")
     args=ap.parse_args()
     if args.file is None and args.code is None:
         dr=run_demo("rust"); dt=run_demo("ts")
@@ -243,7 +258,7 @@ def cli():
     src = args.code if args.code else Path(args.file).read_text()
     ir=PyToIR().parse(src)
     if args.emit_ir: print("=== IR (JSON) ==="); print(ir.to_json()); print()
-    out = render_rust(ir, func_name=args.name) if args.target=="rust" else render_ts(ir, func_name=args.name)
+    out = render_rust(ir, func_name=args.name, parallel=args.parallel) if args.target=="rust" else render_ts(ir, func_name=args.name)
     print(out); 
     if args.out: Path(args.out).write_text(out); print(f"\\n[Saved to] {args.out}")
 

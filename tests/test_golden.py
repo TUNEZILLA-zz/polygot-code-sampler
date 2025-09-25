@@ -64,7 +64,31 @@ TEST_CASES = [
     )
 ]
 
-def run_case(python_code: str, case_name: str, update_golden: bool, golden_dir: Path):
+# Parallel test cases: (python_code, case_name, description)
+PARALLEL_TEST_CASES = [
+    (
+        "squares = [x**2 for x in range(1, 1000)]",
+        "par_squares",
+        "Parallel list comprehension with large range"
+    ),
+    (
+        "sum_evens = sum(x for x in range(1, 1000) if x % 2 == 0)",
+        "par_sum_evens",
+        "Parallel sum reduction with filter"
+    ),
+    (
+        "data = {i: i*i for i in range(1, 100) if i % 2 == 1}",
+        "par_dict_squares",
+        "Parallel dict comprehension"
+    ),
+    (
+        "evens = [x for x in range(0, 100, 2)]",
+        "par_step_range",
+        "Parallel range with step != 1 (filter emulation)"
+    )
+]
+
+def run_case(python_code: str, case_name: str, update_golden: bool, golden_dir: Path, parallel: bool = False):
     """Run a single test case and compare/update golden files"""
     # Parse Python code to IR
     parser = PyToIR()
@@ -72,7 +96,7 @@ def run_case(python_code: str, case_name: str, update_golden: bool, golden_dir: 
     
     # Generate outputs
     ir_json = ir.to_json()
-    rust_output = render_rust(ir, func_name=case_name)
+    rust_output = render_rust(ir, func_name=case_name, parallel=parallel)
     ts_output = render_ts(ir, func_name=case_name)
     
     # Define golden file paths
@@ -125,6 +149,15 @@ def test_golden_files(python_code, case_name, description, update_golden, golden
     
     success = run_case(python_code, case_name, update_golden, golden_dir)
     assert success, f"Test case {case_name} failed"
+
+@pytest.mark.parametrize("python_code,case_name,description", PARALLEL_TEST_CASES)
+def test_parallel_rust_golden(python_code, case_name, description, update_golden, golden_dir):
+    """Test parallel Rust cases against golden files"""
+    print(f"\n⚡️ Testing parallel {case_name}: {description}")
+    print(f"   Python: {python_code.strip()}")
+    
+    success = run_case(python_code, case_name, update_golden, golden_dir, parallel=True)
+    assert success, f"Parallel test case {case_name} failed"
 
 def test_all_golden_files_exist(update_golden, golden_dir):
     """Ensure all golden files exist (run after --update-golden)"""

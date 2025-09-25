@@ -1,0 +1,6 @@
+// Rendered from IR (origin: python)
+use rayon::prelude::*;
+pub fn par_squares() -> Vec<_> {
+    let result = (1..1000).into_par_iter().map(move |x| x ** 2).collect::<Vec<_>>();
+    result
+}

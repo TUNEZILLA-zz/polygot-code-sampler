@@ -1,0 +1,7 @@
+// Rendered from IR (origin: python)
+use rayon::prelude::*;
+use std::collections::HashMap;
+pub fn par_dict_squares() -> HashMap<_, _> {
+    let result = (1..100).into_par_iter().filter(|&i| i % 2 == 1).map(move |i| (i, i * i)).collect::<HashMap<_, _>>();
+    result
+}

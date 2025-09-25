@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Sanity tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pytest -q
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            pcs_step3_ts.py
+            pcs_step3.py
+            pcs_step2.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

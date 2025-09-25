@@ -1,0 +1,6 @@
+// Rendered from IR (origin: python)
+use rayon::prelude::*;
+pub fn par_step_range() -> Vec<_> {
+    let result = (0..100).into_par_iter().filter(|&x| (x - 0) % 2 == 0).map(move |x| x).collect::<Vec<_>>();
+    result
+}

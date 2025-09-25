@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function par_sum_evens(): number|boolean {
+  const result = (Array.from({length: (1000 - 1)}, (_, i) => i + 1)).filter((x) => x % 2 == 0).map((x) => x).reduce((a,b)=>a+b,0);
+  return result;
+}

@@ -1,0 +1,5 @@
+// Rendered from IR (origin: python)
+export function par_squares(): any[] {
+  const result = (Array.from({length: (1000 - 1)}, (_, i) => i + 1)).map((x) => x ** 2);
+  return result;
+}
