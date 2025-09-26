@@ -8,6 +8,12 @@
 
 > 🚀 **NEW**: Enterprise-Grade Performance Monitoring Platform! See [LAUNCH_POST.md](LAUNCH_POST.md) for the complete feature overview and [VALIDATION_REPORT.md](VALIDATION_REPORT.md) for validation results.
 
+## 📊 **Live Performance Dashboard**
+
+**Interactive Performance Monitoring**: [Production Dashboard](https://tunezilla-zz.github.io/polygot-code-sampler/) · [Demo Dashboard](https://tunezilla-zz.github.io/polygot-code-sampler/?demo=1)
+
+*Real-time performance trends, cross-backend comparisons, and intelligent regression detection across 6 target languages with policy-driven governance and enterprise-grade security.*
+
 **Transform Python comprehensions into Rust, TypeScript, SQL, Go, and C# with a production-ready compiler pipeline!**
 
 ## ✨ Features
