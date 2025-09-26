@@ -1,0 +1,220 @@
+name: Performance Benchmarks
+
+# Non-blocking performance tracking workflow
+# Runs on schedule and PRs but doesn't gate merges
+on:
+  schedule:
+    # Run daily at 2 AM UTC to track performance trends
+    - cron: '0 2 * * *'
+  pull_request:
+    # Run on PRs but don't block merges
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    # Allow manual triggering
+
+# This workflow is intentionally non-blocking
+# It provides performance insights without gating development
+
+jobs:
+  performance-benchmark:
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Never fail the workflow
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for trend analysis
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-perf-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-perf-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+
+    - name: Install Rust (for compilation benchmarks)
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+
+    - name: Install Node.js (for TypeScript benchmarks)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Run performance benchmarks
+      id: benchmark
+      run: |
+        echo "🚀 Running performance benchmarks..."
+        python benchmark.py --quick --output benchmark_results.json
+        
+        # Extract key metrics for trend tracking
+        echo "📊 Extracting performance metrics..."
+        python -c "
+        import json
+        with open('benchmark_results.json') as f:
+            data = json.load(f)
+        
+        parsing = data.get('parsing', {})
+        rust_gen = data.get('rust_generation', {})
+        ts_gen = data.get('typescript_generation', {})
+        
+        print(f'parse_time_ms={parsing.get(\"avg_parse_time_ms\", 0):.3f}')
+        print(f'infer_time_ms={parsing.get(\"avg_infer_time_ms\", 0):.3f}')
+        print(f'rust_gen_time_ms={rust_gen.get(\"avg_generation_time_ms\", 0):.3f}')
+        print(f'rust_parallel_time_ms={rust_gen.get(\"avg_parallel_generation_time_ms\", 0):.3f}')
+        print(f'ts_gen_time_ms={ts_gen.get(\"avg_generation_time_ms\", 0):.3f}')
+        print(f'commit_sha=${{GITHUB_SHA}}')
+        print(f'commit_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)')
+        " >> $GITHUB_OUTPUT
+
+    - name: Generate performance report
+      run: |
+        echo "📈 Generating performance report..."
+        python benchmark_report.py --input benchmark_results.json --output performance_report.md
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results-${{ github.run_number }}
+        path: |
+          benchmark_results.json
+          performance_report.md
+        retention-days: 30
+
+    - name: Comment PR with performance summary
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // Read benchmark results
+          const results = JSON.parse(fs.readFileSync('benchmark_results.json', 'utf8'));
+          
+          const parsing = results.parsing || {};
+          const rustGen = results.rust_generation || {};
+          const tsGen = results.typescript_generation || {};
+          
+          const comment = `## 📊 Performance Benchmark Results
+          
+          **Commit:** \`${context.sha.substring(0, 7)}\`
+          **Timestamp:** ${new Date().toISOString()}
+          
+          ### Key Metrics
+          - **Python Parsing:** ${parsing.avg_parse_time_ms?.toFixed(3) || 'N/A'} ms
+          - **Type Inference:** ${parsing.avg_infer_time_ms?.toFixed(3) || 'N/A'} ms
+          - **Rust Generation:** ${rustGen.avg_generation_time_ms?.toFixed(3) || 'N/A'} ms (seq), ${rustGen.avg_parallel_generation_time_ms?.toFixed(3) || 'N/A'} ms (par)
+          - **TypeScript Generation:** ${tsGen.avg_generation_time_ms?.toFixed(3) || 'N/A'} ms
+          
+          ### Performance Insights
+          ${tsGen.avg_generation_time_ms && rustGen.avg_generation_time_ms ? 
+            `- TypeScript is ${(rustGen.avg_generation_time_ms / tsGen.avg_generation_time_ms).toFixed(1)}x faster than Rust generation` : 
+            '- Performance comparison not available'
+          }
+          ${rustGen.avg_parallel_generation_time_ms && rustGen.avg_generation_time_ms ?
+            `- Parallel Rust is ${(rustGen.avg_generation_time_ms / rustGen.avg_parallel_generation_time_ms).toFixed(1)}x faster than sequential` :
+            '- Parallel performance not available'
+          }
+          
+          <details>
+          <summary>📋 Full Performance Report</summary>
+          
+          \`\`\`
+          ${fs.readFileSync('performance_report.md', 'utf8').substring(0, 2000)}...
+          \`\`\`
+          </details>
+          
+          ---
+          *Performance benchmarks are non-blocking and for informational purposes only.*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+    - name: Performance trend analysis
+      if: github.event_name == 'schedule'
+      run: |
+        echo "📈 Analyzing performance trends..."
+        
+        # Create a simple trend analysis
+        python -c "
+        import json
+        import os
+        from datetime import datetime
+        
+        # Read current results
+        with open('benchmark_results.json') as f:
+            current = json.load(f)
+        
+        # Create trend summary
+        trend_data = {
+            'timestamp': current.get('timestamp', ''),
+            'commit_sha': os.environ.get('GITHUB_SHA', ''),
+            'metrics': {
+                'parse_time_ms': current.get('parsing', {}).get('avg_parse_time_ms', 0),
+                'infer_time_ms': current.get('parsing', {}).get('avg_infer_time_ms', 0),
+                'rust_gen_time_ms': current.get('rust_generation', {}).get('avg_generation_time_ms', 0),
+                'rust_parallel_time_ms': current.get('rust_generation', {}).get('avg_parallel_generation_time_ms', 0),
+                'ts_gen_time_ms': current.get('typescript_generation', {}).get('avg_generation_time_ms', 0)
+            }
+        }
+        
+        # Save trend data
+        with open('performance_trend.json', 'w') as f:
+            json.dump(trend_data, f, indent=2)
+        
+        print('✅ Performance trend data saved')
+        "
+
+    - name: Upload trend data
+      if: github.event_name == 'schedule'
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-trend-${{ github.run_number }}
+        path: performance_trend.json
+        retention-days: 90
+
+    - name: Performance summary
+      run: |
+        echo "## 🏆 Performance Benchmark Summary"
+        echo ""
+        echo "**Commit:** \`${{ github.sha }}\`"
+        echo "**Trigger:** ${{ github.event_name }}"
+        echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        echo ""
+        echo "### Key Metrics:"
+        echo "- Parse Time: ${{ steps.benchmark.outputs.parse_time_ms }} ms"
+        echo "- Type Inference: ${{ steps.benchmark.outputs.infer_time_ms }} ms"
+        echo "- Rust Generation: ${{ steps.benchmark.outputs.rust_gen_time_ms }} ms (seq), ${{ steps.benchmark.outputs.rust_parallel_time_ms }} ms (par)"
+        echo "- TypeScript Generation: ${{ steps.benchmark.outputs.ts_gen_time_ms }} ms"
+        echo ""
+        echo "### Performance Insights:"
+        if [ "${{ steps.benchmark.outputs.ts_gen_time_ms }}" != "0.000" ] && [ "${{ steps.benchmark.outputs.rust_gen_time_ms }}" != "0.000" ]; then
+          ratio=$(echo "scale=1; ${{ steps.benchmark.outputs.rust_gen_time_ms }} / ${{ steps.benchmark.outputs.ts_gen_time_ms }}" | bc -l)
+          echo "- TypeScript is ${ratio}x faster than Rust generation"
+        fi
+        if [ "${{ steps.benchmark.outputs.rust_parallel_time_ms }}" != "0.000" ] && [ "${{ steps.benchmark.outputs.rust_gen_time_ms }}" != "0.000" ]; then
+          speedup=$(echo "scale=1; ${{ steps.benchmark.outputs.rust_gen_time_ms }} / ${{ steps.benchmark.outputs.rust_parallel_time_ms }}" | bc -l)
+          echo "- Parallel Rust is ${speedup}x faster than sequential"
+        fi
+        echo ""
+        echo "📊 Full results available in artifacts"
+        echo "📈 Performance trends tracked over time"

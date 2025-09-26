@@ -232,9 +232,7 @@ def cli():
     ap=argparse.ArgumentParser(description="PCS — Rust & TypeScript backends")
     ap.add_argument("--file","-f",type=str); ap.add_argument("--code","-c",type=str)
     ap.add_argument("--name","-n",type=str,default="program"); ap.add_argument("--emit-ir",action="store_true")
-    ap.add_argument("--target","-t",type=str,default="rust",choices=["rust","ts","sql","go"]); ap.add_argument("--out","-o",type=str)
-    ap.add_argument("--execute-sql",action="store_true",help="Execute generated SQL and display results")
-    ap.add_argument("--sql-dialect",type=str,default="sqlite",choices=["sqlite","postgresql"],help="SQL dialect for generation")
+    ap.add_argument("--target","-t",type=str,default="rust",choices=["rust","ts"]); ap.add_argument("--out","-o",type=str)
     args=ap.parse_args()
     if args.file is None and args.code is None:
         dr=run_demo("rust"); dt=run_demo("ts")
@@ -245,117 +243,8 @@ def cli():
     src = args.code if args.code else Path(args.file).read_text()
     ir=PyToIR().parse(src)
     if args.emit_ir: print("=== IR (JSON) ==="); print(ir.to_json()); print()
-    if args.target == "rust":
-        out = render_rust(ir, func_name=args.name)
-    elif args.target == "ts":
-        out = render_ts(ir, func_name=args.name)
-    elif args.target == "sql":
-        out = render_sql(ir, func_name=args.name, dialect=args.sql_dialect)
-        if args.execute_sql:
-            execute_sql_and_display(out, args.sql_dialect)
-    elif args.target == "go":
-        out = render_go(ir, func_name=args.name)
-    else:
-        out = render_ts(ir, func_name=args.name)
-    
+    out = render_rust(ir, func_name=args.name) if args.target=="rust" else render_ts(ir, func_name=args.name)
     print(out); 
     if args.out: Path(args.out).write_text(out); print(f"\\n[Saved to] {args.out}")
-
-
-def render_sql(ir: IRComp, func_name: str = "program", dialect: str = "sqlite") -> str:
-    """
-    Simple SQL renderer for basic comprehensions
-    """
-    if ir.reduce:
-        k = ir.reduce.kind
-        if k == "sum":
-            gen = ir.generators[0]
-            if isinstance(gen.source, IRRange):
-                start, stop, step = gen.source.start, gen.source.stop, gen.source.step
-                
-                # Build the expression to sum
-                if ir.kind == "dict":
-                    expr = ir.val_expr or "i"
-                else:
-                    expr = ir.element or "i"
-                
-                # Convert Python expressions to SQL
-                expr = expr.replace("**", "^")  # Python ** to SQL ^
-                
-                # Build WHERE clause from filters
-                where_clause = ""
-                if gen.filters:
-                    for filter_expr in gen.filters:
-                        filter_sql = filter_expr.replace(" and ", " AND ").replace(" or ", " OR ").replace(" not ", " NOT ")
-                        where_clause += f" WHERE {filter_sql}"
-                
-                if dialect == "sqlite":
-                    # Use recursive CTE for SQLite
-                    return f"WITH RECURSIVE range(i) AS (SELECT {start} UNION ALL SELECT i+1 FROM range WHERE i < {stop-1}) SELECT SUM({expr}) FROM range{where_clause};"
-                else:  # postgresql
-                    return f"SELECT SUM({expr}) FROM generate_series({start}, {stop-1}) AS i{where_clause};"
-    
-    # Fallback for other cases
-    return "-- SQL generation not implemented for this pattern"
-
-
-def execute_sql_and_display(sql_query: str, dialect: str = "sqlite") -> None:
-    """
-    Execute SQL query and display results in a pretty format.
-    Currently supports SQLite via sqlite3 command-line tool.
-    """
-    import subprocess
-    import tempfile
-    import os
-    
-    print(f"\n🗄️ Executing SQL ({dialect}):")
-    print("=" * 50)
-    print(sql_query)
-    print("=" * 50)
-    
-    if dialect == "sqlite":
-        try:
-            # Create a temporary SQLite database
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.sql', delete=False) as f:
-                f.write(sql_query)
-                sql_file = f.name
-            
-            # Execute with sqlite3
-            result = subprocess.run(
-                ["sqlite3", ":memory:", f".read {sql_file}"],
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            
-            # Clean up
-            os.unlink(sql_file)
-            
-            if result.returncode == 0:
-                print("✅ Results:")
-                if result.stdout.strip():
-                    # Pretty print results
-                    lines = result.stdout.strip().split('\n')
-                    for i, line in enumerate(lines, 1):
-                        print(f"  {i:2d}: {line}")
-                else:
-                    print("  (No results returned)")
-            else:
-                print(f"❌ SQL Error: {result.stderr}")
-                
-        except subprocess.TimeoutExpired:
-            print("⏰ Query timed out (>10s)")
-        except FileNotFoundError:
-            print("❌ sqlite3 not found. Install with: brew install sqlite3")
-        except Exception as e:
-            print(f"❌ Execution error: {e}")
-    
-    elif dialect == "postgresql":
-        print("❌ PostgreSQL execution not yet implemented")
-        print("   Use --sql-dialect sqlite for execution")
-    
-    else:
-        print(f"❌ Unsupported dialect: {dialect}")
-
 
 if __name__=="__main__": cli()

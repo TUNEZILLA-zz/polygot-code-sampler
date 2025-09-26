@@ -1,0 +1,9 @@
+// Rendered from IR (origin: python)
+func go_sum_reduction() int {
+    acc := 0
+    for i := 0; i < 10; i++ {
+        if !(i % 2 == 0) { continue }
+        acc += i
+    }
+    return acc
+}

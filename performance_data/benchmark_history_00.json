@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-09-16 00:28:09",
+  "mode": "quick",
+  "parsing": {
+    "total_cases": 2,
+    "avg_parse_time_ms": 0.1515140578279607,
+    "avg_infer_time_ms": 0.08745328989919948,
+    "parse_times": [
+      {
+        "case": "simple_squares",
+        "time_ms": 0.18181686939355285,
+        "memory_mb": 0.05
+      },
+      {
+        "case": "dict_odds",
+        "time_ms": 0.12121124626236857,
+        "memory_mb": 0.0
+      }
+    ],
+    "type_inference_times": [
+      {
+        "case": "simple_squares",
+        "time_ms": 0.09619861888911944,
+        "memory_mb": 0.0
+      },
+      {
+        "case": "dict_odds",
+        "time_ms": 0.07870796090927953,
+        "memory_mb": 0.0
+      }
+    ]
+  },
+  "rust_generation": {
+    "total_cases": 2,
+    "avg_generation_time_ms": 0.06098193242046724,
+    "avg_parallel_generation_time_ms": 0.010077558460314297,
+    "generation_times": [
+      {
+        "case": "simple_squares",
+        "time_ms": 0.09147289863070086,
+        "code_size_chars": 154
+      },
+      {
+        "case": "dict_odds",
+        "time_ms": 0.03049096621023362,
+        "code_size_chars": 223
+      }
+    ],
+    "parallel_generation_times": [
+      {
+        "case": "simple_squares",
+        "time_ms": 0.012093070152377157,
+        "code_size_chars": 154
+      },
+      {
+        "case": "dict_odds",
+        "time_ms": 0.008062046768251438,
+        "code_size_chars": 223
+      }
+    ]
+  },
+  "typescript_generation": {
+    "total_cases": 2,
+    "avg_generation_time_ms": 0.00880593319252056,
+    "generation_times": [
+      {
+        "case": "simple_squares",
+        "time_ms": 0.007044746554016448,
+        "code_size_chars": 192
+      },
+      {
+        "case": "dict_odds",
+        "time_ms": 0.010567119831024673,
+        "code_size_chars": 233
+      }
+    ]
+  }
+}

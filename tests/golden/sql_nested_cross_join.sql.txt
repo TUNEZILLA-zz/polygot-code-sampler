@@ -1,0 +1,2 @@
+SELECT i * j
+FROM generate_series(1, 3) AS i CROSS JOIN generate_series(1, 3) AS j WHERE i != j;

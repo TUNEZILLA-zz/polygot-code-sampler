@@ -1,0 +1,2 @@
+SELECT i, i * i
+FROM generate_series(1, 5) AS i WHERE i % 2 == 1;

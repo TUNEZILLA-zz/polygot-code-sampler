@@ -1,0 +1,42 @@
+import (
+    "runtime"
+    "sync"
+)
+
+func go_parallel_list() []int {
+    numWorkers := runtime.NumCPU()
+    totalRange := 20
+    chunkSize := totalRange / numWorkers
+    if chunkSize == 0 { chunkSize = 1 }
+
+    results := make(chan []int, numWorkers)  // Simplified for now
+    var wg sync.WaitGroup
+
+    for w := 0; w < numWorkers; w++ {
+        wg.Add(1)
+        go func(workerID int) {
+            defer wg.Done()
+            start := workerID * chunkSize
+            end := start + chunkSize
+            if workerID == numWorkers-1 { end = totalRange }
+
+            workerResults := make([]int, 0)
+
+            for i := start; i < end; i++ {
+                if !(i % 2 == 0) { continue }
+                workerResults = append(workerResults, i * i)
+            }
+            results <- workerResults
+        }(w)
+    }
+
+    wg.Wait()
+    close(results)
+
+    // Merge results
+    out := make([]int, 0)
+    for workerResults := range results {
+        out = append(out, workerResults...)
+    }
+    return out
+}

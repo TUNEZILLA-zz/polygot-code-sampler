@@ -1,0 +1,9 @@
+// Rendered from IR (origin: python)
+func go_dict_comprehension() map[int]int {
+    out := make(map[int]int)
+    for i := 1; i < 6; i++ {
+        if !(i % 2 == 1) { continue }
+        out[i] = i * i
+    }
+    return out
+}

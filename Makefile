@@ -8,7 +8,7 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install dependencies
-	pip install pytest pytest-cov flake8 black isort
+	pip install -r requirements-test.txt
 
 test: ## Run all tests
 	python3 -m pytest tests/ -v
@@ -35,21 +35,76 @@ demo-parallel: ## Demo parallel Rust transformation
 	python3 pcs_step3_ts.py --code "squares = [x**2 for x in range(1, 1000)]" --target rust --parallel
 
 lint: ## Run linting checks
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	ruff check pcs_step3_ts.py tests/
+	black --check pcs_step3_ts.py tests/
+	isort --check-only pcs_step3_ts.py tests/
+	mypy pcs_step3_ts.py
 
-format: ## Format code with black and isort
-	black .
-	isort .
+format: ## Format code with black, isort, and ruff
+	black pcs_step3_ts.py tests/
+	isort pcs_step3_ts.py tests/
+	ruff check --fix pcs_step3_ts.py tests/
 
 format-check: ## Check code formatting
-	black --check --diff .
-	isort --check-only --diff .
+	black --check pcs_step3_ts.py tests/
+	isort --check-only pcs_step3_ts.py tests/
+	ruff check pcs_step3_ts.py tests/
+
+type-check: ## Run type checking
+	mypy pcs_step3_ts.py
+
+lint-fix: ## Fix linting issues automatically
+	ruff check --fix pcs_step3_ts.py tests/
+	black pcs_step3_ts.py tests/
+	isort pcs_step3_ts.py tests/
+
+benchmark: ## Run performance benchmarks
+	python3 benchmark.py
+
+benchmark-quick: ## Run quick performance benchmarks (parsing + generation only)
+	python3 benchmark.py --quick
+
+benchmark-results: ## Show latest benchmark results
+	@if [ -f benchmark_results.json ]; then \
+		python3 -c "import json; data=json.load(open('benchmark_results.json')); print('Latest benchmark:', data.get('timestamp', 'unknown')); print('Mode:', data.get('mode', 'full')); print('Cases tested:', data.get('parsing', {}).get('total_cases', 0))"; \
+	else \
+		echo "No benchmark results found. Run 'make benchmark' first."; \
+	fi
+
+benchmark-report: ## Generate performance report from benchmark results
+	@if [ -f benchmark_results.json ]; then \
+		python3 benchmark_report.py; \
+	else \
+		echo "No benchmark results found. Run 'make benchmark' first."; \
+	fi
+
+benchmark-full: ## Run full benchmark suite and generate report
+	python3 benchmark.py && python3 benchmark_report.py
+
+dashboard: ## Generate performance dashboard from historical data
+	python3 performance_dashboard.py
+
+dashboard-print: ## Print performance dashboard to stdout
+	python3 performance_dashboard.py --print
+
+simulate-history: ## Generate simulated performance history for testing
+	python3 simulate_performance_history.py
+
+test-dashboard: ## Test dashboard with simulated data
+	python3 simulate_performance_history.py && python3 performance_dashboard.py --files performance_data/benchmark_history_*.json --print
+
+bench-rust: ## Run Rust-specific benchmarks
+	python3 benchmark.py --target rust
+
+bench-ts: ## Run TypeScript-specific benchmarks
+	python3 benchmark.py --target ts
 
 clean: ## Clean up generated files
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name ".pytest_cache" -delete
+	rm -rf performance_data/
+	rm -f benchmark_results.json benchmark_report.md performance_report.md
 	rm -rf .coverage htmlcov/
 
 coverage: ## Run tests with coverage

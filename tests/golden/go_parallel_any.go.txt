@@ -1,0 +1,39 @@
+import (
+    "runtime"
+    "sync"
+)
+
+func go_parallel_any() bool {
+    numWorkers := runtime.NumCPU()
+    totalRange := 100
+    chunkSize := totalRange / numWorkers
+    if chunkSize == 0 { chunkSize = 1 }
+
+    results := make(chan int, numWorkers)
+    var wg sync.WaitGroup
+
+    for w := 0; w < numWorkers; w++ {
+        wg.Add(1)
+        go func(workerID int) {
+            defer wg.Done()
+            start := workerID * chunkSize
+            end := start + chunkSize
+            if workerID == numWorkers-1 { end = totalRange }
+
+            acc := false
+
+            for i := start; i < end; i++ {
+                if x > 50 { acc = true }
+            }
+            results <- acc
+        }(w)
+    }
+
+    wg.Wait()
+    close(results)
+
+    for result := range results {
+        if result { return true }
+    }
+    return false
+}

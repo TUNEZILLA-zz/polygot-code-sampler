@@ -1,0 +1,23 @@
+{
+  "kind": "list",
+  "generators": [
+    {
+      "var": "i",
+      "source": {
+        "start": 10,
+        "stop": 5,
+        "step": 1
+      },
+      "filters": []
+    }
+  ],
+  "element": "i",
+  "key_expr": null,
+  "val_expr": null,
+  "reduce": null,
+  "provenance": {
+    "origin": "python",
+    "pattern": "list"
+  },
+  "__type__": "IRComp"
+}
