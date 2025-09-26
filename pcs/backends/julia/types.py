@@ -53,6 +53,8 @@ def get_collection_type(kind: str, element_type: str = "Int") -> str:
         return f"Set{{{element_type}}}"
     elif kind == "dict":
         return f"Dict{{{element_type}, {element_type}}}"
+    elif kind == "group_by":
+        return f"Dict{{{element_type}, Vector{{{element_type}}}}}"
     else:
         return f"Vector{{{element_type}}}"
 

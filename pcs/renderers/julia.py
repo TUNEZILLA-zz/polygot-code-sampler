@@ -5,7 +5,7 @@ Julia renderer for Polyglot Code Sampler
 from ..core import IRComp
 from ..backends.julia import lower_program
 
-def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False, mode: str = "loops") -> str:
+def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False, mode: str = "auto", explain: bool = True, unsafe: bool = False) -> str:
     """
     Julia backend with broadcast/vectorized support:
       list -> Vector{Int}
@@ -19,7 +19,7 @@ def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False,
       - Leverages Julia's high-performance array operations
     """
     # Use the new comprehensive Julia backend
-    return lower_program(ir, mode=mode, parallel=parallel)
+    return lower_program(ir, mode=mode, parallel=parallel, explain=explain, unsafe=unsafe)
 
 def _should_use_broadcast(ir: IRComp, gen) -> bool:
     """Determine if broadcast syntax is appropriate"""
