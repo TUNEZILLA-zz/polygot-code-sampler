@@ -6,6 +6,8 @@
 
 **Dashboards:** [Production](https://tunezilla-zz.github.io/polygot-code-sampler/) · [Demo](https://tunezilla-zz.github.io/polygot-code-sampler/?demo=1)
 
+> 🚀 **NEW**: Enterprise-Grade Performance Monitoring Platform! See [LAUNCH_POST.md](LAUNCH_POST.md) for the complete feature overview and [VALIDATION_REPORT.md](VALIDATION_REPORT.md) for validation results.
+
 **Transform Python comprehensions into Rust, TypeScript, SQL, Go, and C# with a production-ready compiler pipeline!**
 
 ## ✨ Features
