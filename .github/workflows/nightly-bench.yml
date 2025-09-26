@@ -74,11 +74,24 @@ jobs:
           echo "🚀 Starting nightly benchmarks..."
           python scripts/bench_all.py
 
+      # Run multi-test benchmark suite
+      - name: Run multi-test benchmarks
+        run: |
+          echo "🧪 Running comprehensive multi-test suite..."
+          python scripts/bench_multi_test.py
+
       # Aggregate results
       - name: Aggregate benchmark results
         run: |
           echo "📊 Aggregating results..."
           python scripts/aggregate_bench.py
+
+      # Check for performance regressions
+      - name: Check for performance regressions
+        run: |
+          echo "🔍 Checking for performance regressions..."
+          python scripts/trend_alerts.py
+        continue-on-error: true
 
       # Commit results to main branch
       - name: Commit benchmark results

@@ -199,8 +199,16 @@
           <canvas id="chartParallel"></canvas>
         </div>
         <div class="chart-container">
+          <h3>Cross-Backend Ratios</h3>
+          <canvas id="chartRatios"></canvas>
+        </div>
+        <div class="chart-container">
           <h3>Performance Trends</h3>
           <canvas id="chartTrends"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Speedup Analysis</h3>
+          <canvas id="chartSpeedup"></canvas>
         </div>
       </div>
       
@@ -311,8 +319,14 @@
       // Chart 3: Parallel vs Sequential
       createParallelChart(results);
       
-      // Chart 4: Performance Trends
+      // Chart 4: Cross-Backend Ratios
+      createRatiosChart(results);
+      
+      // Chart 5: Performance Trends
       createTrendsChart(results);
+      
+      // Chart 6: Speedup Analysis
+      createSpeedupChart(results);
     }
 
     function createBackendChart(results) {
@@ -546,13 +560,136 @@
       });
     }
 
+    function createRatiosChart(results) {
+      const ctx = document.getElementById('chartRatios').getContext('2d');
+      
+      if (charts.ratios) {
+        charts.ratios.destroy();
+      }
+
+      const test = document.getElementById('test-select').value;
+      const filteredResults = results.filter(r => r.test === test);
+      
+      const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
+      const backends = [...new Set(filteredResults.map(r => r.backend))];
+
+      // Calculate ratios relative to fastest backend (Julia as baseline)
+      const baseline = 'julia';
+      const datasets = backends.map(backend => {
+        const data = dates.map(date => {
+          const baselineResults = filteredResults.filter(r => 
+            r.backend === baseline && r.timestamp.startsWith(date) && !r.parallel
+          );
+          const backendResults = filteredResults.filter(r => 
+            r.backend === backend && r.timestamp.startsWith(date) && !r.parallel
+          );
+          
+          if (baselineResults.length === 0 || backendResults.length === 0) return null;
+          
+          const baselineTime = Math.min(...baselineResults.map(r => r.mean_ns));
+          const backendTime = Math.min(...backendResults.map(r => r.mean_ns));
+          
+          return backendTime / baselineTime; // Ratio (1.0 = same speed, >1.0 = slower)
+        });
+
+        return {
+          label: backend,
+          data: data,
+          borderColor: getColor(backend),
+          backgroundColor: getColor(backend, 0.1),
+          tension: 0.1,
+          fill: false
+        };
+      });
+
+      charts.ratios = new Chart(ctx, {
+        type: 'line',
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            title: { display: true, text: `${test}: Performance Ratios (vs ${baseline})` },
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Speed Ratio (1.0 = baseline)' },
+              min: 0.5,
+              max: 3.0
+            }
+          }
+        }
+      });
+    }
+
+    function createSpeedupChart(results) {
+      const ctx = document.getElementById('chartSpeedup').getContext('2d');
+      
+      if (charts.speedup) {
+        charts.speedup.destroy();
+      }
+
+      const test = document.getElementById('test-select').value;
+      const filteredResults = results.filter(r => r.test === test);
+      
+      const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
+      const backends = [...new Set(filteredResults.map(r => r.backend))];
+
+      const datasets = backends.map(backend => {
+        const data = dates.map(date => {
+          const sequentialResults = filteredResults.filter(r => 
+            r.backend === backend && r.timestamp.startsWith(date) && !r.parallel
+          );
+          const parallelResults = filteredResults.filter(r => 
+            r.backend === backend && r.timestamp.startsWith(date) && r.parallel
+          );
+          
+          if (sequentialResults.length === 0 || parallelResults.length === 0) return null;
+          
+          const sequentialTime = Math.min(...sequentialResults.map(r => r.mean_ns));
+          const parallelTime = Math.min(...parallelResults.map(r => r.mean_ns));
+          
+          return sequentialTime / parallelTime; // Speedup ratio
+        });
+
+        return {
+          label: backend,
+          data: data,
+          borderColor: getColor(backend),
+          backgroundColor: getColor(backend, 0.1),
+          tension: 0.1,
+          fill: false
+        };
+      });
+
+      charts.speedup = new Chart(ctx, {
+        type: 'line',
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            title: { display: true, text: `${test}: Parallel Speedup Ratios` },
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: {
+              title: { display: true, text: 'Speedup Ratio (higher is better)' },
+              min: 1.0
+            }
+          }
+        }
+      });
+    }
+
     function updateCharts() {
       if (!benchmarkData) return;
       
       createBackendChart(benchmarkData.results);
       createModeChart(benchmarkData.results);
       createParallelChart(benchmarkData.results);
+      createRatiosChart(benchmarkData.results);
       createTrendsChart(benchmarkData.results);
+      createSpeedupChart(benchmarkData.results);
     }
 
     function getColor(name, alpha = 1) {

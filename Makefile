@@ -22,6 +22,12 @@ help:
 	@echo "  bench-full      - Run benchmarks and aggregate results"
 	@echo "  bench-status    - Show benchmark status and results"
 	@echo ""
+	@echo "Phase 2: Advanced benchmarking:"
+	@echo "  bench-multi     - Run comprehensive multi-test benchmark suite"
+	@echo "  trend-alerts    - Check for performance regressions with alerts"
+	@echo "  bench-phase2    - Complete Phase 2 benchmark suite"
+	@echo "  dashboard-preview - Preview enhanced dashboard locally"
+	@echo ""
 
 # Test Julia backend
 test-julia:
@@ -132,3 +138,24 @@ bench-status:
 	@echo ""
 	@echo "Last benchmark:"
 	@ls -t bench/results/*.ndjson 2>/dev/null | head -1 | xargs ls -la 2>/dev/null || echo "  No benchmarks found"
+
+# Phase 2: Advanced benchmarking features
+bench-multi:
+	@echo "🚀 Running multi-test benchmark suite..."
+	python3 scripts/bench_multi_test.py
+
+trend-alerts:
+	@echo "🔍 Checking for performance regressions..."
+	python3 scripts/trend_alerts.py
+
+bench-phase2: bench-multi bench-agg trend-alerts
+	@echo "🎉 Phase 2 benchmark suite completed!"
+
+# Enhanced dashboard features
+dashboard-preview:
+	@echo "📈 Previewing enhanced dashboard..."
+	@if command -v python3 >/dev/null 2>&1; then \
+		cd site && python3 -m http.server 8080; \
+	else \
+		echo "⚠️  Python3 not found. Open site/index.html in your browser"; \
+	fi
