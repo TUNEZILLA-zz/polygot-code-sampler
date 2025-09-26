@@ -15,6 +15,13 @@ help:
 	@echo "  dev-workflow    - Complete dev workflow (test + benchmark)"
 	@echo "  clean-julia     - Clean Julia test artifacts"
 	@echo ""
+	@echo "Benchmark targets:"
+	@echo "  bench           - Run all backend benchmarks (Julia, Rust, Go, TS, C#)"
+	@echo "  bench-agg       - Aggregate benchmark results for dashboard"
+	@echo "  bench-publish   - Publish benchmark dashboard to GitHub Pages"
+	@echo "  bench-full      - Run benchmarks and aggregate results"
+	@echo "  bench-status    - Show benchmark status and results"
+	@echo ""
 
 # Test Julia backend
 test-julia:
@@ -92,3 +99,36 @@ status:
 	@echo ""
 	@echo "Scripts:"
 	@ls -la scripts/test_*.py 2>/dev/null || echo "  No test scripts found"
+
+# Benchmark targets
+bench:
+	@echo "🚀 Running all backend benchmarks..."
+	python3 scripts/bench_all.py
+
+bench-agg:
+	@echo "📊 Aggregating benchmark results..."
+	python3 scripts/aggregate_bench.py
+
+bench-publish:
+	@echo "📈 Publishing benchmark dashboard..."
+	@if command -v gh-pages >/dev/null 2>&1; then \
+		gh-pages -d site; \
+	else \
+		echo "⚠️  gh-pages not found. Install with: npm install -g gh-pages"; \
+		echo "   Or use GitHub Actions for automatic publishing"; \
+	fi
+
+bench-full: bench bench-agg
+	@echo "🎉 Full benchmark suite completed!"
+
+bench-status:
+	@echo "📊 Benchmark Status:"
+	@echo "==================="
+	@echo "Results directory:"
+	@ls -la bench/results/ 2>/dev/null || echo "  No results found"
+	@echo ""
+	@echo "Site directory:"
+	@ls -la site/ 2>/dev/null || echo "  No site files found"
+	@echo ""
+	@echo "Last benchmark:"
+	@ls -t bench/results/*.ndjson 2>/dev/null | head -1 | xargs ls -la 2>/dev/null || echo "  No benchmarks found"
