@@ -215,6 +215,13 @@
             <!-- Options will be populated by JavaScript -->
           </select>
         </div>
+        <div class="control-group">
+          <label for="baseline-select">Baseline (for ratios):</label>
+          <select id="baseline-select">
+            <option value="">No baseline</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+        </div>
       </div>
       
       <div class="charts">
@@ -253,6 +260,10 @@
   <script>
     let benchmarkData = null;
     let charts = {};
+
+    function ratio(seriesA, seriesB) {
+      return seriesA.map((v, i) => (v && seriesB[i]) ? v / seriesB[i] : null);
+    }
 
     function updateDataHealth(data) {
       const healthDiv = document.getElementById('data-health');

@@ -7,10 +7,41 @@ import json
 import pathlib
 import statistics
 from datetime import datetime
+from typing import Dict, List, Any, Set
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "bench" / "results"
 PAGES = ROOT / "site"
+SCHEMA_FILE = ROOT / "bench" / "schema.json"
+
+def load_schema() -> Dict[str, Any]:
+    """Load benchmark data schema for validation."""
+    try:
+        with open(SCHEMA_FILE, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"⚠️  Could not load schema: {e}")
+        return {"version": 1, "required_fields": ["commit", "timestamp", "backend", "test", "mean_ns"]}
+
+def validate_record(record: Dict[str, Any], schema: Dict[str, Any]) -> List[str]:
+    """Validate a single benchmark record against schema."""
+    warnings = []
+    required_fields = schema.get("required_fields", [])
+    
+    # Check required fields
+    for field in required_fields:
+        if field not in record or record[field] is None:
+            warnings.append(f"Missing required field: {field}")
+    
+    # Check for unknown fields (forward compatibility)
+    known_fields = set(schema.get("fields", []))
+    record_fields = set(record.keys())
+    unknown_fields = record_fields - known_fields
+    
+    if unknown_fields:
+        warnings.append(f"Unknown fields (future version?): {', '.join(unknown_fields)}")
+    
+    return warnings
 
 # Create site directory
 PAGES.mkdir(parents=True, exist_ok=True)
@@ -18,6 +49,8 @@ PAGES.mkdir(parents=True, exist_ok=True)
 def load_all_results():
     """Load all benchmark results from NDJSON files"""
     all_rows = []
+    schema = load_schema()
+    validation_warnings = []
 
     if not RESULTS.exists():
         print(f"❌ Results directory not found: {RESULTS}")
@@ -33,6 +66,12 @@ def load_all_results():
                         continue
                     try:
                         data = json.loads(line)
+                        
+                        # Validate against schema
+                        warnings = validate_record(data, schema)
+                        if warnings:
+                            validation_warnings.extend([f"{p.name}:{line_num}: {w}" for w in warnings])
+                        
                         all_rows.append(data)
                     except json.JSONDecodeError as e:
                         print(f"⚠️ Invalid JSON in {p.name}:{line_num}: {e}")
@@ -40,6 +79,15 @@ def load_all_results():
             print(f"❌ Error reading {p}: {e}")
 
     print(f"✅ Loaded {len(all_rows)} benchmark results")
+    
+    # Report validation warnings
+    if validation_warnings:
+        print(f"⚠️  Schema validation warnings ({len(validation_warnings)}):")
+        for warning in validation_warnings[:5]:  # Show first 5 warnings
+            print(f"   {warning}")
+        if len(validation_warnings) > 5:
+            print(f"   ... and {len(validation_warnings) - 5} more warnings")
+    
     return all_rows
 
 def filter_outliers(data, field='mean_ns', threshold=3.0):

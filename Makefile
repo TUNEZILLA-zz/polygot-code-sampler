@@ -174,6 +174,11 @@ bench-refresh:
 	python3 scripts/regression_check.py --input site/benchmarks.json
 	@echo "4️⃣ Committing and pushing..."
 	git add bench/results site/benchmarks.json
+ifdef DRY_RUN
+	@echo "🔍 DRY RUN: Would commit with message: bench: refresh $(shell date -u +%Y-%m-%d)"
+	@echo "🔍 DRY RUN: Would push to origin main"
+else
 	git commit -m "bench: refresh $(shell date -u +%Y-%m-%d)" || echo "No changes to commit"
 	git push origin main
+endif
 	@echo "✅ Benchmark refresh complete!"

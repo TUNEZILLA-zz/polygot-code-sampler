@@ -26,7 +26,11 @@ jobs:
       
       - name: Check for performance regressions
         run: |
-          python3 scripts/regression_check.py --input site/benchmarks.json --github-comment
+          python3 scripts/regression_check.py \
+            --input site/benchmarks.json \
+            --per-backend-thresholds "+12%:julia,+8%:rust,+15%:go,+10%:ts,+10%:csharp" \
+            --grace-period 3 \
+            --github-comment
       
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

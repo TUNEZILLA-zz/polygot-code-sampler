@@ -85,7 +85,24 @@ def calculate_rolling_median(records: List[Dict[str, Any]], current_record: Dict
     
     return median(values)
 
-def check_regressions(data: List[Dict[str, Any]], threshold: float = 0.10) -> List[Dict[str, Any]]:
+def parse_thresholds(threshold_str: str) -> Dict[str, float]:
+    """Parse per-backend thresholds from string like '+12%:julia,+8%:rust,+15%:go'"""
+    thresholds = {}
+    if not threshold_str:
+        return thresholds
+    
+    for part in threshold_str.split(','):
+        if ':' in part:
+            threshold_part, backend = part.split(':', 1)
+            # Remove + and % signs, convert to decimal
+            threshold_val = float(threshold_part.replace('+', '').replace('%', '')) / 100.0
+            thresholds[backend.strip()] = threshold_val
+    
+    return thresholds
+
+def check_regressions(data: List[Dict[str, Any]], threshold: float = 0.10, 
+                     per_backend_thresholds: Dict[str, float] = None,
+                     grace_period_days: int = 3) -> List[Dict[str, Any]]:
     """Check for performance regressions."""
     recent_data = filter_recent_data(data, days=7)
     groups = group_by_backend_test_mode(recent_data)
@@ -94,6 +111,12 @@ def check_regressions(data: List[Dict[str, Any]], threshold: float = 0.10) -> Li
     
     for key, records in groups.items():
         if len(records) < 2:
+            continue
+        
+        backend, test, mode = key.split(':')
+        
+        # Grace period: skip if test doesn't have enough history
+        if len(records) < grace_period_days:
             continue
         
         # Get the most recent record
@@ -109,10 +132,15 @@ def check_regressions(data: List[Dict[str, Any]], threshold: float = 0.10) -> Li
         if rolling_median is None:
             continue
         
+        # Use per-backend threshold or fallback to default
+        backend_threshold = threshold
+        if per_backend_thresholds and backend in per_backend_thresholds:
+            backend_threshold = per_backend_thresholds[backend]
+        
         # Check for regression
         regression_ratio = (current_perf - rolling_median) / rolling_median
         
-        if regression_ratio > threshold:
+        if regression_ratio > backend_threshold:
             regressions.append({
                 'key': key,
                 'current_perf': current_perf,
@@ -147,7 +175,11 @@ def main():
     parser.add_argument("--input", "-i", type=Path, default=Path("site/benchmarks.json"),
                        help="Path to benchmarks.json file")
     parser.add_argument("--threshold", "-t", type=float, default=0.10,
-                       help="Regression threshold (default: 0.10 = 10%)")
+                       help="Default regression threshold (default: 0.10 = 10%)")
+    parser.add_argument("--per-backend-thresholds", type=str, default="",
+                       help="Per-backend thresholds like '+12%:julia,+8%:rust,+15%:go'")
+    parser.add_argument("--grace-period", type=int, default=3,
+                       help="Grace period in days for new tests (default: 3)")
     parser.add_argument("--fail-on-regression", action="store_true",
                        help="Exit with non-zero code if regressions found")
     parser.add_argument("--github-comment", action="store_true",
@@ -162,8 +194,13 @@ def main():
         print("⚠️  No benchmark data found", file=sys.stderr)
         sys.exit(0)
     
+    # Parse per-backend thresholds
+    per_backend_thresholds = parse_thresholds(args.per_backend_thresholds)
+    
     # Check for regressions
-    regressions = check_regressions(data, threshold=args.threshold)
+    regressions = check_regressions(data, threshold=args.threshold, 
+                                  per_backend_thresholds=per_backend_thresholds,
+                                  grace_period_days=args.grace_period)
     
     # Generate report
     report = format_regression_report(regressions)

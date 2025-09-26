@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "description": "PCS Benchmark Data Schema",
+  "fields": [
+    "commit",
+    "timestamp", 
+    "os",
+    "cpu",
+    "backend",
+    "test",
+    "mode",
+    "parallel",
+    "n",
+    "mean_ns",
+    "std_ns"
+  ],
+  "field_descriptions": {
+    "commit": "Git commit SHA",
+    "timestamp": "ISO 8601 timestamp",
+    "os": "Operating system identifier",
+    "cpu": "CPU model/architecture",
+    "backend": "Target language (julia, rust, go, ts, csharp)",
+    "test": "Test case identifier",
+    "mode": "Execution mode (loops, broadcast, parallel, etc.)",
+    "parallel": "Boolean indicating parallel execution",
+    "n": "Data size/input size",
+    "mean_ns": "Mean execution time in nanoseconds",
+    "std_ns": "Standard deviation in nanoseconds"
+  },
+  "required_fields": [
+    "commit",
+    "timestamp",
+    "backend", 
+    "test",
+    "mean_ns"
+  ]
+}
