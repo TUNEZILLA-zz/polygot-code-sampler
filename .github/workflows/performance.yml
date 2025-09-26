@@ -78,7 +78,7 @@ jobs:
         print(f'rust_gen_time_ms={rust_gen.get(\"avg_generation_time_ms\", 0):.3f}')
         print(f'rust_parallel_time_ms={rust_gen.get(\"avg_parallel_generation_time_ms\", 0):.3f}')
         print(f'ts_gen_time_ms={ts_gen.get(\"avg_generation_time_ms\", 0):.3f}')
-        print(f'commit_sha=${{GITHUB_SHA}}')
+        print(f'commit_sha=${{ github.sha }}')
         print(f'commit_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)')
         " >> $GITHUB_OUTPUT
 
