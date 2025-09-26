@@ -3,7 +3,7 @@ module PCS_Runtime
 using Base.Threads
 import Base.Threads: @threads, nthreads, threadid
 
-export parallel_reduce_parts!, combine_parts, merge_shards!, dict_comp_parallel, groupby_parallel, unsafe_wrap, finalize_groups!
+export parallel_reduce_parts!, combine_parts, merge_shards!, dict_comp_parallel, groupby_parallel, unsafe_wrap, finalize_groups!, @threads, nthreads, threadid
 
 # Unsafe optimizations toggle
 const USE_UNSAFE = Ref(false)
