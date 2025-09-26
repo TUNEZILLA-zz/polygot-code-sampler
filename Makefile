@@ -28,6 +28,9 @@ help:
 	@echo "  bench-phase2    - Complete Phase 2 benchmark suite"
 	@echo "  dashboard-preview - Preview enhanced dashboard locally"
 	@echo ""
+	@echo "Quick refresh:"
+	@echo "  bench-refresh   - One-liner: run benchmarks, aggregate, commit & push"
+	@echo ""
 
 # Test Julia backend
 test-julia:
@@ -159,3 +162,18 @@ dashboard-preview:
 	else \
 		echo "⚠️  Python3 not found. Open site/index.html in your browser"; \
 	fi
+
+# One-liner refresh: run benchmarks, aggregate, commit & push
+bench-refresh:
+	@echo "🔄 Running complete benchmark refresh..."
+	@echo "1️⃣ Running benchmarks..."
+	$(MAKE) bench
+	@echo "2️⃣ Aggregating results..."
+	$(MAKE) bench-agg
+	@echo "3️⃣ Checking for regressions..."
+	python3 scripts/regression_check.py --input site/benchmarks.json
+	@echo "4️⃣ Committing and pushing..."
+	git add bench/results site/benchmarks.json
+	git commit -m "bench: refresh $(shell date -u +%Y-%m-%d)" || echo "No changes to commit"
+	git push origin main
+	@echo "✅ Benchmark refresh complete!"

@@ -31,6 +31,32 @@
       margin-bottom: 30px;
       font-size: 1.1em;
     }
+    .data-health {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .data-health.healthy {
+      background: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+    .data-health.warning {
+      background: #fff3cd;
+      border-color: #ffeaa7;
+      color: #856404;
+    }
+    .data-health.error {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
     .summary {
       background: #ecf0f1;
       padding: 20px;
@@ -148,6 +174,12 @@
     <h1>🚀 PCS Benchmarks</h1>
     <p class="subtitle">Polyglot Code Sampler Performance Dashboard - Comparing backends over time (lower is better)</p>
     
+    <!-- Data Health Badge -->
+    <div id="data-health" class="data-health">
+      <span id="health-status">🔄 Loading...</span>
+      <span id="health-details"></span>
+    </div>
+    
     <div id="loading" class="loading">
       <p>📊 Loading benchmark data...</p>
     </div>
@@ -222,6 +254,54 @@
     let benchmarkData = null;
     let charts = {};
 
+    function updateDataHealth(data) {
+      const healthDiv = document.getElementById('data-health');
+      const statusSpan = document.getElementById('health-status');
+      const detailsSpan = document.getElementById('health-details');
+      
+      if (!data || data.length === 0) {
+        healthDiv.className = 'data-health error';
+        statusSpan.textContent = '❌ No Data';
+        detailsSpan.textContent = 'No benchmark data available';
+        return;
+      }
+      
+      // Check data freshness (last 7 days)
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+      const latestTimestamp = Math.max(...data.map(d => new Date(d.timestamp).getTime()));
+      const latestDate = new Date(latestTimestamp);
+      
+      const daysSinceLatest = (now - latestDate) / (1000 * 60 * 60 * 24);
+      
+      // Check data diversity
+      const backends = new Set(data.map(d => d.backend));
+      const tests = new Set(data.map(d => d.test));
+      
+      let healthClass = 'data-health healthy';
+      let status = '✅ Healthy';
+      let details = `${data.length} records • ${backends.size} backends • ${tests.size} tests`;
+      
+      if (daysSinceLatest > 7) {
+        healthClass = 'data-health warning';
+        status = '⚠️ Stale Data';
+        details += ` • Last update: ${Math.round(daysSinceLatest)} days ago`;
+      } else if (backends.size < 3) {
+        healthClass = 'data-health warning';
+        status = '⚠️ Limited Data';
+        details += ' • Few backends available';
+      } else if (data.length < 10) {
+        healthClass = 'data-health warning';
+        status = '⚠️ Low Volume';
+        details += ' • Limited benchmark results';
+      }
+      
+      healthDiv.className = healthClass;
+      statusSpan.textContent = status;
+      detailsSpan.textContent = details;
+    }
+
     async function loadData() {
       try {
         const response = await fetch('./benchmarks.json?v=' + Date.now(), {cache: 'no-store'});
@@ -243,10 +323,11 @@
           throw new Error('No valid benchmark data found');
         }
         
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-        
-        initializeDashboard();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                updateDataHealth(benchmarkData);
+                initializeDashboard();
       } catch (error) {
         console.error('Error loading benchmark data:', error);
         document.getElementById('loading').style.display = 'none';

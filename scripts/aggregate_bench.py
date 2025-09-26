@@ -43,7 +43,7 @@ def load_all_results():
     return all_rows
 
 def filter_outliers(data, field='mean_ns', threshold=3.0):
-    """Remove outliers using z-score method"""
+    """Remove outliers using z-score method (>3σ)"""
     if len(data) < 3:
         return data
 
