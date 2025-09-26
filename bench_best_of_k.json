@@ -1,0 +1,32 @@
+[
+  {
+    "test": "sum_even_squares",
+    "n": 1000000,
+    "k": 3,
+    "mean_ns": 51358000,
+    "std_ns": 753880.6271552546,
+    "reps": 3,
+    "all_times": [
+      52562000,
+      51358000,
+      52746000
+    ],
+    "timestamp": "2025-09-26T04:19:06Z",
+    "backend": "python_reference"
+  },
+  {
+    "test": "dict_comprehension",
+    "n": 100000,
+    "k": 3,
+    "mean_ns": 5752000,
+    "std_ns": 1050934.9805451017,
+    "reps": 3,
+    "all_times": [
+      5752000,
+      7701000,
+      6045000
+    ],
+    "timestamp": "2025-09-26T04:19:06Z",
+    "backend": "python_reference"
+  }
+]

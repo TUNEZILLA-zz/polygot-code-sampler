@@ -1,0 +1,1 @@
+[{"commit": "test123", "timestamp": "2025-09-25T21:45:00Z", "os": "darwin", "cpu": "Apple M1", "backend": "julia", "test": "sum_even_squares", "mode": "loops", "parallel": false, "n": 1000000, "mean_ns": 1234567, "std_ns": 1234, "extra_field": "future_version_field"}]

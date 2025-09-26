@@ -10,8 +10,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  regression-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Generate benchmark data
+        run: |
+          python3 scripts/aggregate_bench.py
+      
+      - name: Check for performance regressions
+        run: |
+          python3 scripts/regression_check.py \
+            --input site/benchmarks.json \
+            --per-backend-thresholds "+12%:julia,+8%:rust,+15%:go,+10%:ts,+10%:csharp" \
+            --grace-period 3 \
+            --github-comment \
+            --fail-on-regression || echo "regression_fail" > regression_fail.txt
+        continue-on-error: true
+      
+      - name: Notify on regression (if webhook configured)
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"🚨 PCS Performance Regression Alert\\nCommit: ${GITHUB_SHA}\\nRun: ${GITHUB_RUN_ID}\\nDashboard: https://tunezilla-zz.github.io/polygot-code-sampler/\"}" \
+            "$SLACK_WEBHOOK_URL"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   publish:
     runs-on: ubuntu-latest
+    needs: [regression-check]
     steps:
       - uses: actions/checkout@v4
       
