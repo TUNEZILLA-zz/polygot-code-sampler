@@ -16,6 +16,7 @@
   - **SQLite**: Recursive CTEs for ranges
   - **Mini-optimizer**: Range clipping, predicate pushdown, constant folding
 - **Python → Go**: `[]int`, `map[int]struct{}`, `map[int]int`, `for` loops, `struct` types
+- **Python → C#**: LINQ with `List<T>`, `HashSet<T>`, `Dictionary<K,V>`, `.Where()`, `.Select()`, `.Sum()`
 
 ### 🧩 **Comprehension Types**
 - **List comprehensions**: `[x**2 for x in range(10) if x % 2 == 0]`
@@ -51,11 +52,12 @@
 
 ### ⚡ **Parallel Parity**
 
-PCS transforms the same Python comprehension into *parallel code* across 3 ecosystems:
+PCS transforms the same Python comprehension into *parallel code* across 4 ecosystems:
 
 - **Rust** → `.into_par_iter()` (Rayon)
 - **Go** → goroutines + channels (`runtime.NumCPU` workers)
 - **TypeScript** → Web Workers (`navigator.hardwareConcurrency`)
+- **C#** → `.AsParallel()` (PLINQ)
 - **SQL** → Parallelism via DB query engine
 
 ```python
@@ -239,6 +241,12 @@ python pcs_step3_ts.py --code "sum(i for i in range(10) if i % 2 == 0)" --target
 
 # Transform to Go
 python pcs_step3_ts.py --code "[i*2 for i in range(10) if i % 2 == 0]" --target go
+
+# Transform to C# (LINQ)
+python pcs_step3_ts.py --code "sum(i*i for i in range(10) if i % 2 == 0)" --target csharp
+
+# Transform to C# (PLINQ parallel)
+python pcs_step3_ts.py --code "sum(i*i for i in range(10) if i % 2 == 0)" --target csharp --parallel
 ```
 
 ## 🧪 Testing
