@@ -75,6 +75,12 @@
 - **Info**: Performance regression detected
 - **Debug**: Schema validation warnings
 
+### **Notification Channels**
+- **Slack**: Regression alerts via webhook (if configured)
+- **GitHub**: PR comments on regression detection
+- **Dashboard**: Real-time health status indicators
+- **CI/CD**: Workflow failure notifications
+
 ## 🎯 **Threshold Configuration**
 
 ### **Per-Backend Thresholds**

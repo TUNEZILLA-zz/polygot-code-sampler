@@ -149,6 +149,29 @@ for backend, times in by_backend.items():
 "
 ```
 
+## 🔔 **Slack Notifications Setup**
+
+### **Configure Slack Webhook**
+1. **Create Slack App**: Go to https://api.slack.com/apps
+2. **Add Incoming Webhooks**: Enable the feature
+3. **Create Webhook**: Choose your monitoring channel
+4. **Copy URL**: Save the webhook URL
+
+### **Add GitHub Secret**
+1. **Repository Settings**: Go to Settings → Secrets and variables → Actions
+2. **New Secret**: Click "New repository secret"
+3. **Name**: `SLACK_WEBHOOK_URL`
+4. **Value**: Paste your webhook URL
+
+### **Test Notifications**
+```bash
+# Test with emergency override (safe)
+gh workflow run publish-dashboard.yml -f ALLOW_REGRESSION=true
+
+# Or temporarily lower threshold to trigger regression
+# Update workflow with: --per-backend-thresholds "+1%:rust"
+```
+
 ## 🛠️ **Maintenance Tasks**
 
 ### **Weekly Cache Bust**
