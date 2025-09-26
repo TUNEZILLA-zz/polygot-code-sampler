@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # (full script from previous cell, reconstructed)
 from __future__ import annotations
+
+import argparse
 import ast
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Union, Any
 import json
 import re
-import argparse
-import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
+
 
 @dataclass
 class IRRange:
@@ -19,23 +20,23 @@ class IRRange:
 @dataclass
 class IRGenerator:
     var: str
-    source: Union['IRRange', str]
-    filters: List[str]
+    source: IRRange | str
+    filters: list[str]
 
 @dataclass
 class IRReduce:
     kind: str
-    op: Optional[str] = None
-    initial: Optional[str] = None
+    op: str | None = None
+    initial: str | None = None
 
 @dataclass
 class IRComp:
     kind: str
-    generators: List[IRGenerator]
-    element: Optional[str] = None
-    key_expr: Optional[str] = None
-    val_expr: Optional[str] = None
-    reduce: Optional[IRReduce] = None
+    generators: list[IRGenerator]
+    element: str | None = None
+    key_expr: str | None = None
+    val_expr: str | None = None
+    reduce: IRReduce | None = None
     provenance: dict = None
 
     def to_json(self) -> str:
@@ -50,7 +51,7 @@ class IRComp:
 
 class PyToIR(ast.NodeVisitor):
     def __init__(self):
-        self.comp: Optional[IRComp] = None
+        self.comp: IRComp | None = None
 
     def parse(self, code: str) -> IRComp:
         tree = ast.parse(code)
@@ -79,7 +80,7 @@ class PyToIR(ast.NodeVisitor):
             raise ValueError("No supported comprehension/reduction found")
         return self.comp
 
-    def _reduction_kind(self, func: ast.AST) -> Optional[str]:
+    def _reduction_kind(self, func: ast.AST) -> str | None:
         if isinstance(func, ast.Name) and func.id in {"sum", "any", "all", "max", "min", "prod"}:
             return func.id
         if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name) and func.value.id == "math" and func.attr == "prod":
@@ -98,8 +99,8 @@ class PyToIR(ast.NodeVisitor):
             start, stop, step = args[0], args[1], args[2]
         return IRRange(start=start, stop=stop, step=step)
 
-    def _gens_from_comp(self, comp: Union[ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]) -> List[IRGenerator]:
-        gens: List[IRGenerator] = []
+    def _gens_from_comp(self, comp: ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp) -> list[IRGenerator]:
+        gens: list[IRGenerator] = []
         for gen in comp.generators:
             if not isinstance(gen.target, ast.Name):
                 raise ValueError("Only simple variable targets supported")
@@ -115,13 +116,13 @@ class PyToIR(ast.NodeVisitor):
             gens.append(IRGenerator(var=var, source=source, filters=filters))
         return gens
 
-    def _comp_to_ir(self, comp: Union[ast.ListComp, ast.SetComp, ast.GeneratorExp], kind: str, reduce_: Optional[IRReduce]) -> IRComp:
+    def _comp_to_ir(self, comp: ast.ListComp | ast.SetComp | ast.GeneratorExp, kind: str, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         element_src = ast.unparse(comp.elt)
         provenance = {"origin": "python", "pattern": f"{kind}_nested" if len(gens) > 1 else kind}
         return IRComp(kind=kind, generators=gens, element=element_src, reduce=reduce_, provenance=provenance)
 
-    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: Optional[IRReduce]) -> IRComp:
+    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         key_src = ast.unparse(comp.key)
         val_src = ast.unparse(comp.value)
@@ -244,7 +245,7 @@ def cli():
     ir=PyToIR().parse(src)
     if args.emit_ir: print("=== IR (JSON) ==="); print(ir.to_json()); print()
     out = render_rust(ir, func_name=args.name) if args.target=="rust" else render_ts(ir, func_name=args.name)
-    print(out); 
+    print(out)
     if args.out: Path(args.out).write_text(out); print(f"\\n[Saved to] {args.out}")
 
 if __name__=="__main__": cli()

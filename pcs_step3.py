@@ -1,14 +1,15 @@
 
 #!/usr/bin/env python3
 from __future__ import annotations
+
+import argparse
 import ast
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Union, Any
 import json
 import re
-import argparse
 import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 # ---------- Tiny IR (extended) ----------
 
@@ -21,23 +22,23 @@ class IRRange:
 @dataclass
 class IRGenerator:
     var: str
-    source: Union['IRRange', str]  # range(...) or variable name
-    filters: List[str]             # list of predicate expressions as strings
+    source: IRRange | str  # range(...) or variable name
+    filters: list[str]             # list of predicate expressions as strings
 
 @dataclass
 class IRReduce:
     kind: str            # 'sum'|'prod'|'any'|'all'|'max'|'min'
-    op: Optional[str] = None
-    initial: Optional[str] = None
+    op: str | None = None
+    initial: str | None = None
 
 @dataclass
 class IRComp:
     kind: str                         # 'list'|'set'|'dict'
-    generators: List[IRGenerator]
-    element: Optional[str] = None     # list/set element expr
-    key_expr: Optional[str] = None    # dict key
-    val_expr: Optional[str] = None    # dict value
-    reduce: Optional[IRReduce] = None
+    generators: list[IRGenerator]
+    element: str | None = None     # list/set element expr
+    key_expr: str | None = None    # dict key
+    val_expr: str | None = None    # dict value
+    reduce: IRReduce | None = None
     provenance: dict = None
 
     def to_json(self) -> str:
@@ -57,7 +58,7 @@ class IRComp:
 
 class PyToIRStep3(ast.NodeVisitor):
     def __init__(self):
-        self.comp: Optional[IRComp] = None
+        self.comp: IRComp | None = None
 
     def parse(self, code: str) -> IRComp:
         tree = ast.parse(code)
@@ -96,7 +97,7 @@ class PyToIRStep3(ast.NodeVisitor):
             raise ValueError("No supported comprehension/reduction found")
         return self.comp
 
-    def _reduction_kind(self, func: ast.AST) -> Optional[str]:
+    def _reduction_kind(self, func: ast.AST) -> str | None:
         if isinstance(func, ast.Name) and func.id in {"sum", "any", "all", "max", "min", "prod"}:
             return func.id
         if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name) and func.value.id == "math" and func.attr == "prod":
@@ -115,8 +116,8 @@ class PyToIRStep3(ast.NodeVisitor):
             start, stop, step = args[0], args[1], args[2]
         return IRRange(start=start, stop=stop, step=step)
 
-    def _gens_from_comp(self, comp: Union[ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]) -> List[IRGenerator]:
-        gens: List[IRGenerator] = []
+    def _gens_from_comp(self, comp: ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp) -> list[IRGenerator]:
+        gens: list[IRGenerator] = []
         for gen in comp.generators:
             if not isinstance(gen.target, ast.Name):
                 raise ValueError("Only simple variable targets supported")
@@ -132,13 +133,13 @@ class PyToIRStep3(ast.NodeVisitor):
             gens.append(IRGenerator(var=var, source=source, filters=filters))
         return gens
 
-    def _comp_to_ir(self, comp: Union[ast.ListComp, ast.SetComp, ast.GeneratorExp], kind: str, reduce_: Optional[IRReduce]) -> IRComp:
+    def _comp_to_ir(self, comp: ast.ListComp | ast.SetComp | ast.GeneratorExp, kind: str, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         element_src = ast.unparse(comp.elt)
         provenance = {"origin": "python", "pattern": f"{kind}_nested" if len(gens) > 1 else kind}
         return IRComp(kind=kind, generators=gens, element=element_src, reduce=reduce_, provenance=provenance)
 
-    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: Optional[IRReduce]) -> IRComp:
+    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         key_src = ast.unparse(comp.key)
         val_src = ast.unparse(comp.value)

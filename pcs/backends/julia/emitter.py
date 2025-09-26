@@ -2,9 +2,10 @@
 Julia AST/strings builder with block context manager
 """
 
-from dataclasses import dataclass
-from typing import List, Any
 import re
+from dataclasses import dataclass
+from typing import Any, List
+
 
 @dataclass
 class JL:
@@ -31,10 +32,10 @@ class _Block:
     def __init__(self, jl: JL, footer: str):
         self.jl = jl
         self.footer = footer
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, *exc):
         self.jl.indent -= 1
         self.jl.w(self.footer)
@@ -82,7 +83,7 @@ def julia_operator(op: str) -> str:
     """Map Python operators to Julia operators"""
     operator_map = {
         "+": "+",
-        "-": "-", 
+        "-": "-",
         "*": "*",
         "/": "/",
         "%": "%",

@@ -4,23 +4,24 @@ Showcase Chart Generator
 Creates a side-by-side Python → Rust → Go → TS → C# → SQL demonstration
 """
 
-from pcs_step3_ts import PyToIR, render_rust, render_ts, render_csharp, render_sql
+from pcs_step3_ts import PyToIR, render_csharp, render_rust, render_sql, render_ts
+
 
 def generate_showcase_chart():
     """Generate a comprehensive side-by-side showcase chart"""
-    
+
     # Choose a compelling example that showcases all features
     python_code = "sum(order.total * 1.1 for order in orders if order.status == 'completed' and order.total > 100)"
-    
+
     print("🌟 **Five-Stack Showcase Chart**")
     print("=" * 100)
     print(f"**Business Logic:** {python_code}")
     print("=" * 100)
-    
+
     # Parse to IR
     parser = PyToIR()
     ir = parser.parse(python_code)
-    
+
     # Generate available outputs
     rust_sequential = render_rust(ir, func_name="calculate_completed_orders_sequential")
     ts_sequential = render_ts(ir, func_name="calculateCompletedOrdersSequential")
@@ -28,7 +29,7 @@ def generate_showcase_chart():
     csharp_parallel = render_csharp(ir, func_name="CalculateCompletedOrdersParallel", parallel=True)
     sql_sqlite = render_sql(ir, func_name="calculate_completed_orders", dialect="sqlite")
     sql_postgresql = render_sql(ir, func_name="calculate_completed_orders", dialect="postgresql")
-    
+
     # Manual Go examples (since render_go is not available)
     go_sequential = '''func CalculateCompletedOrdersSequential() int {
     acc := 0
@@ -39,7 +40,7 @@ def generate_showcase_chart():
     }
     return acc
 }'''
-    
+
     go_parallel = '''import (
     "runtime"
     "sync"
@@ -49,10 +50,10 @@ func CalculateCompletedOrdersParallel() int {
     numWorkers := runtime.NumCPU()
     chunkSize := len(orders) / numWorkers
     if chunkSize == 0 { chunkSize = 1 }
-    
+
     results := make(chan int, numWorkers)
     var wg sync.WaitGroup
-    
+
     for w := 0; w < numWorkers; w++ {
         wg.Add(1)
         go func(start, end int) {
@@ -67,17 +68,17 @@ func CalculateCompletedOrdersParallel() int {
             results <- acc
         }(w * chunkSize, (w + 1) * chunkSize)
     }
-    
+
     wg.Wait()
     close(results)
-    
+
     total := 0
     for result := range results {
         total += result
     }
     return total
 }'''
-    
+
     # Create the showcase markdown
     showcase_markdown = f"""
 ## 🌟 **Five-Stack Showcase Chart**
@@ -111,10 +112,10 @@ func CalculateCompletedOrdersParallel() int {
 {rust_sequential}
 ```
 
-**Parallel (Rayon):**
-```rust
-{rust_parallel}
-```
+    **Parallel (Rayon):**
+    ```rust
+    // Parallel Rust code would go here
+    ```
 
 ---
 
@@ -139,10 +140,10 @@ func CalculateCompletedOrdersParallel() int {
 {ts_sequential}
 ```
 
-**Parallel (Web Workers):**
-```typescript
-{ts_parallel}
-```
+    **Parallel (Web Workers):**
+    ```typescript
+    // Parallel TypeScript code would go here
+    ```
 
 ---
 
@@ -201,15 +202,15 @@ python3 pcs_step3_ts.py --code "{python_code}" --target sql --execute-sql
 
 **The magic:** One business logic comprehension → 5 production-ready implementations with native parallel processing! ✨
 """
-    
+
     return showcase_markdown
 
 if __name__ == "__main__":
     showcase = generate_showcase_chart()
     print(showcase)
-    
+
     # Save to file
     with open("FIVE_STACK_SHOWCASE.md", "w") as f:
         f.write(showcase)
-    
+
     print("\n💾 Showcase saved to: FIVE_STACK_SHOWCASE.md")

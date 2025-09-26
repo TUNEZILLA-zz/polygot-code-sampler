@@ -3,11 +3,12 @@ Core functionality for Polyglot Code Sampler
 """
 
 from __future__ import annotations
+
 import ast
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Union, Any
 import json
-import re
+from dataclasses import asdict, dataclass
+from typing import Any
+
 
 @dataclass
 class IRRange:
@@ -18,14 +19,14 @@ class IRRange:
 @dataclass
 class IRGenerator:
     var: str
-    source: Union['IRRange', str]
-    filters: List[str]
+    source: IRRange | str
+    filters: list[str]
 
 @dataclass
 class IRReduce:
     kind: str
-    op: Optional[str] = None
-    initial: Optional[str] = None
+    op: str | None = None
+    initial: str | None = None
 
 @dataclass
 class TypeInfo:
@@ -36,17 +37,19 @@ class TypeInfo:
 @dataclass
 class IRComp:
     kind: str
-    generators: List[IRGenerator]
-    element: Optional[str] = None
-    key_expr: Optional[str] = None
-    val_expr: Optional[str] = None
-    reduce: Optional[IRReduce] = None
+    generators: list[IRGenerator]
+    element: str | None = None
+    key_expr: str | None = None
+    val_expr: str | None = None
+    reduce: IRReduce | None = None
     provenance: dict = None
 
     def to_json(self) -> str:
         def to_dict(obj: Any):
             if hasattr(obj, "__dataclass_fields__"):
-                d = asdict(obj); d["__type__"] = obj.__class__.__name__; return d
+                d = asdict(obj)
+                d["__type__"] = obj.__class__.__name__
+                return d
             elif isinstance(obj, list):
                 return [to_dict(x) for x in obj]
             else:
@@ -58,7 +61,7 @@ class PyToIR:
         tree = ast.parse(code)
         if len(tree.body) != 1:
             raise ValueError("Expected single expression")
-        
+
         expr = tree.body[0]
         if isinstance(expr, ast.Expr):
             return self._parse_expr(expr.value)
@@ -82,7 +85,7 @@ class PyToIR:
     def _parse_list_comp(self, node: ast.ListComp) -> IRComp:
         generators = [self._parse_generator(gen) for gen in node.generators]
         element = ast.unparse(node.elt) if node.elt else None
-        
+
         return IRComp(
             kind="list",
             generators=generators,
@@ -94,7 +97,7 @@ class PyToIR:
         generators = [self._parse_generator(gen) for gen in node.generators]
         key_expr = ast.unparse(node.key) if node.key else None
         val_expr = ast.unparse(node.value) if node.value else None
-        
+
         return IRComp(
             kind="dict",
             generators=generators,
@@ -106,7 +109,7 @@ class PyToIR:
     def _parse_set_comp(self, node: ast.SetComp) -> IRComp:
         generators = [self._parse_generator(gen) for gen in node.generators]
         element = ast.unparse(node.elt) if node.elt else None
-        
+
         return IRComp(
             kind="set",
             generators=generators,
@@ -117,7 +120,7 @@ class PyToIR:
     def _parse_genexp(self, node: ast.GeneratorExp) -> IRComp:
         generators = [self._parse_generator(gen) for gen in node.generators]
         element = ast.unparse(node.elt) if node.elt else None
-        
+
         return IRComp(
             kind="generator",
             generators=generators,
@@ -129,20 +132,20 @@ class PyToIR:
         """Parse function calls like sum(), max(), min(), any(), all()"""
         if not isinstance(node.func, ast.Name):
             raise ValueError(f"Unsupported function call: {ast.unparse(node)}")
-        
+
         func_name = node.func.id
         if func_name not in ('sum', 'max', 'min', 'any', 'all'):
             raise ValueError(f"Unsupported function: {func_name}")
-        
+
         if len(node.args) != 1:
             raise ValueError(f"Function {func_name} expects exactly one argument")
-        
+
         arg = node.args[0]
         if isinstance(arg, ast.GeneratorExp):
             # Parse the generator expression
             generators = [self._parse_generator(gen) for gen in arg.generators]
             element = ast.unparse(arg.elt) if arg.elt else None
-            
+
             return IRComp(
                 kind="generator",
                 generators=generators,
@@ -157,10 +160,10 @@ class PyToIR:
         var = node.target.id if isinstance(node.target, ast.Name) else "x"
         source = self._parse_source(node.iter)
         filters = [ast.unparse(f) for f in node.ifs]
-        
+
         return IRGenerator(var=var, source=source, filters=filters)
 
-    def _parse_source(self, node: ast.AST) -> Union[IRRange, str]:
+    def _parse_source(self, node: ast.AST) -> IRRange | str:
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "range":
             args = node.args
             if len(args) == 1:

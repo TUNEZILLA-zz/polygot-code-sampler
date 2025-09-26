@@ -4,12 +4,14 @@ Command-line interface for Polyglot Code Sampler
 
 import argparse
 import sys
+
 from .core import PyToIR
-from .renderers.rust import render_rust
-from .renderers.ts import render_ts
 from .renderers.csharp import render_csharp
-from .renderers.sql import render_sql
 from .renderers.julia import render_julia
+from .renderers.rust import render_rust
+from .renderers.sql import render_sql
+from .renderers.ts import render_ts
+
 
 def main():
     """Main CLI entry point"""
@@ -24,20 +26,20 @@ Examples:
   pcs --code "sum(i for i in range(100))" --target sql --execute-sql
         """
     )
-    
+
     parser.add_argument(
-        "--code", 
+        "--code",
         required=True,
         help="Python comprehension to transform"
     )
-    
+
     parser.add_argument(
         "--target",
         choices=["rust", "ts", "go", "csharp", "sql", "julia"],
         default="rust",
         help="Target language (default: rust)"
     )
-    
+
     parser.add_argument(
         "--parallel",
         action="store_true",
@@ -48,39 +50,39 @@ Examples:
     parser.add_argument("--threads", type=int, help="Number of threads (pass-through to JULIA_NUM_THREADS)")
     parser.add_argument("--unsafe", action="store_true", help="Enable @inbounds/@simd optimizations")
     parser.add_argument("--no-explain", action="store_true", help="Disable explanatory comments in generated code")
-    
+
     parser.add_argument(
         "--sql-dialect",
         choices=["sqlite", "postgresql"],
         default="sqlite",
         help="SQL dialect (default: sqlite)"
     )
-    
+
     parser.add_argument(
         "--execute-sql",
         action="store_true",
         help="Execute generated SQL and display results"
     )
-    
+
     parser.add_argument(
         "--int-type",
         default="i32",
         help="Integer type for Rust (default: i32)"
     )
-    
+
     parser.add_argument(
         "--strict-types",
         action="store_true",
         help="Enable strict type checking"
     )
-    
+
     args = parser.parse_args()
-    
+
     try:
         # Parse Python code to IR
         parser_obj = PyToIR()
         ir = parser_obj.parse(args.code)
-        
+
         # Generate target code
         if args.target == "rust":
             output = render_rust(ir, parallel=args.parallel, int_type=args.int_type)
@@ -94,14 +96,14 @@ Examples:
                 execute_sql_and_display(output)
                 return
         elif args.target == "julia":
-            output = render_julia(ir, parallel=args.parallel, mode=args.mode, 
+            output = render_julia(ir, parallel=args.parallel, mode=args.mode,
                                 explain=not args.no_explain, unsafe=args.unsafe)
         else:
             print(f"Target '{args.target}' not yet implemented", file=sys.stderr)
             sys.exit(1)
-        
+
         print(output)
-        
+
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
@@ -117,13 +119,13 @@ def execute_sql_and_display(sql: str):
             capture_output=True,
             timeout=10
         )
-        
+
         if result.returncode == 0:
             print("SQL Results:")
             print(result.stdout)
         else:
             print(f"SQL Error: {result.stderr}")
-            
+
     except subprocess.TimeoutExpired:
         print("SQL execution timed out")
     except FileNotFoundError:

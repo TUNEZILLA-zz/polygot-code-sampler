@@ -34,22 +34,22 @@ def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
     """Generate a markdown table for performance data"""
     if not data:
         return f"### {title}\n\nNo data available.\n\n"
-    
+
     # Get all possible keys
     all_keys = set()
     for item in data:
         all_keys.update(item.keys())
-    
+
     # Filter out non-displayable keys
     display_keys = [k for k in all_keys if k not in ['success', 'error', 'output']]
-    
+
     if not display_keys:
         return f"### {title}\n\nNo displayable data.\n\n"
-    
+
     # Create table header
     header = "| " + " | ".join(display_keys) + " |"
     separator = "| " + " | ".join(["---"] * len(display_keys)) + " |"
-    
+
     # Create table rows
     rows = []
     for item in data:
@@ -66,7 +66,7 @@ def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
             else:
                 row.append(str(value))
         rows.append("| " + " | ".join(row) + " |")
-    
+
     return f"""### {title}
 
 {header}
@@ -78,19 +78,19 @@ def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
 
 def generate_benchmark_report(results_file: str, output_file: str = None) -> str:
     """Generate a comprehensive benchmark report"""
-    with open(results_file, 'r') as f:
+    with open(results_file) as f:
         results = json.load(f)
-    
+
     report = f"""# 🚀 Polyglot Code Sampler Performance Report
 
-**Generated:** {results.get('timestamp', 'Unknown')}  
-**Mode:** {results.get('mode', 'full')}  
+**Generated:** {results.get('timestamp', 'Unknown')}
+**Mode:** {results.get('mode', 'full')}
 **Python Version:** {results.get('python_version', 'Unknown')}
 
 ## 🖥️ System Information
 
 """
-    
+
     if 'system_info' in results:
         sys_info = results['system_info']
         report += f"""- **CPU Cores:** {sys_info.get('cpu_count', 'Unknown')}
@@ -98,7 +98,7 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - **Platform:** {sys_info.get('platform', 'Unknown')}
 
 """
-    
+
     # Parsing Performance
     if 'parsing' in results:
         parsing = results['parsing']
@@ -110,13 +110,13 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - Total cases: {parsing.get('total_cases', 0)}
 
 """
-        
+
         if 'parse_times' in parsing:
             report += generate_performance_table(
-                parsing['parse_times'], 
+                parsing['parse_times'],
                 "Parse Times by Case"
             )
-    
+
     # Code Generation Performance
     if 'rust_generation' in results:
         rust_gen = results['rust_generation']
@@ -127,13 +127,13 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - Parallel: {format_time_ms(rust_gen.get('avg_parallel_generation_time_ms', 0))}
 
 """
-        
+
         if 'generation_times' in rust_gen:
             report += generate_performance_table(
-                rust_gen['generation_times'], 
+                rust_gen['generation_times'],
                 "Rust Generation Times"
             )
-    
+
     if 'typescript_generation' in results:
         ts_gen = results['typescript_generation']
         report += f"""## 📘 TypeScript Code Generation
@@ -142,13 +142,13 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - Generation time: {format_time_ms(ts_gen.get('avg_generation_time_ms', 0))}
 
 """
-        
+
         if 'generation_times' in ts_gen:
             report += generate_performance_table(
-                ts_gen['generation_times'], 
+                ts_gen['generation_times'],
                 "TypeScript Generation Times"
             )
-    
+
     # Execution Performance
     if 'rust_execution' in results:
         rust_exec = results['rust_execution']
@@ -160,13 +160,13 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - Execution: {format_time_ms(rust_exec['avg_execution_time_ms'])}
 
 """
-            
+
             if 'compilation_times' in rust_exec:
                 report += generate_performance_table(
-                    rust_exec['compilation_times'], 
+                    rust_exec['compilation_times'],
                     "Rust Compilation Times"
                 )
-    
+
     if 'typescript_execution' in results:
         ts_exec = results['typescript_execution']
         if 'avg_execution_time_ms' in ts_exec:
@@ -177,38 +177,38 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 - Node.js time: {format_time_ms(ts_exec.get('avg_node_time_ns', 0) / 1_000_000)}
 
 """
-            
+
             if 'execution_times' in ts_exec:
                 report += generate_performance_table(
-                    ts_exec['execution_times'], 
+                    ts_exec['execution_times'],
                     "TypeScript Execution Times"
                 )
-    
+
     # Scalability Analysis
     if 'scalability' in results:
         scalability = results['scalability']
-        report += f"""## 📈 Scalability Analysis
+        report += """## 📈 Scalability Analysis
 
 Performance across different data sizes:
 
 """
-        
+
         if 'cases' in scalability:
             report += generate_performance_table(
-                scalability['cases'], 
+                scalability['cases'],
                 "Scalability by Range Size"
             )
-    
+
     # Performance Insights
     report += """## 💡 Performance Insights
 
 ### Key Findings
 
 """
-    
+
     # Add insights based on the data
     insights = []
-    
+
     if 'rust_generation' in results and 'typescript_generation' in results:
         rust_avg = results['rust_generation'].get('avg_generation_time_ms', 0)
         ts_avg = results['typescript_generation'].get('avg_generation_time_ms', 0)
@@ -220,7 +220,7 @@ Performance across different data sizes:
                 insights.append(f"Rust generation is {1/ratio:.1f}x faster than TypeScript generation")
             else:
                 insights.append("Rust and TypeScript generation have similar performance")
-    
+
     if 'parsing' in results:
         parse_avg = results['parsing'].get('avg_parse_time_ms', 0)
         infer_avg = results['parsing'].get('avg_infer_time_ms', 0)
@@ -229,7 +229,7 @@ Performance across different data sizes:
                 insights.append("Type inference takes significant time - consider caching for repeated operations")
             else:
                 insights.append("Type inference is fast and efficient")
-    
+
     if 'scalability' in results and 'cases' in results['scalability']:
         cases = results['scalability']['cases']
         if len(cases) >= 2:
@@ -244,13 +244,13 @@ Performance across different data sizes:
                     insights.append("Parsing scales super-linearly - consider optimization for large inputs")
                 else:
                     insights.append("Parsing scales linearly with input size")
-    
+
     if not insights:
         insights.append("Run more comprehensive benchmarks to generate insights")
-    
+
     for insight in insights:
         report += f"- {insight}\n"
-    
+
     report += """
 ### Recommendations
 
@@ -262,7 +262,7 @@ Performance across different data sizes:
 ---
 *Report generated by Polyglot Code Sampler Benchmark Suite*
 """
-    
+
     return report
 
 
@@ -272,23 +272,23 @@ def main():
     parser.add_argument("--input", "-i", default="benchmark_results.json", help="Input benchmark results file")
     parser.add_argument("--output", "-o", help="Output markdown file (default: benchmark_report.md)")
     parser.add_argument("--print", action="store_true", help="Print report to stdout")
-    
+
     args = parser.parse_args()
-    
+
     if not Path(args.input).exists():
         print(f"Error: Benchmark results file '{args.input}' not found")
         print("Run 'make benchmark' or 'python benchmark.py' first")
         return 1
-    
+
     report = generate_benchmark_report(args.input)
-    
+
     if args.print:
         print(report)
     else:
         output_file = args.output or "benchmark_report.md"
         Path(output_file).write_text(report)
         print(f"📊 Performance report generated: {output_file}")
-    
+
     return 0
 
 

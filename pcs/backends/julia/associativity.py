@@ -35,22 +35,22 @@ def assoc_identity(op: str, elem_type: str) -> str:
     """Get identity element for associative operation"""
     if op not in ASSOC_TABLE:
         return "0"
-    
+
     ident = ASSOC_TABLE[op]["identity"]
-    
+
     # Handle special cases for Inf/-Inf
     if ident == "Inf":
         return "Inf32" if elem_type == "Int" else "Inf"
     elif ident == "-Inf":
         return "-Inf32" if elem_type == "Int" else "-Inf"
-    
+
     return ident
 
 def get_parallel_note(op: str, elem_type: str) -> str:
     """Generate NOTE comment for parallelization"""
     if not is_associative(op, elem_type):
         return f"# NOTE: parallel fallback → sequential: non-associative op '{op}' or unsupported type '{elem_type}'"
-    
+
     identity = assoc_identity(op, elem_type)
     return f"# NOTE: parallelized with thread-local partials (op '{op}', identity {identity}, type {elem_type})"
 
@@ -58,9 +58,9 @@ def get_associativity_explanation(op: str, elem_type: str) -> str:
     """Get detailed explanation of associativity decision"""
     if op not in ASSOC_TABLE:
         return f"Operation '{op}' not in associativity table"
-    
+
     supported_types = get_supported_types(op)
     if elem_type not in supported_types:
         return f"Type '{elem_type}' not supported for '{op}' (supported: {supported_types})"
-    
+
     return f"Operation '{op}' is associative for type '{elem_type}'"

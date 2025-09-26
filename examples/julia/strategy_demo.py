@@ -7,12 +7,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def run_demo():
     """Run comprehensive demo of Julia backend features"""
-    
+
     print("🧪 Julia Backend Strategy Selector Demo")
     print("=" * 50)
-    
+
     # Test cases demonstrating different strategies
     test_cases = [
         {
@@ -70,30 +71,30 @@ def run_demo():
             "expected": "sequential fallback"
         }
     ]
-    
+
     for i, test in enumerate(test_cases, 1):
         print(f"\n📝 Test {i}: {test['name']}")
         print(f"Code: {test['code']}")
         print(f"Args: {' '.join(test['args'])}")
         print(f"Expected: {test['expected']}")
         print("-" * 30)
-        
+
         try:
             result = subprocess.run([
-                sys.executable, "-m", "pcs", 
+                sys.executable, "-m", "pcs",
                 "--code", test["code"]
-            ] + test["args"], 
+            ] + test["args"],
             capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent)
-            
+
             if result.returncode == 0:
                 print("✅ Generated successfully:")
                 print(result.stdout)
             else:
                 print(f"❌ Failed: {result.stderr}")
-                
+
         except Exception as e:
             print(f"❌ Error: {e}")
-    
+
     print(f"\n🎉 Demo completed! All {len(test_cases)} test cases processed.")
     print("\n📊 Strategy Selection Summary:")
     print("- Auto mode intelligently selects broadcast for small N without filters")

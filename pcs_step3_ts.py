@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # (full script from previous cell, reconstructed)
 from __future__ import annotations
+
+import argparse
 import ast
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Union, Any
 import json
 import re
-import argparse
-import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
+
 
 @dataclass
 class IRRange:
@@ -19,23 +20,23 @@ class IRRange:
 @dataclass
 class IRGenerator:
     var: str
-    source: Union['IRRange', str]
-    filters: List[str]
+    source: IRRange | str
+    filters: list[str]
 
 @dataclass
 class IRReduce:
     kind: str
-    op: Optional[str] = None
-    initial: Optional[str] = None
+    op: str | None = None
+    initial: str | None = None
 
 @dataclass
 class IRComp:
     kind: str
-    generators: List[IRGenerator]
-    element: Optional[str] = None
-    key_expr: Optional[str] = None
-    val_expr: Optional[str] = None
-    reduce: Optional[IRReduce] = None
+    generators: list[IRGenerator]
+    element: str | None = None
+    key_expr: str | None = None
+    val_expr: str | None = None
+    reduce: IRReduce | None = None
     provenance: dict = None
 
     def to_json(self) -> str:
@@ -50,7 +51,7 @@ class IRComp:
 
 class PyToIR(ast.NodeVisitor):
     def __init__(self):
-        self.comp: Optional[IRComp] = None
+        self.comp: IRComp | None = None
 
     def parse(self, code: str) -> IRComp:
         tree = ast.parse(code)
@@ -79,7 +80,7 @@ class PyToIR(ast.NodeVisitor):
             raise ValueError("No supported comprehension/reduction found")
         return self.comp
 
-    def _reduction_kind(self, func: ast.AST) -> Optional[str]:
+    def _reduction_kind(self, func: ast.AST) -> str | None:
         if isinstance(func, ast.Name) and func.id in {"sum", "any", "all", "max", "min", "prod"}:
             return func.id
         if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name) and func.value.id == "math" and func.attr == "prod":
@@ -98,8 +99,8 @@ class PyToIR(ast.NodeVisitor):
             start, stop, step = args[0], args[1], args[2]
         return IRRange(start=start, stop=stop, step=step)
 
-    def _gens_from_comp(self, comp: Union[ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp]) -> List[IRGenerator]:
-        gens: List[IRGenerator] = []
+    def _gens_from_comp(self, comp: ast.ListComp | ast.SetComp | ast.DictComp | ast.GeneratorExp) -> list[IRGenerator]:
+        gens: list[IRGenerator] = []
         for gen in comp.generators:
             if not isinstance(gen.target, ast.Name):
                 raise ValueError("Only simple variable targets supported")
@@ -115,13 +116,13 @@ class PyToIR(ast.NodeVisitor):
             gens.append(IRGenerator(var=var, source=source, filters=filters))
         return gens
 
-    def _comp_to_ir(self, comp: Union[ast.ListComp, ast.SetComp, ast.GeneratorExp], kind: str, reduce_: Optional[IRReduce]) -> IRComp:
+    def _comp_to_ir(self, comp: ast.ListComp | ast.SetComp | ast.GeneratorExp, kind: str, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         element_src = ast.unparse(comp.elt)
         provenance = {"origin": "python", "pattern": f"{kind}_nested" if len(gens) > 1 else kind}
         return IRComp(kind=kind, generators=gens, element=element_src, reduce=reduce_, provenance=provenance)
 
-    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: Optional[IRReduce]) -> IRComp:
+    def _dictcomp_to_ir(self, comp: ast.DictComp, reduce_: IRReduce | None) -> IRComp:
         gens = self._gens_from_comp(comp)
         key_src = ast.unparse(comp.key)
         val_src = ast.unparse(comp.value)
@@ -260,8 +261,8 @@ def cli():
         out = render_csharp(ir, func_name=args.name, parallel=args.parallel)
     else:
         out = render_ts(ir, func_name=args.name)
-    
-    print(out); 
+
+    print(out)
     if args.out: Path(args.out).write_text(out); print(f"\\n[Saved to] {args.out}")
 
 
@@ -278,7 +279,7 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
       - Type inference for better production code
       - Enterprise-ready C# patterns
     """
-    
+
     # Helper function to convert Python expressions to C#
     def csharp_expr(expr: str) -> str:
         # Basic Python→C# expression tweaks
@@ -296,14 +297,14 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
         result = expr
         for pattern, replacement in replacements:
             result = re.sub(pattern, replacement, result)
-        
+
         # Handle Math.Pow expressions
         if "Math.Pow" in result:
             # Convert x**2 to Math.Pow(x, 2)
             result = re.sub(r"(\w+)\s*Math\.Pow\s*(\w+)", r"Math.Pow(\1, \2)", result)
-        
+
         return result
-    
+
     # Determine output type
     if ir.reduce:
         k = ir.reduce.kind
@@ -322,10 +323,10 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
             return_type = "Dictionary<int, int>"
         else:
             return_type = "List<int>"
-    
+
     # Build the LINQ chain
     lines = []
-    
+
     # Add using statements
     lines.append("using System;")
     lines.append("using System.Collections.Generic;")
@@ -333,36 +334,36 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
     if parallel:
         lines.append("using System.Threading.Tasks;")
     lines.append("")
-    
+
     # Function signature
     lines.append(f"public static class {func_name}")
     lines.append("{")
     lines.append(f"    public static {return_type} Execute()")
     lines.append("    {")
-    
+
     # Build the source range
     if len(ir.generators) == 1 and isinstance(ir.generators[0].source, IRRange):
         gen = ir.generators[0]
         start, stop, step = gen.source.start, gen.source.stop, gen.source.step
-        
+
         if step == 1:
             source = f"Enumerable.Range({start}, {stop - start})"
         else:
             # For non-unit steps, use a custom range
             source = f"Enumerable.Range(0, {stop - start}).Select(i => {start} + i * {step})"
-        
+
         # Add parallel prefix if requested
         if parallel:
             source = f"{source}.AsParallel()"
-        
+
         # Build the LINQ chain
         chain = source
-        
+
         # Add filters
         for filter_expr in gen.filters:
             filter_csharp = csharp_expr(filter_expr)
             chain += f".Where({gen.var} => {filter_csharp})"
-        
+
         # Add the final operation
         if ir.reduce:
             k = ir.reduce.kind
@@ -370,9 +371,9 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
                 expr = ir.val_expr or "0"
             else:
                 expr = ir.element or "0"
-            
+
             expr_csharp = csharp_expr(expr)
-            
+
             if k == "sum":
                 chain += f".Sum({gen.var} => {expr_csharp})"
             elif k == "prod":
@@ -403,17 +404,17 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
                 key_csharp = csharp_expr(key_expr)
                 val_csharp = csharp_expr(val_expr)
                 chain += f".ToDictionary({gen.var} => {key_csharp}, {gen.var} => {val_csharp})"
-        
+
         lines.append(f"        return {chain};")
-    
+
     else:
         # Handle nested comprehensions (more complex)
         lines.append("        // Complex nested comprehension - simplified for demo")
         lines.append("        return new List<int>();")
-    
+
     lines.append("    }")
     lines.append("}")
-    
+
     return "\n".join(lines)
 
 
@@ -426,30 +427,30 @@ def render_sql(ir: IRComp, func_name: str = "program", dialect: str = "sqlite") 
         if k == "sum":
             gen = ir.generators[0]
             if isinstance(gen.source, IRRange):
-                start, stop, step = gen.source.start, gen.source.stop, gen.source.step
-                
+                start, stop, _step = gen.source.start, gen.source.stop, gen.source.step
+
                 # Build the expression to sum
                 if ir.kind == "dict":
                     expr = ir.val_expr or "i"
                 else:
                     expr = ir.element or "i"
-                
+
                 # Convert Python expressions to SQL
                 expr = expr.replace("**", "^")  # Python ** to SQL ^
-                
+
                 # Build WHERE clause from filters
                 where_clause = ""
                 if gen.filters:
                     for filter_expr in gen.filters:
                         filter_sql = filter_expr.replace(" and ", " AND ").replace(" or ", " OR ").replace(" not ", " NOT ")
                         where_clause += f" WHERE {filter_sql}"
-                
+
                 if dialect == "sqlite":
                     # Use recursive CTE for SQLite
                     return f"WITH RECURSIVE range(i) AS (SELECT {start} UNION ALL SELECT i+1 FROM range WHERE i < {stop-1}) SELECT SUM({expr}) FROM range{where_clause};"
                 else:  # postgresql
                     return f"SELECT SUM({expr}) FROM generate_series({start}, {stop-1}) AS i{where_clause};"
-    
+
     # Fallback for other cases
     return "-- SQL generation not implemented for this pattern"
 
@@ -459,22 +460,22 @@ def execute_sql_and_display(sql_query: str, dialect: str = "sqlite") -> None:
     Execute SQL query and display results in a pretty format.
     Currently supports SQLite via sqlite3 command-line tool.
     """
+    import os
     import subprocess
     import tempfile
-    import os
-    
+
     print(f"\n🗄️ Executing SQL ({dialect}):")
     print("=" * 50)
     print(sql_query)
     print("=" * 50)
-    
+
     if dialect == "sqlite":
         try:
             # Create a temporary SQLite database
             with tempfile.NamedTemporaryFile(mode='w', suffix='.sql', delete=False) as f:
                 f.write(sql_query)
                 sql_file = f.name
-            
+
             # Execute with sqlite3
             result = subprocess.run(
                 ["sqlite3", ":memory:", f".read {sql_file}"],
@@ -482,10 +483,10 @@ def execute_sql_and_display(sql_query: str, dialect: str = "sqlite") -> None:
                 text=True,
                 timeout=10
             )
-            
+
             # Clean up
             os.unlink(sql_file)
-            
+
             if result.returncode == 0:
                 print("✅ Results:")
                 if result.stdout.strip():
@@ -497,18 +498,18 @@ def execute_sql_and_display(sql_query: str, dialect: str = "sqlite") -> None:
                     print("  (No results returned)")
             else:
                 print(f"❌ SQL Error: {result.stderr}")
-                
+
         except subprocess.TimeoutExpired:
             print("⏰ Query timed out (>10s)")
         except FileNotFoundError:
             print("❌ sqlite3 not found. Install with: brew install sqlite3")
         except Exception as e:
             print(f"❌ Execution error: {e}")
-    
+
     elif dialect == "postgresql":
         print("❌ PostgreSQL execution not yet implemented")
         print("   Use --sql-dialect sqlite for execution")
-    
+
     else:
         print(f"❌ Unsupported dialect: {dialect}")
 

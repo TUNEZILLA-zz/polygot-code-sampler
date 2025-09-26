@@ -4,34 +4,42 @@ Interop Demo Generator
 Shows the same IR rendered across all five backends for a single comprehension
 """
 
-from pcs_step3_ts import PyToIR, render_rust, render_ts, render_go, render_csharp, render_sql
+from pcs_step3_ts import (
+    PyToIR,
+    render_csharp,
+    render_go,
+    render_rust,
+    render_sql,
+    render_ts,
+)
+
 
 def generate_interop_demo():
     """Generate interop demo showing same IR across all backends"""
-    
+
     # Choose a comprehensive example
     python_code = "sum(x * x for x in range(100) if x % 2 == 0)"
-    
+
     print("🔄 **Interop Demo: Same IR → All Five Backends**")
     print("=" * 80)
     print(f"**Python Input:** {python_code}")
     print("=" * 80)
-    
+
     # Parse to IR
     parser = PyToIR()
     ir = parser.parse(python_code)
-    
+
     print("**IR (JSON):**")
     print(ir.to_json())
     print("=" * 80)
-    
+
     # Generate all outputs from the same IR
     rust_output = render_rust(ir, func_name="sum_squares")
     ts_output = render_ts(ir, func_name="sumSquares")
     go_output = render_go(ir, func_name="SumSquares")
     csharp_output = render_csharp(ir, func_name="SumSquares")
     sql_output = render_sql(ir, func_name="sum_squares", dialect="postgresql")
-    
+
     # Create the interop markdown
     interop_markdown = f"""
 ## 🔄 **Interop Demo: Same IR → All Five Backends**
@@ -130,15 +138,15 @@ python3 pcs_step3_ts.py --code "{python_code}" --target csharp --parallel
 
 **One comprehension, one IR, five production-ready implementations!** ✨
 """
-    
+
     return interop_markdown
 
 if __name__ == "__main__":
     demo = generate_interop_demo()
     print(demo)
-    
+
     # Save to file
     with open("INTEROP_DEMO.md", "w") as f:
         f.write(demo)
-    
+
     print("\n💾 Interop demo saved to: INTEROP_DEMO.md")

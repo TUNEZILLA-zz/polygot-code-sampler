@@ -2,8 +2,9 @@
 Julia renderer for Polyglot Code Sampler
 """
 
-from ..core import IRComp
 from ..backends.julia import lower_program
+from ..core import IRComp
+
 
 def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False, mode: str = "auto", explain: bool = True, unsafe: bool = False) -> str:
     """
@@ -32,22 +33,22 @@ def _should_use_broadcast(ir: IRComp, gen) -> bool:
 def _render_julia_broadcast(ir: IRComp, gen, range_expr: str, parallel: bool) -> list:
     """Render using Julia's broadcast syntax"""
     lines = []
-    
+
     if ir.reduce:
         k = ir.reduce.kind
         if ir.kind == "dict":
             expr = ir.val_expr or "0"
         else:
             expr = ir.element or "0"
-        
+
         # Create the range
         lines.append(f"    {gen.var} = {range_expr}")
-        
+
         # Apply filters using broadcast
         for filter_expr in gen.filters:
             lines.append(f"    mask = {filter_expr}")
             lines.append(f"    {gen.var} = {gen.var}[mask]")
-        
+
         # Apply the reduction
         if k == "sum":
             lines.append(f"    return sum({expr})")
@@ -62,12 +63,12 @@ def _render_julia_broadcast(ir: IRComp, gen, range_expr: str, parallel: bool) ->
     else:
         # Collection operations
         lines.append(f"    {gen.var} = {range_expr}")
-        
+
         # Apply filters
         for filter_expr in gen.filters:
             lines.append(f"    mask = {filter_expr}")
             lines.append(f"    {gen.var} = {gen.var}[mask]")
-        
+
         # Apply element transformation
         if ir.kind == "list":
             if ir.element:
@@ -83,13 +84,13 @@ def _render_julia_broadcast(ir: IRComp, gen, range_expr: str, parallel: bool) ->
             key_expr = ir.key_expr or "0"
             val_expr = ir.val_expr or "0"
             lines.append(f"    return Dict({key_expr} => {val_expr} for {gen.var} in {gen.var})")
-    
+
     return lines
 
 def _render_julia_loop(ir: IRComp, gen, range_expr: str, parallel: bool) -> list:
     """Render using explicit loops"""
     lines = []
-    
+
     # Initialize result
     if ir.reduce:
         k = ir.reduce.kind
@@ -110,19 +111,19 @@ def _render_julia_loop(ir: IRComp, gen, range_expr: str, parallel: bool) -> list
             lines.append("    result = Set{Int}()")
         elif ir.kind == "dict":
             lines.append("    result = Dict{Int, Int}()")
-    
+
     # Add parallel prefix if requested
     loop_prefix = "    @threads " if parallel else "    "
-    
+
     # Create the loop
     lines.append(f"{loop_prefix}for {gen.var} in {range_expr}")
-    
+
     # Add filters as if statements
     for filter_expr in gen.filters:
         lines.append(f"        if !({filter_expr})")
         lines.append("            continue")
         lines.append("        end")
-    
+
     # Add the body
     if ir.reduce:
         k = ir.reduce.kind
@@ -130,7 +131,7 @@ def _render_julia_loop(ir: IRComp, gen, range_expr: str, parallel: bool) -> list
             expr = ir.val_expr or "0"
         else:
             expr = ir.element or "0"
-        
+
         if k == "sum":
             lines.append(f"        result += {expr}")
         elif k == "max":
@@ -161,8 +162,8 @@ def _render_julia_loop(ir: IRComp, gen, range_expr: str, parallel: bool) -> list
             key_expr = ir.key_expr or "0"
             val_expr = ir.val_expr or "0"
             lines.append(f"        result[{key_expr}] = {val_expr}")
-    
+
     lines.append("    end")
     lines.append("    return result")
-    
+
     return lines

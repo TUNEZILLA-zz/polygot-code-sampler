@@ -10,7 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from pcs_step3_ts import PyToIR, infer_types, render_rust, render_ts, render_sql, render_go
+from pcs_step3_ts import (
+    PyToIR,
+    infer_types,
+    render_go,
+    render_rust,
+    render_sql,
+    render_ts,
+)
 
 # Test cases: (python_code, case_name, description)
 TEST_CASES = [

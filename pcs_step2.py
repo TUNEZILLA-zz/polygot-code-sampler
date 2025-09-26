@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
+import argparse
 import ast
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Union, Any
 import json
 import re
-import argparse
 import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 # ---------- Tiny IR (extended for nesting) ----------
 
@@ -20,19 +21,19 @@ class IRRange:
 @dataclass
 class IRGenerator:
     var: str
-    source: Union['IRRange', str]  # range(...) or variable name
-    filters: List[str]             # list of predicate expressions as strings
+    source: IRRange | str  # range(...) or variable name
+    filters: list[str]             # list of predicate expressions as strings
 
 @dataclass
 class IRReduce:
     op: str            # '+', '*', etc.
-    initial: Optional[str] = None
+    initial: str | None = None
 
 @dataclass
 class IRComp:
-    generators: List[IRGenerator]
+    generators: list[IRGenerator]
     element: str                   # expression for the element (e.g., "i * j", "(i, j)")
-    reduce: Optional[IRReduce] = None
+    reduce: IRReduce | None = None
     provenance: dict = None
 
     def to_json(self) -> str:
@@ -60,7 +61,7 @@ class PyToIRNested(ast.NodeVisitor):
       - Filters are side-effect-free expressions.
     """
     def __init__(self):
-        self.comp: Optional[IRComp] = None
+        self.comp: IRComp | None = None
 
     def parse(self, code: str) -> IRComp:
         tree = ast.parse(code)
@@ -98,9 +99,9 @@ class PyToIRNested(ast.NodeVisitor):
             start, stop, step = args[0], args[1], args[2]
         return IRRange(start=start, stop=stop, step=step)
 
-    def _comp_to_ir(self, comp: Union[ast.ListComp, ast.GeneratorExp], reduce_: Optional[IRReduce]) -> IRComp:
+    def _comp_to_ir(self, comp: ast.ListComp | ast.GeneratorExp, reduce_: IRReduce | None) -> IRComp:
         # Multiple generators allowed
-        gens: List[IRGenerator] = []
+        gens: list[IRGenerator] = []
         for gen in comp.generators:
             # Target var name
             if not isinstance(gen.target, ast.Name):

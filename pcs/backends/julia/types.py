@@ -2,12 +2,12 @@
 Julia type mapping and type inference
 """
 
-from typing import Dict, Any, Optional
+from typing import Optional
 
 # Type mapping from Python/IR types to Julia types
 type_mapping = {
     "int": "Int",
-    "float": "Float64", 
+    "float": "Float64",
     "bool": "Bool",
     "str": "String",
     "list": "Vector",
@@ -19,7 +19,7 @@ type_mapping = {
 def julia_type(ir_type: str, element_type: Optional[str] = None, key_type: Optional[str] = None, value_type: Optional[str] = None) -> str:
     """Convert IR type to Julia type annotation"""
     base_type = type_mapping.get(ir_type, ir_type)
-    
+
     if ir_type == "list" and element_type:
         element_julia = type_mapping.get(element_type, element_type)
         return f"Vector{{{element_julia}}}"

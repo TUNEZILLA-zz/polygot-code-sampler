@@ -4,29 +4,30 @@ Polyglot Parallelism Demo Generator
 Creates a side-by-side showcase of all 4 backends for the same Python comprehension
 """
 
-from pcs_step3_ts import PyToIR, render_rust, render_ts, render_sql
+from pcs_step3_ts import PyToIR, render_rust, render_sql, render_ts
+
 
 def generate_polyglot_demo():
     """Generate a comprehensive polyglot parallelism demo"""
-    
+
     # Choose a compelling example that showcases parallel processing
     python_code = "sum(i * i for i in range(1000000) if i % 2 == 0)"
-    
+
     print("🎯 **Polyglot Parallelism Demo**")
     print("=" * 80)
     print(f"**Python Input:** `{python_code}`")
     print("=" * 80)
-    
+
     # Parse to IR
     parser = PyToIR()
     ir = parser.parse(python_code)
-    
+
     # Generate available outputs
     rust_sequential = render_rust(ir, func_name="sum_squares_sequential")
     ts_sequential = render_ts(ir, func_name="sumSquaresSequential")
     sql_sqlite = render_sql(ir, func_name="sum_squares", dialect="sqlite")
     sql_postgresql = render_sql(ir, func_name="sum_squares", dialect="postgresql")
-    
+
     # Manual Go examples (since render_go is not available in current file)
     go_sequential = '''func SumSquaresSequential() int {
     acc := 0
@@ -36,7 +37,7 @@ def generate_polyglot_demo():
     }
     return acc
 }'''
-    
+
     go_parallel = '''import (
     "runtime"
     "sync"
@@ -47,10 +48,10 @@ func SumSquaresParallel() int {
     totalRange := 1000000
     chunkSize := totalRange / numWorkers
     if chunkSize == 0 { chunkSize = 1 }
-    
+
     results := make(chan int, numWorkers)
     var wg sync.WaitGroup
-    
+
     for w := 0; w < numWorkers; w++ {
         wg.Add(1)
         go func(workerID int) {
@@ -58,7 +59,7 @@ func SumSquaresParallel() int {
             start := workerID * chunkSize
             end := start + chunkSize
             if workerID == numWorkers-1 { end = totalRange }
-            
+
             acc := 0
             for i := start; i < end; i++ {
                 if !(i % 2 == 0) { continue }
@@ -67,17 +68,17 @@ func SumSquaresParallel() int {
             results <- acc
         }(w)
     }
-    
+
     wg.Wait()
     close(results)
-    
+
     total := 0
     for result := range results {
         total += result
     }
     return total
 }'''
-    
+
     # Create the demo markdown
     demo_markdown = f"""
 ## 🚀 **Polyglot Parallelism in Action**
@@ -169,22 +170,22 @@ func SumSquaresParallel() int {
 ```bash
 # Generate all outputs
 python3 pcs_step3_ts.py --code "{python_code}" --target rust --parallel
-python3 pcs_step3_ts.py --code "{python_code}" --target ts --parallel  
+python3 pcs_step3_ts.py --code "{python_code}" --target ts --parallel
 python3 pcs_step3_ts.py --code "{python_code}" --target go --parallel
 python3 pcs_step3_ts.py --code "{python_code}" --target sql --execute-sql
 ```
 
 **The magic:** One Python comprehension → 4 production-ready implementations with native parallel processing! ✨
 """
-    
+
     return demo_markdown
 
 if __name__ == "__main__":
     demo = generate_polyglot_demo()
     print(demo)
-    
+
     # Save to file
     with open("POLYGLOT_PARALLELISM_DEMO.md", "w") as f:
         f.write(demo)
-    
+
     print("\n💾 Demo saved to: POLYGLOT_PARALLELISM_DEMO.md")
