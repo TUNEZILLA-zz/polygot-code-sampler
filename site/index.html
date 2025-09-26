@@ -224,11 +224,24 @@
 
     async function loadData() {
       try {
-        const response = await fetch('benchmarks.json');
+        const response = await fetch('./benchmarks.json?v=' + Date.now(), {cache: 'no-store'});
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        benchmarkData = await response.json();
+        const rawData = await response.json();
+        
+        // Handle both old format (object with results) and new format (array)
+        if (rawData && typeof rawData === 'object' && rawData.results) {
+          benchmarkData = rawData.results;
+        } else if (Array.isArray(rawData)) {
+          benchmarkData = rawData;
+        } else {
+          throw new Error('Invalid data format: expected array of benchmark results or object with results key');
+        }
+        
+        if (!benchmarkData || !Array.isArray(benchmarkData)) {
+          throw new Error('No valid benchmark data found');
+        }
         
         document.getElementById('loading').style.display = 'none';
         document.getElementById('content').style.display = 'block';

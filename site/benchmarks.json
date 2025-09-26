@@ -1,170 +1,145 @@
-{
-  "summary": {
-    "total_results": 11,
-    "backends": [
-      "csharp",
-      "go",
-      "julia",
-      "rust",
-      "ts"
-    ],
-    "tests": [
-      "sum_even_squares"
-    ],
-    "modes": [
-      "broadcast",
-      "loops",
-      "parallel"
-    ],
-    "date_range": {
-      "start": "2025-09-25",
-      "end": "2025-09-25"
-    },
-    "last_updated": "2025-09-26T02:50:24.462075Z"
+[
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:00Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "julia",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 1234567,
+    "std_ns": 1234
   },
-  "results": [
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:00Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "julia",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 1234567,
-      "std_ns": 1234
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:01Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "julia",
-      "test": "sum_even_squares",
-      "mode": "broadcast",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 987654,
-      "std_ns": 890
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:02Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "julia",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": true,
-      "n": 1000000,
-      "mean_ns": 456789,
-      "std_ns": 567
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:03Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "rust",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 234567,
-      "std_ns": 234
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:04Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "rust",
-      "test": "sum_even_squares",
-      "mode": "parallel",
-      "parallel": true,
-      "n": 1000000,
-      "mean_ns": 123456,
-      "std_ns": 123
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:05Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "go",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 345678,
-      "std_ns": 345
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:06Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "go",
-      "test": "sum_even_squares",
-      "mode": "parallel",
-      "parallel": true,
-      "n": 1000000,
-      "mean_ns": 178901,
-      "std_ns": 178
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:07Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "ts",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 567890,
-      "std_ns": 567
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:08Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "ts",
-      "test": "sum_even_squares",
-      "mode": "parallel",
-      "parallel": true,
-      "n": 1000000,
-      "mean_ns": 234567,
-      "std_ns": 234
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:09Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "csharp",
-      "test": "sum_even_squares",
-      "mode": "loops",
-      "parallel": false,
-      "n": 1000000,
-      "mean_ns": 456789,
-      "std_ns": 456
-    },
-    {
-      "commit": "7d5fd99",
-      "timestamp": "2025-09-25T21:45:10Z",
-      "os": "darwin",
-      "cpu": "Apple M1",
-      "backend": "csharp",
-      "test": "sum_even_squares",
-      "mode": "parallel",
-      "parallel": true,
-      "n": 1000000,
-      "mean_ns": 198765,
-      "std_ns": 198
-    }
-  ]
-}
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:01Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "julia",
+    "test": "sum_even_squares",
+    "mode": "broadcast",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 987654,
+    "std_ns": 890
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:02Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "julia",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": true,
+    "n": 1000000,
+    "mean_ns": 456789,
+    "std_ns": 567
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:03Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "rust",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 234567,
+    "std_ns": 234
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:04Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "rust",
+    "test": "sum_even_squares",
+    "mode": "parallel",
+    "parallel": true,
+    "n": 1000000,
+    "mean_ns": 123456,
+    "std_ns": 123
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:05Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "go",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 345678,
+    "std_ns": 345
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:06Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "go",
+    "test": "sum_even_squares",
+    "mode": "parallel",
+    "parallel": true,
+    "n": 1000000,
+    "mean_ns": 178901,
+    "std_ns": 178
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:07Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "ts",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 567890,
+    "std_ns": 567
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:08Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "ts",
+    "test": "sum_even_squares",
+    "mode": "parallel",
+    "parallel": true,
+    "n": 1000000,
+    "mean_ns": 234567,
+    "std_ns": 234
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:09Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "csharp",
+    "test": "sum_even_squares",
+    "mode": "loops",
+    "parallel": false,
+    "n": 1000000,
+    "mean_ns": 456789,
+    "std_ns": 456
+  },
+  {
+    "commit": "7d5fd99",
+    "timestamp": "2025-09-25T21:45:10Z",
+    "os": "darwin",
+    "cpu": "Apple M1",
+    "backend": "csharp",
+    "test": "sum_even_squares",
+    "mode": "parallel",
+    "parallel": true,
+    "n": 1000000,
+    "mean_ns": 198765,
+    "std_ns": 198
+  }
+]

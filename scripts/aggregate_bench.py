@@ -167,15 +167,10 @@ def main():
     # Generate summary statistics
     summary = generate_summary_stats(aggregated_data)
 
-    # Write combined JSON for the dashboard
-    output_data = {
-        'summary': summary,
-        'results': aggregated_data
-    }
-
+    # Write combined JSON for the dashboard (just the results array)
     output_file = PAGES / "benchmarks.json"
     with open(output_file, 'w') as f:
-        json.dump(output_data, f, indent=2)
+        json.dump(aggregated_data, f, indent=2)
 
     print(f"✅ Wrote {output_file} with {len(aggregated_data)} aggregated results")
 
