@@ -74,6 +74,10 @@ def gensym(prefix: str = "var") -> str:
     gensym._counter += 1
     return f"{prefix}{gensym._counter}"
 
+def reset_gensym():
+    """Reset gensym counter for deterministic output"""
+    gensym._counter = 0
+
 def julia_operator(op: str) -> str:
     """Map Python operators to Julia operators"""
     operator_map = {

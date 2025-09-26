@@ -2,13 +2,16 @@
 IR → Julia lowering rules for loops and broadcast modes
 """
 
-from .emitter import JL, jl_var, literal, gensym, julia_operator
+from .emitter import JL, jl_var, literal, gensym, julia_operator, reset_gensym
 from .types import julia_type, get_collection_type, get_reduction_type
 from .strategy import choose_strategy, get_elem_count_hint, get_op_kind, get_elem_type
 from ...core import IRComp, IRGenerator, IRRange, IRReduce
 
 def lower_program(ir: IRComp, mode: str = "auto", parallel: bool = False, explain: bool = True, unsafe: bool = False) -> str:
     """Lower IR to Julia code"""
+    # Reset gensym counter for deterministic output
+    reset_gensym()
+    
     jl = JL(code=[])
     
     # Header
@@ -17,9 +20,15 @@ def lower_program(ir: IRComp, mode: str = "auto", parallel: bool = False, explai
     jl.w("")
     jl.indent += 1
     
-    # Add imports if needed
+    # Add runtime include for parallel operations
     if parallel:
-        jl.w("using Base.Threads")
+        jl.w("include(\"pcs_runtime.jl\")")
+        jl.w("using .PCS_Runtime")
+        jl.w("")
+    elif any(gen.filters for gen in ir.generators) or ir.reduce:
+        # Add runtime for non-parallel operations that might benefit from helpers
+        jl.w("include(\"pcs_runtime.jl\")")
+        jl.w("using .PCS_Runtime")
         jl.w("")
     
     # Generate main function
@@ -310,46 +319,30 @@ def _lower_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mod
     else:
         return _lower_list_comprehension(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
 
-def _lower_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel: bool) -> str:
+def _lower_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel_flavor: str, unsafe: bool) -> str:
     """Lower dictionary comprehension"""
-    if parallel:
-        return _lower_parallel_dict_comprehension(jl, ir, gen, source_sym)
+    if parallel_flavor == "sharded":
+        return _lower_parallel_dict_comprehension(jl, ir, gen, source_sym, unsafe)
     else:
-        return _lower_sequential_dict_comprehension(jl, ir, gen, source_sym)
+        return _lower_sequential_dict_comprehension(jl, ir, gen, source_sym, unsafe)
 
-def _lower_parallel_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str) -> str:
-    """Lower parallel dictionary comprehension using shard pattern"""
+def _lower_parallel_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
+    """Lower parallel dictionary comprehension using runtime helpers"""
     result_sym = gensym("result")
-    shards_sym = gensym("shards")
     
-    # Create shards for each thread
-    jl.w(f"{shards_sym} = [Dict{{Int, Int}}() for _ in 1:nthreads()]")
+    # Use runtime helper for parallel dict comprehension
+    key_expr = _lower_expression(ir.key_expr or gen.var, gen.var)
+    val_expr = _lower_expression(ir.val_expr or gen.var, gen.var)
     
-    # Parallel loop with thread-local writes
-    with jl.block(f"@threads for {gen.var} in {source_sym}"):
-        # Apply filters
-        if gen.filters:
-            # Has filters - apply only when filter passes
-            for filter_expr in gen.filters:
-                with jl.block(f"if {_lower_expression(filter_expr, gen.var)}"):
-                    key_expr = _lower_expression(ir.key_expr or gen.var, gen.var)
-                    val_expr = _lower_expression(ir.val_expr or gen.var, gen.var)
-                    jl.w(f"{shards_sym}[threadid()][{key_expr}] = {val_expr}")
-        else:
-            # No filters
-            key_expr = _lower_expression(ir.key_expr or gen.var, gen.var)
-            val_expr = _lower_expression(ir.val_expr or gen.var, gen.var)
-            jl.w(f"{shards_sym}[threadid()][{key_expr}] = {val_expr}")
+    # Generate key and value functions with proper variable substitution
+    key_func = f"i -> {key_expr.replace(gen.var, 'i')}"
+    val_func = f"i -> {val_expr.replace(gen.var, 'i')}"
     
-    # Merge shards serially
-    jl.w(f"{result_sym} = Dict{{Int, Int}}()")
-    with jl.block(f"@inbounds for s in {shards_sym}"):
-        with jl.block("for (k, v) in s"):
-            jl.w(f"{result_sym}[k] = v")
+    jl.w(f"{result_sym} = dict_comp_parallel({source_sym}, {key_func}, {val_func}; KT=Int, VT=Int, combine=(o,n)->n)")
     
     return result_sym
 
-def _lower_sequential_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str) -> str:
+def _lower_sequential_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
     """Lower sequential dictionary comprehension"""
     result_sym = gensym("dict")
     jl.w(f"{result_sym} = Dict{{Int, Int}}()")

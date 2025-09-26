@@ -38,18 +38,16 @@ def choose_strategy(
         - explanation: NOTE comment explaining the decision
     """
     
-    # 1) Respect explicit user mode
+    # 1) Mode selection
     if user_mode in ("loops", "broadcast"):
         mode = user_mode
         mode_explanation = ""
     else:
-        # Heuristics when auto:
-        # - small vectors → broadcast for clarity
-        # - filters + large N → loops to avoid allocations
-        # - dict/group/join → loops (broadcast rarely helps)
-        if (elem_count_hint and elem_count_hint <= 10_000 and 
-            (node.kind in ("list", "set") or node.reduce) and 
-            not any(gen.filters for gen in node.generators)):
+        # Auto mode heuristics
+        small = (elem_count_hint or 0) <= 10_000
+        no_filters = not any(gen.filters for gen in node.generators)
+        
+        if small and no_filters and (node.kind in {"list", "set"} or node.reduce):
             mode = "broadcast"
             mode_explanation = f"# NOTE: auto-selected broadcast mode for small N={elem_count_hint}"
         else:
@@ -57,30 +55,40 @@ def choose_strategy(
             mode_explanation = f"# NOTE: auto-selected loops mode for {node.kind} operation"
     
     # 2) Parallelization gate
-    can_parallel = (
-        parallel_requested
-        and op_kind in ASSOCIATIVE_OPS
-        and elem_type in ASSOCIATIVE_OPS[op_kind]
-        and _has_no_cross_iteration_deps(node)
-    )
+    assoc_ok = (op_kind, elem_type) in {
+        ("sum", "Int"), ("sum", "Float64"),
+        ("prod", "Int"), ("prod", "Float64"),
+        ("max", "Int"), ("max", "Float64"),
+        ("min", "Int"), ("min", "Float64"),
+        ("+", "Int"), ("+", "Float64"),
+        ("*", "Int"), ("*", "Float64"),
+        ("|", "Int"), ("&", "Int"), ("^", "Int"),
+    }
+    # Dict/group operations are always parallelizable if requested (no associativity needed)
+    dict_ok = node.kind in {"dict", "group_by"}
+    can_parallel = bool(parallel_requested and (assoc_ok or dict_ok) and _has_no_cross_iteration_deps(node))
     
-    # 3) Dict/group safety
-    if node.kind in {"dict", "group_by"} and can_parallel:
-        parallel_flavor = "sharded"  # per-thread shards + merge
-        parallel_explanation = "# NOTE: dict/group parallelized with shard-merge pattern (thread-local writes)"
-    elif can_parallel:
-        parallel_flavor = "threadlocals"  # parts[threadid()] pattern
-        parallel_explanation = "# NOTE: parallelized with thread-local partials"
-    else:
-        parallel_flavor = "sequential"
-        if parallel_requested and op_kind and op_kind not in ASSOCIATIVE_OPS:
-            parallel_explanation = f"# NOTE: parallel fallback → sequential: non-associative op '{op_kind}'"
-        elif parallel_requested and elem_type not in ASSOCIATIVE_OPS.get(op_kind, ()):
-            parallel_explanation = f"# NOTE: parallel fallback → sequential: type '{elem_type}' not supported for '{op_kind}'"
-        elif parallel_requested and not _has_no_cross_iteration_deps(node):
-            parallel_explanation = "# NOTE: parallel fallback → sequential: cross-iteration dependencies detected"
+    # 3) Parallel flavor selection
+    if node.kind in {"dict", "group_by"}:
+        parallel_flavor = "sharded" if can_parallel else "sequential"
+        mode = "loops"  # force loops for dict/group operations
+        if can_parallel:
+            parallel_explanation = "# NOTE: parallelized with shard-merge pattern (thread-local writes)"
         else:
             parallel_explanation = ""
+    else:
+        parallel_flavor = "threadlocals" if can_parallel else "sequential"
+        if can_parallel:
+            parallel_explanation = "# NOTE: parallelized with thread-local partials"
+        else:
+            parallel_explanation = ""
+    
+    # 4) Fallback explanations
+    if parallel_requested and not can_parallel:
+        if not assoc_ok:
+            parallel_explanation = f"# NOTE: parallel fallback → sequential: non-associative op '{op_kind}' or unsupported type '{elem_type}'"
+        elif not _has_no_cross_iteration_deps(node):
+            parallel_explanation = "# NOTE: parallel fallback → sequential: cross-iteration dependencies detected"
     
     # Combine explanations
     explanations = [e for e in [mode_explanation, parallel_explanation] if e]

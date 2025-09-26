@@ -48,6 +48,23 @@
 - **Memory usage tracking** and optimization insights
 - **Automated CI benchmarks** with performance regression detection
 - **Performance trend tracking** with non-blocking CI workflow
+
+### 🧠 **Julia Strategy Selection**
+
+The Julia backend features intelligent auto-mode selection with the following heuristics:
+
+| Pattern | Small N | Large N | Parallel? | Notes |
+|---------|---------|---------|-----------|-------|
+| **map** | broadcast | loops | thread-locals OK | broadcast for clarity on small data |
+| **map + filter** | loops | loops | thread-locals OK | avoid allocations; ifelse. for b'cast |
+| **reduce (associative)** | broadcast/loops | loops | thread-locals OK | check associativity + type |
+| **dict-comp / group-by** | loops | loops | sharded merge only | per-thread shards + serial merge |
+
+**Strategy Selection Logic:**
+- **Auto Mode**: Intelligently selects broadcast for small N (≤10k) without filters, loops otherwise
+- **Parallel Gate**: Only parallelizes associative operations (`sum`, `prod`, `max`, `min`, `+`, `*`, `|`, `&`, `^`)
+- **Dict/Group Safety**: Uses shard-merge pattern for thread-safe parallel dict/group operations
+- **Fallback Explanations**: Clear NOTE comments explaining all decisions
 - **Performance dashboard** for historical analysis and regression detection
 
 ### ⚡ **Five-Stack Parallel Parity**
