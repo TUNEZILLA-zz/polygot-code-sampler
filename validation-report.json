@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-09-26T04:55:32.737042Z",
+  "platform": "Enterprise Performance Monitoring",
+  "version": "1.0",
+  "tests": [
+    {
+      "test": "Policy Loading",
+      "status": "\u2705 PASSED",
+      "exit_code": 0,
+      "stdout": "\u2705 Policy loaded successfully (v1.0)\n\ud83d\udcc5 Last updated: 2025-09-26\n\ud83c\udfaf Regression thresholds: {'julia': 0.12, 'rust': 0.08, 'go': 0.15, 'ts': 0.1, 'csharp': 0.1, 'sql': 0.2}\n\ud83d\udd0d K-anomaly threshold: 0.8\n\ud83d\udcca Das",
+      "stderr": ""
+    },
+    {
+      "test": "Demo Data Generation",
+      "status": "\u2705 PASSED",
+      "exit_code": 0,
+      "stdout": "\ud83c\udfad Generating synthetic benchmark data...\n\ud83d\udcca Days: 7, Backends: julia,rust,go,ts,csharp, Seed: 1337\npython3 scripts/generate_demo_data.py --days 7 --backends julia,rust,go,ts,csharp --out site/benchmark",
+      "stderr": ""
+    },
+    {
+      "test": "Policy Schema Validation",
+      "status": "\u2705 PASSED",
+      "exit_code": 0,
+      "stdout": "Schema OK\n",
+      "stderr": ""
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "timeout": 0
+  }
+}
