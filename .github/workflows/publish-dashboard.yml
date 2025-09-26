@@ -3,7 +3,6 @@ name: Publish Dashboard
 on:
   push:
     branches: [ main ]
-    paths: [ 'site/**' ]
   workflow_dispatch:
 
 jobs:
