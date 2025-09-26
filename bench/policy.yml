@@ -1,0 +1,74 @@
+# PCS Performance Monitoring Policy
+# Single source of truth for all thresholds, grace periods, and governance rules
+
+version: 1.0
+last_updated: "2025-09-26"
+
+# Regression Detection Thresholds
+regression:
+  default_threshold: 0.10  # 10% default
+  per_backend:
+    julia: 0.12    # 12% - Julia can be more variable
+    rust: 0.08     # 8% - Rust should be stable
+    go: 0.15       # 15% - Go has GC variance
+    ts: 0.10       # 10% - TypeScript baseline
+    csharp: 0.10   # 10% - C# baseline
+    sql: 0.20      # 20% - SQL depends on DB state
+  
+  grace_period_days: 3
+  min_sample_size: 5
+  max_regression_ratio: 0.50  # 50% max before requiring approval
+
+# K-Anomaly Detection
+k_anomaly:
+  threshold_ratio: 0.8  # 80% of backends must regress
+  min_active_backends: 3
+  alert_on_consecutive_days: 2
+
+# Data Quality
+data_quality:
+  outlier_threshold: 3.0  # 3σ z-score
+  variance_warning_ratio: 0.15  # std/mean > 15% triggers warning
+  min_records_per_day: 10
+  max_age_days: 180
+
+# Governance
+governance:
+  require_approval_threshold: 0.20  # 20% regression requires approval
+  emergency_override_approvers: ["@performance-team"]
+  data_retention_days: 180
+  
+# Runner Fingerprinting
+runner_fingerprinting:
+  enabled: true
+  track_fields: ["runner_image", "cpu_flags", "memory_total", "os_version"]
+  suppress_alerts_on_runner_change: true
+
+# Warmup & Burn-in
+warmup:
+  enabled: true
+  warmup_runs: 3
+  burn_in_runs: 2
+  record_warmup_times: true
+
+# Dashboard Presets
+dashboard_presets:
+  - name: "All Parallel"
+    filters: {"parallel": true}
+  - name: "Julia vs Rust"
+    filters: {"backend": ["julia", "rust"]}
+  - name: "Large N Only"
+    filters: {"n": {"min": 1000000}}
+  - name: "Recent Regressions"
+    filters: {"days": 7, "regression": true}
+
+# Multi-test Matrix (future)
+matrix:
+  enabled: false
+  dimensions:
+    - name: "N"
+      values: [100000, 1000000, 10000000]
+    - name: "skew"
+      values: [0.1, 0.2, 0.5]
+    - name: "branching_factor"
+      values: [4, 8, 16]

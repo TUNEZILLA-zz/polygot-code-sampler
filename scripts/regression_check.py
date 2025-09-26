@@ -15,6 +15,18 @@ from typing import Dict, List, Any, Optional
 from statistics import median
 import os
 
+# Import policy loader
+try:
+    from policy_loader import load_policy, get_regression_threshold, get_grace_period
+except ImportError:
+    # Fallback if policy_loader not available
+    def load_policy():
+        return None
+    def get_regression_threshold(backend, policy):
+        return 0.10
+    def get_grace_period(policy):
+        return 3
+
 def load_benchmark_data(file_path: Path) -> List[Dict[str, Any]]:
     """Load benchmark data from JSON file."""
     try:

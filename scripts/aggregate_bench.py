@@ -4,6 +4,7 @@ Benchmark aggregator - combines all NDJSON results into GitHub Pages data
 """
 
 import json
+import os
 import pathlib
 import statistics
 import sys
@@ -220,8 +221,11 @@ def main():
         print("❌ No benchmark data found")
         return
 
-    # Check for demo data and refuse to publish if found
-    check_for_demo_data(all_data)
+    # Check for demo data and refuse to publish if found (unless emergency override)
+    if not os.getenv('ALLOW_REGRESSION'):
+        check_for_demo_data(all_data)
+    else:
+        print("🚨 Emergency override: ALLOW_REGRESSION=true - bypassing demo data check")
 
     # Aggregate by day (keep best performance per day/backend/test/mode)
     aggregated_data = aggregate_by_day(all_data)

@@ -267,6 +267,16 @@
         </div>
       </div>
       
+      <!-- Quick Filter Presets -->
+      <div class="presets">
+        <h4>🎯 Quick Filters</h4>
+        <button onclick="applyPreset('all-parallel')" class="preset-btn">All Parallel</button>
+        <button onclick="applyPreset('julia-vs-rust')" class="preset-btn">Julia vs Rust</button>
+        <button onclick="applyPreset('large-n')" class="preset-btn">Large N Only</button>
+        <button onclick="applyPreset('recent-regressions')" class="preset-btn">Recent Regressions</button>
+        <button onclick="applyPreset('clear')" class="preset-btn">Clear Filters</button>
+      </div>
+      
       <!-- About & Methods Panel -->
     <div class="about-panel" id="about-panel" style="display: none;">
       <h3>📊 About & Methods</h3>
@@ -941,6 +951,87 @@
       }
     })();
   });
+  </script>
+  
+  <style>
+    .presets {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .presets h4 {
+      margin: 0 0 10px 0;
+      color: #495057;
+    }
+    
+    .preset-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .preset-btn:hover {
+      background: #0056b3;
+    }
+    
+    .preset-btn.active {
+      background: #28a745;
+    }
+  </style>
+  
+  <script>
+    // Quick Filter Presets
+    function applyPreset(preset) {
+      const testSelect = document.getElementById('test-select');
+      const backendSelect = document.getElementById('backend-select');
+      const modeSelect = document.getElementById('mode-select');
+      const baselineSelect = document.getElementById('baseline-select');
+      
+      // Clear all filters first
+      testSelect.value = '';
+      backendSelect.value = '';
+      modeSelect.value = '';
+      baselineSelect.value = '';
+      
+      // Apply preset filters
+      switch(preset) {
+        case 'all-parallel':
+          modeSelect.value = 'parallel';
+          break;
+        case 'julia-vs-rust':
+          backendSelect.value = 'julia';
+          // Note: This would need backend multi-select for true comparison
+          break;
+        case 'large-n':
+          // This would need N filtering (not implemented in current UI)
+          alert('Large N filtering requires N field in data');
+          break;
+        case 'recent-regressions':
+          // This would need regression detection integration
+          alert('Recent regressions requires regression analysis');
+          break;
+        case 'clear':
+          // Already cleared above
+          break;
+      }
+      
+      // Update active button
+      document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Trigger chart update
+      if (typeof updateCharts === 'function') {
+        updateCharts();
+      }
+    }
   </script>
 </body>
 </html>
