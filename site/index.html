@@ -727,6 +727,36 @@
     // Load data when page loads
     loadData();
   </script>
+
+  <!-- Data Status Widget -->
+  <script>
+  function formatTS(ts){ try { return new Date(ts).toISOString(); } catch { return String(ts) } }
+  function summarize(rows){
+    if(!rows?.length) return 'No rows';
+    const last = rows.slice().sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)).at(-1);
+    const bset = new Set(rows.map(r=>r.backend));
+    const tset = new Set(rows.map(r=>r.test));
+    return `Rows: ${rows.length} • Backends: ${[...bset].join(', ')} • Tests: ${[...tset].join(', ')} • Last: ${formatTS(last.timestamp)}`;
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const el = document.createElement('div');
+    el.style.cssText = 'padding:10px;margin:8px 0;border-radius:8px;background:#f6f8fa;font:12px/1.4 system-ui, sans-serif';
+    el.id = 'data-status';
+    el.textContent = 'Loading data…';
+    document.body.prepend(el);
+    (async ()=>{
+      try{
+        const r = await fetch('./benchmarks.json?v='+Date.now(), {cache:'no-store'});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        const rows = await r.json();
+        if(!Array.isArray(rows)) throw new Error('Not an array');
+        el.textContent = summarize(rows);
+      }catch(e){
+        el.textContent = 'Data load error: ' + e.message;
+      }
+    })();
+  });
+  </script>
 </body>
 </html>
 <!-- Updated Thu Sep 25 22:18:57 CDT 2025 -->
