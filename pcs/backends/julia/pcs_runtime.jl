@@ -2,7 +2,13 @@
 module PCS_Runtime
 using Base.Threads
 
-export parallel_reduce_parts!, combine_parts, merge_shards!, dict_comp_parallel, groupby_parallel
+export parallel_reduce_parts!, combine_parts, merge_shards!, dict_comp_parallel, groupby_parallel, unsafe_wrap, finalize_groups!
+
+# Unsafe optimizations toggle
+const USE_UNSAFE = Ref(false)
+
+# Helper to conditionally wrap with unsafe optimizations
+unsafe_wrap(s) = USE_UNSAFE[] ? s : ""
 
 # Thread-local partials for associative reductions
 function parallel_reduce_parts!(parts, range_iter, f, pred)
@@ -58,6 +64,19 @@ function groupby_parallel(xs; key::Function, KT::Type=Int, T::Type=Any)
         end
     end
     return out
+end
+
+# Group-by stable ordering option
+function finalize_groups!(d::Dict; stable::Bool=false)
+    if stable
+        for (k, v) in d
+            # Stable by second field example (customize as needed)
+            if length(v) > 1 && eltype(v) <: Tuple
+                sort!(v, by = x -> x[2]) 
+            end
+        end
+    end
+    return d
 end
 
 end # module

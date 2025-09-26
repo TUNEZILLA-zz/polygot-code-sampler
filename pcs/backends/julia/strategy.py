@@ -4,19 +4,7 @@ Centralized strategy selection for Julia code generation
 
 from typing import Tuple, Optional
 from ...core import IRComp, IRGenerator
-
-# Associativity whitelist for safe parallelization
-ASSOCIATIVE_OPS = {
-    "sum": ("Int", "Float64"),  # sum reduction
-    "prod": ("Int", "Float64"),  # product reduction
-    "max": ("Int", "Float64"),
-    "min": ("Int", "Float64"),
-    "+": ("Int", "Float64"),  # addition operator
-    "*": ("Int", "Float64"),  # multiplication operator
-    "|": ("Int",),  # bitwise OR
-    "&": ("Int",),  # bitwise AND
-    "^": ("Int",),  # bitwise XOR
-}
+from .associativity import is_associative, get_parallel_note, get_associativity_explanation
 
 def choose_strategy(
     node: IRComp, 
@@ -55,15 +43,7 @@ def choose_strategy(
             mode_explanation = f"# NOTE: auto-selected loops mode for {node.kind} operation"
     
     # 2) Parallelization gate
-    assoc_ok = (op_kind, elem_type) in {
-        ("sum", "Int"), ("sum", "Float64"),
-        ("prod", "Int"), ("prod", "Float64"),
-        ("max", "Int"), ("max", "Float64"),
-        ("min", "Int"), ("min", "Float64"),
-        ("+", "Int"), ("+", "Float64"),
-        ("*", "Int"), ("*", "Float64"),
-        ("|", "Int"), ("&", "Int"), ("^", "Int"),
-    }
+    assoc_ok = is_associative(op_kind, elem_type) if op_kind else False
     # Dict/group operations are always parallelizable if requested (no associativity needed)
     dict_ok = node.kind in {"dict", "group_by"}
     can_parallel = bool(parallel_requested and (assoc_ok or dict_ok) and _has_no_cross_iteration_deps(node))
@@ -85,8 +65,8 @@ def choose_strategy(
     
     # 4) Fallback explanations
     if parallel_requested and not can_parallel:
-        if not assoc_ok:
-            parallel_explanation = f"# NOTE: parallel fallback → sequential: non-associative op '{op_kind}' or unsupported type '{elem_type}'"
+        if not assoc_ok and not dict_ok:
+            parallel_explanation = get_parallel_note(op_kind, elem_type)
         elif not _has_no_cross_iteration_deps(node):
             parallel_explanation = "# NOTE: parallel fallback → sequential: cross-iteration dependencies detected"
     
@@ -117,17 +97,41 @@ def _has_no_cross_iteration_deps(node: IRComp) -> bool:
     return True
 
 def get_elem_count_hint(node: IRComp) -> Optional[int]:
-    """Estimate element count for strategy selection"""
+    """Estimate element count for strategy selection with cost model"""
     if not node.generators:
         return None
     
     gen = node.generators[0]
+    
+    # Try to get size hint from node attributes first
+    if hasattr(node, 'range_len'):
+        return node.range_len
     
     # Simple range estimation
     if hasattr(gen.source, 'start') and hasattr(gen.source, 'stop'):
         return gen.source.stop - gen.source.start
     
     return None
+
+def size_hint(node: IRComp) -> Optional[int]:
+    """Cost model hook for size estimation"""
+    # Try to propagate |range|, filter selectivity, etc.
+    if hasattr(node, "range_len"): 
+        return node.range_len
+    
+    # Estimate from generators
+    if node.generators:
+        gen = node.generators[0]
+        if hasattr(gen.source, 'start') and hasattr(gen.source, 'stop'):
+            base_size = gen.source.stop - gen.source.start
+            
+            # Apply filter selectivity estimate
+            if gen.filters:
+                # Conservative estimate: filters reduce size by ~50%
+                return int(base_size * 0.5)
+            return base_size
+    
+    return None  # unknown
 
 def get_op_kind(node: IRComp) -> Optional[str]:
     """Get the operation kind for strategy selection"""

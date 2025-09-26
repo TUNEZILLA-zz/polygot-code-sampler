@@ -65,6 +65,27 @@ The Julia backend features intelligent auto-mode selection with the following he
 - **Parallel Gate**: Only parallelizes associative operations (`sum`, `prod`, `max`, `min`, `+`, `*`, `|`, `&`, `^`)
 - **Dict/Group Safety**: Uses shard-merge pattern for thread-safe parallel dict/group operations
 - **Fallback Explanations**: Clear NOTE comments explaining all decisions
+
+**Group-by Parallel Example:**
+```julia
+using .PCS_Runtime  # included by generator
+groups = PCS_Runtime.groupby_parallel(xs; key = x->x.bucket, KT=Int, T=Tuple{Int,Float64})
+# Optional finalization step for stable ordering
+# groups = finalize_groups!(groups; stable=true)
+```
+
+**What Happens When... Table:**
+
+| Situation | Result |
+|-----------|--------|
+| **Parallel reduce with non-associative op** | Sequential fallback with NOTE |
+| **Dict/group with --mode=broadcast** | Loops forced with NOTE |
+| **No size hint + filter present** | Loops to avoid allocations |
+| **--threads 8 but runtime has 4 threads** | NOTE explaining actual Threads.nthreads() |
+| **Small N (≤10k) without filters** | Auto-selects broadcast mode |
+| **Large N or filters present** | Auto-selects loops mode |
+| **Associative operation + parallel requested** | Thread-local partials or shard-merge |
+| **Non-associative operation + parallel requested** | Sequential fallback with explanation |
 - **Performance dashboard** for historical analysis and regression detection
 
 ### ⚡ **Five-Stack Parallel Parity**
