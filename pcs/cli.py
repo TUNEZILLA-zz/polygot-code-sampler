@@ -7,6 +7,7 @@ import sys
 
 from .core import PyToIR
 from .renderers.csharp import render_csharp
+from .renderers.go import render_go
 from .renderers.julia import render_julia
 from .renderers.rust import render_rust
 from .renderers.sql import render_sql
@@ -95,6 +96,8 @@ Examples:
             if args.execute_sql:
                 execute_sql_and_display(output)
                 return
+        elif args.target == "go":
+            output = render_go(ir, parallel=args.parallel)
         elif args.target == "julia":
             output = render_julia(ir, parallel=args.parallel, mode=args.mode,
                                 explain=not args.no_explain, unsafe=args.unsafe)

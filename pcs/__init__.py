@@ -6,6 +6,7 @@ from .__version__ import __version__
 from .cli import main
 from .core import IRComp, IRGenerator, IRRange, IRReduce, PyToIR, TypeInfo
 from .renderers.csharp import render_csharp
+from .renderers.go import render_go
 from .renderers.julia import render_julia
 from .renderers.rust import render_rust
 from .renderers.sql import render_sql

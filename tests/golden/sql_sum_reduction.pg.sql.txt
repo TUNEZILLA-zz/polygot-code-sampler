@@ -1,2 +1,1 @@
-SELECT SUM(i)
-FROM generate_series(0, 9) AS i WHERE i % 2 == 0;
+SELECT SUM(i) FROM generate_series(0, 9) AS i WHERE i % 2 == 0;

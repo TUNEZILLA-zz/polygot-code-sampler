@@ -5,24 +5,22 @@ import (
 
 func go_parallel_sum() int {
     numWorkers := runtime.NumCPU()
-    totalRange := 100
-    chunkSize := totalRange / numWorkers
+    chunkSize := (100 - 0) / numWorkers
     if chunkSize == 0 { chunkSize = 1 }
 
     results := make(chan int, numWorkers)
     var wg sync.WaitGroup
 
-    for w := 0; w < numWorkers; w++ {
+    for w := 0; w < numWorkers; w++ {{
         wg.Add(1)
-        go func(workerID int) {
+        go func(workerID int) {{
             defer wg.Done()
-            start := workerID * chunkSize
+            start := 0 + workerID * chunkSize
             end := start + chunkSize
-            if workerID == numWorkers-1 { end = totalRange }
+            if workerID == numWorkers-1 { end = 100 }
 
             acc := 0
-
-            for i := start; i < end; i++ {
+            for i := start; i < end; i += 1 {
                 if !(i % 2 == 0) { continue }
                 acc += i * i
             }

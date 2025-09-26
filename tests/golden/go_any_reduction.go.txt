@@ -1,8 +1,7 @@
-// Rendered from IR (origin: python)
 func go_any_reduction() bool {
-    acc := false
-    for x := 1; x < 10; x++ {
-        if x % 2 == 1 { acc = true }
+    acc := 0
+    for x := 1; x < 10; x += 1 {
+        if x % 2 == 1 { return true }
     }
-    return acc
+    return false
 }

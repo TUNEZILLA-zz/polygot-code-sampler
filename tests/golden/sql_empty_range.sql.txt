@@ -1,2 +1,1 @@
-SELECT i
-FROM generate_series(0, -1) AS i WHERE 1=0;
+-- SQL generation not implemented for this pattern

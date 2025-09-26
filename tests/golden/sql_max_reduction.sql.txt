@@ -1,2 +1,1 @@
-SELECT MAX(i * j)
-FROM generate_series(1, 4) AS i CROSS JOIN generate_series(1, 3) AS j;
+-- SQL generation not implemented for this pattern

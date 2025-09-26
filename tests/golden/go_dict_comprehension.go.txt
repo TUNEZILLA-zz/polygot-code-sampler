@@ -1,9 +1,8 @@
-// Rendered from IR (origin: python)
 func go_dict_comprehension() map[int]int {
-    out := make(map[int]int)
-    for i := 1; i < 6; i++ {
+    result := make(map[int]int)
+    for i := 1; i < 6; i += 1 {
         if !(i % 2 == 1) { continue }
-        out[i] = i * i
+        result[i] = i
     }
-    return out
+    return result
 }

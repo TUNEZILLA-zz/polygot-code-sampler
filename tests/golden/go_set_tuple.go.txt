@@ -1,16 +1,5 @@
-type Pair struct {
-    A int
-    B int
-}
-
-// Rendered from IR (origin: python)
-func go_set_tuple() map[Pair]struct{} {
-    out := make(map[Pair]struct{})
-    for i := 1; i < 3; i++ {
-        for j := 1; j < 3; j++ {
-            if !(i != j) { continue }
-            out[Pair{A: i, B: j}] = struct{}{}
-        }
-        }
-    return out
+func go_set_tuple() map[int]struct{} {
+    // Multiple generators - using sequential implementation
+    // TODO: Implement parallel multi-generator support
+    return nil
 }

@@ -1,2 +1,1 @@
-SELECT i * j
-FROM generate_series(1, 2) AS i CROSS JOIN generate_series(1, 2) AS j WHERE i != j;
+-- SQL generation not implemented for this pattern

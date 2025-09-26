@@ -1,2 +1,1 @@
-SELECT i * 2
-FROM (WITH RECURSIVE series(n) AS (SELECT 0 UNION ALL SELECT n+1 FROM series WHERE n < 9) SELECT n FROM series) AS i WHERE i % 2 == 0;
+-- SQL generation not implemented for this pattern

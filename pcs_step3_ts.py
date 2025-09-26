@@ -149,7 +149,7 @@ def range_to_ts(r: IRRange) -> str:
     else:
         length = f"Math.ceil(({r.stop} - {r.start}) / {r.step})"; return f"Array.from({{length: {length}}}, (_, i) => {r.start} + i*{r.step})"
 
-def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64") -> str:
+def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", reduce_int: str = "i64", parallel: bool = False, type_info=None) -> str:
     def py_expr_to_rust(expr: str) -> str:
         out = expr
         for pat, repl in [(r"\\band\\b","&&"),(r"\\bor\\b","||"),(r"\\bnot\\b","!"),(r"\\bTrue\\b","true"),(r"\\bFalse\\b","false")]:
@@ -187,6 +187,20 @@ def render_rust(ir: IRComp, func_name: str = "program", int_type: str = "i32", r
         elif ir.kind=="set": uses.append("use std::collections::HashSet;"); trailer=".collect::<HashSet<_>>()"; ret_type="HashSet<_>"
         else: uses.append("use std::collections::HashMap;"); trailer=".collect::<HashMap<_, _>>()"; ret_type="HashMap<_, _>"
     return "\n".join([f"// Rendered from IR (origin: {ir.provenance.get('origin')})", *uses, f"pub fn {func_name}() -> {ret_type} {{", f"    let result = {body}{trailer};", "    result", "}"])
+
+def infer_types(ir: IRComp, int_type: str = "i32") -> dict:
+    """Simple type inference for IR"""
+    return {
+        "int_type": int_type,
+        "reduce_type": "i64" if ir.reduce else int_type,
+        "element_type": int_type
+    }
+
+def render_go(ir: IRComp, func_name: str = "program", parallel: bool = False) -> str:
+    """Go renderer - placeholder implementation"""
+    # Import the actual renderer from the pcs package
+    from pcs.renderers.go import render_go as _render_go
+    return _render_go(ir, func_name, parallel)
 
 def render_ts(ir: IRComp, func_name: str = "program") -> str:
     def render_gen(idx: int) -> str:
