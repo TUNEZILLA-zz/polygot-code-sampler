@@ -1,0 +1,177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PCS Performance Monitoring Policy",
+  "description": "Schema for bench/policy.yml configuration",
+  "type": "object",
+  "required": ["version", "last_updated", "regression", "k_anomaly", "data_quality", "governance", "runner_fingerprinting", "warmup", "dashboard_presets"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "regression": {
+      "type": "object",
+      "required": ["default_threshold", "per_backend", "grace_period_days", "min_sample_size", "max_regression_ratio"],
+      "properties": {
+        "default_threshold": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1.0
+        },
+        "per_backend": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z]+$": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 1.0
+            }
+          }
+        },
+        "grace_period_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "min_sample_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "max_regression_ratio": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 2.0
+        }
+      }
+    },
+    "k_anomaly": {
+      "type": "object",
+      "required": ["threshold_ratio", "min_active_backends", "alert_on_consecutive_days"],
+      "properties": {
+        "threshold_ratio": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 1.0
+        },
+        "min_active_backends": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 10
+        },
+        "alert_on_consecutive_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        }
+      }
+    },
+    "data_quality": {
+      "type": "object",
+      "required": ["outlier_threshold", "variance_warning_ratio", "min_records_per_day", "max_age_days"],
+      "properties": {
+        "outlier_threshold": {
+          "type": "number",
+          "minimum": 1.0,
+          "maximum": 5.0
+        },
+        "variance_warning_ratio": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 0.5
+        },
+        "min_records_per_day": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "max_age_days": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 365
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "required": ["require_approval_threshold", "emergency_override_approvers", "data_retention_days"],
+      "properties": {
+        "require_approval_threshold": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "emergency_override_approvers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "data_retention_days": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 365
+        }
+      }
+    },
+    "runner_fingerprinting": {
+      "type": "object",
+      "required": ["enabled", "track_fields", "suppress_alerts_on_runner_change"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "track_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suppress_alerts_on_runner_change": {
+          "type": "boolean"
+        }
+      }
+    },
+    "warmup": {
+      "type": "object",
+      "required": ["enabled", "warmup_runs", "burn_in_runs", "record_warmup_times"],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "warmup_runs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "burn_in_runs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "record_warmup_times": {
+          "type": "boolean"
+        }
+      }
+    },
+    "dashboard_presets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "filters"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "filters": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

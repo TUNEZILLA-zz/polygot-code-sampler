@@ -1,7 +1,7 @@
 # PCS Performance Monitoring Policy
 # Single source of truth for all thresholds, grace periods, and governance rules
 
-version: 1.0
+version: "1.0"
 last_updated: "2025-09-26"
 
 # Regression Detection Thresholds

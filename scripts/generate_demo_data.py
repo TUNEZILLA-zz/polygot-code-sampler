@@ -80,6 +80,9 @@ def synth_row(backend, test, base_ns, mode, parallel, n, commit, ts_iso, os_name
         "std_ns": float(std_ns),
         "reps": 5,
         "k_policy": "best-of-k",
+        "generator": "pcs@demo",
+        "bench_runner_ver": "1.0.0",
+        "policy_sha": "demo-policy-sha"
     }
 
 def main():
