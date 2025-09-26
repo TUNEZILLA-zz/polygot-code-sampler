@@ -155,3 +155,4 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
     lines.append("}")
 
     return "\n".join(lines)
+

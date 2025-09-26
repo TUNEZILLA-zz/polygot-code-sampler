@@ -161,3 +161,4 @@ The Polyglot Code Sampler has become the **gold standard** for performance monit
 ---
 
 *Ready to explore? Start with `make demo-data && make demo-serve` and experience the future of performance monitoring.*
+

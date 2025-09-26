@@ -110,3 +110,4 @@ The Slack notifications complement the live dashboard at:
 - **Real-time Status**: Data health indicators
 - **Interactive Charts**: Performance trends and comparisons
 - **About & Methods**: Detailed documentation of thresholds and methods
+

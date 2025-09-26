@@ -35,3 +35,4 @@ jobs:
         # No need to set user/__token__ since we're using trusted publishing
         # The repository must be configured in PyPI with the GitHub OIDC integration
         print-hash: true
+

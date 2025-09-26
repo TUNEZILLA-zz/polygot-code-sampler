@@ -31,3 +31,4 @@ def update_golden(request):
 def golden_dir():
     """Fixture to get the golden directory path"""
     return Path(__file__).parent / "golden"
+

@@ -22,3 +22,4 @@ result = PCS_Generated.main()
 println("Result: ", result)
 println("Expected: ", sum(x*x for x in 1:99 if x % 2 == 0))
 println("Test passed: ", result == sum(x*x for x in 1:99 if x % 2 == 0))
+

@@ -107,3 +107,4 @@ SELECT {gen.var} FROM range"""
         lines.append("SELECT 0")
 
     return "\n".join(lines)
+

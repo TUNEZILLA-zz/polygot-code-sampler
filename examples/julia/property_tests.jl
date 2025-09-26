@@ -121,3 +121,4 @@ end
 println("✅ All property tests passed!")
 println("Thread count: ", Threads.nthreads())
 println("Use JULIA_NUM_THREADS to control thread count")
+

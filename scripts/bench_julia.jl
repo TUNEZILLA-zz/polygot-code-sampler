@@ -104,3 +104,4 @@ for (test_name, mode, parallel) in test_cases
         println(JSON3.write(error_result))
     end
 end
+

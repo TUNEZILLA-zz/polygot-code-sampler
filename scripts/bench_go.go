@@ -174,3 +174,4 @@ func main() {
 		json.NewEncoder(os.Stdout).Encode(result)
 	}
 }
+

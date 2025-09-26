@@ -64,3 +64,4 @@ def get_associativity_explanation(op: str, elem_type: str) -> str:
         return f"Type '{elem_type}' not supported for '{op}' (supported: {supported_types})"
 
     return f"Operation '{op}' is associative for type '{elem_type}'"
+

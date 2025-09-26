@@ -42,3 +42,4 @@ jobs:
         run: |
           # This step will fail if the previous step detected golden changes
           echo "Golden files are stable"
+

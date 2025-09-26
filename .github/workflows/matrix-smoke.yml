@@ -72,3 +72,4 @@ jobs:
           print(f'✅ ${{ matrix.backend }} basic: Generated {len(output)} characters')
           assert len(output) > 0, 'Should generate non-empty output'
           "
+

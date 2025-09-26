@@ -125,3 +125,4 @@ if __name__ == "__main__":
     test_dict_comprehension_strategies()
     test_fallback_behavior()
     print("\n🎉 All one IR → many goldens tests passed!")
+

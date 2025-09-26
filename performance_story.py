@@ -112,3 +112,4 @@ if __name__ == "__main__":
         f.write(story)
 
     print("\n💾 Performance story saved to: PERFORMANCE_STORY.md")
+

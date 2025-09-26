@@ -236,3 +236,4 @@ def render_go(ir: IRComp, func_name: str = "program", parallel: bool = False, ty
 
     lines.append('}')
     return '\n'.join(lines)
+
