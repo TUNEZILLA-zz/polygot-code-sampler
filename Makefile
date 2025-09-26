@@ -182,3 +182,23 @@ else
 	git push origin main
 endif
 	@echo "✅ Benchmark refresh complete!"
+
+# Demo data generation (no toolchains required)
+demo-data:
+	@echo "🎭 Generating synthetic benchmark data..."
+	python3 scripts/generate_demo_data.py --days 7 --backends julia,rust,go,ts,csharp --out site/benchmarks.json
+	@echo "✅ Demo data generated! Use 'make demo-serve' to preview dashboard."
+
+# Serve demo dashboard locally
+demo-serve:
+	@echo "🚀 Starting demo dashboard server..."
+	@echo "📊 Dashboard will be available at http://localhost:8080"
+	@echo "⏹️  Press Ctrl+C to stop"
+	python3 -m http.server --directory site 8080
+
+# Clean demo data
+demo-clean:
+	@echo "🧹 Cleaning demo data..."
+	rm -f site/benchmarks.json
+	rm -f bench/results/*.ndjson || true
+	@echo "✅ Demo data cleaned!"

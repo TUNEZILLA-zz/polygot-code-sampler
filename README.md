@@ -396,6 +396,22 @@ fn program() -> i32 {
 }
 ```
 
+### 🎭 Demo Data (No Toolchains Required)
+
+To preview the performance dashboard without running heavy benchmarks:
+
+```bash
+make demo-data     # generates synthetic data for 7 days
+make demo-serve    # serves at http://localhost:8080
+```
+
+**Customize the demo:**
+- **Days**: `--days 14`
+- **Backends**: `--backends julia,rust,go`
+- **Sizes**: `--n-list 100000,1000000,10000000`
+
+The generator writes daily NDJSON under `bench/results/YYYY-MM-DD.ndjson` and the dashboard array to `site/benchmarks.json`.
+
 ```typescript
 // TypeScript Output
 function program(): number {

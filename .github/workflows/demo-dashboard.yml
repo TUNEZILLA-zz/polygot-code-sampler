@@ -1,0 +1,32 @@
+name: Publish Demo Dashboard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'scripts/generate_demo_data.py'
+      - '.github/workflows/demo-dashboard.yml'
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      
+      - name: Generate demo data
+        run: |
+          python3 scripts/generate_demo_data.py --days 7 --backends julia,rust,go,ts,csharp --out site/benchmarks.json
+      
+      - name: Publish demo dashboard
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: site
+          publish_branch: gh-pages-demo
+          keep_files: false
