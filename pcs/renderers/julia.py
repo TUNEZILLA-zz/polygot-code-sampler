@@ -3,6 +3,7 @@ Julia renderer for Polyglot Code Sampler
 """
 
 from ..core import IRComp
+from ..backends.julia import lower_program
 
 def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False) -> str:
     """
@@ -17,68 +18,8 @@ def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False)
       - Threads.@threads for parallel processing
       - Leverages Julia's high-performance array operations
     """
-    
-    # Determine return type
-    if ir.reduce:
-        k = ir.reduce.kind
-        if k in ("sum", "prod", "max", "min"):
-            return_type = "Int"
-        elif k in ("any", "all"):
-            return_type = "Bool"
-        else:
-            return_type = "Int"
-    else:
-        if ir.kind == "list":
-            return_type = "Vector{Int}"
-        elif ir.kind == "set":
-            return_type = "Set{Int}"
-        elif ir.kind == "dict":
-            return_type = "Dict{Int, Int}"
-        else:
-            return_type = "Vector{Int}"
-    
-    # Build the Julia code
-    lines = []
-    
-    # Add imports
-    if parallel:
-        lines.append("using Base.Threads")
-    lines.append("")
-    
-    # Function signature
-    lines.append(f"function {func_name}()::{return_type}")
-    lines.append("    # Generated from Python comprehension")
-    lines.append("")
-    
-    # Build the source range
-    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
-        gen = ir.generators[0]
-        start, stop, step = gen.source.start, gen.source.stop, gen.source.step
-        
-        # Generate range
-        if step == 1:
-            range_expr = f"{start}:{stop-1}"
-        else:
-            range_expr = f"{start}:{step}:{stop-1}"
-        
-        # Choose lowering strategy: broadcast vs loop
-        if _should_use_broadcast(ir, gen):
-            # Broadcast-based lowering (vectorized)
-            lines.extend(_render_julia_broadcast(ir, gen, range_expr, parallel))
-        else:
-            # Loop-based lowering (explicit)
-            lines.extend(_render_julia_loop(ir, gen, range_expr, parallel))
-    
-    else:
-        # Handle nested comprehensions (more complex)
-        lines.append("    # Complex nested comprehension - using loop-based approach")
-        lines.append("    result = Int[]")
-        lines.append("    # Simplified implementation")
-        lines.append("    return result")
-    
-    lines.append("end")
-    
-    return "\n".join(lines)
+    # Use the new comprehensive Julia backend
+    return lower_program(ir, mode="loops", parallel=parallel)
 
 def _should_use_broadcast(ir: IRComp, gen) -> bool:
     """Determine if broadcast syntax is appropriate"""

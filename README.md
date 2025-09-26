@@ -385,13 +385,41 @@ public static class Program
 ```
 
 ```julia
-# Julia Output
-function program()::Int
-    i = 0:9
-    mask = i % 2 == 0
-    i = i[mask]
-    return sum(i * i)
+# Julia Output (Sequential)
+module PCS_Generated
+
+function main()::Int
+    acc1 = 0
+    for i in 1:9
+        if i % 2 == 0
+            acc1 += i * i
+        end
+    end
+    return acc1
 end
+
+end # module
+
+# Julia Output (Parallel - Thread-Safe)
+module PCS_Generated
+
+using Base.Threads
+
+function main()::Int
+    parts1 = fill(0, nthreads())
+    @threads for i in 1:9
+        if i % 2 == 0
+            parts1[threadid()] += i * i
+        end
+    end
+    acc2 = 0
+    @inbounds for p in parts1
+        acc2 += p
+    end
+    return acc2
+end
+
+end # module
 ```
 
 **Try it yourself:**
