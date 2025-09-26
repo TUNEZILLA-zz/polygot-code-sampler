@@ -57,6 +57,43 @@
       border-color: #f5c6cb;
       color: #721c24;
     }
+    .about-panel {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .about-panel h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    .methods-content h4 {
+      color: #34495e;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    .methods-content ul {
+      margin-bottom: 15px;
+    }
+    .methods-content li {
+      margin-bottom: 5px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      background: #5a6268;
+    }
     .summary {
       background: #ecf0f1;
       padding: 20px;
@@ -174,6 +211,12 @@
     <h1>🚀 PCS Benchmarks</h1>
     <p class="subtitle">Polyglot Code Sampler Performance Dashboard - Comparing backends over time (lower is better)</p>
     
+    <div style="text-align: center; margin-bottom: 20px;">
+      <button onclick="toggleAboutPanel()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+        📊 About & Methods
+      </button>
+    </div>
+    
     <!-- Data Health Badge -->
     <div id="data-health" class="data-health">
       <span id="health-status">🔄 Loading...</span>
@@ -224,7 +267,42 @@
         </div>
       </div>
       
-      <div class="charts">
+      <!-- About & Methods Panel -->
+    <div class="about-panel" id="about-panel" style="display: none;">
+      <h3>📊 About & Methods</h3>
+      <div class="methods-content">
+        <h4>🎯 Regression Detection</h4>
+        <ul>
+          <li><strong>Per-Backend Thresholds:</strong> Julia 12%, Rust 8%, Go 15%, TypeScript 10%, C# 10%</li>
+          <li><strong>Grace Period:</strong> 3 days for new tests to prevent false alarms</li>
+          <li><strong>Method:</strong> 7-day rolling median comparison</li>
+        </ul>
+        
+        <h4>📈 Data Quality</h4>
+        <ul>
+          <li><strong>Outlier Filtering:</strong> >3σ removal using z-score method</li>
+          <li><strong>Schema Validation:</strong> Forward-compatible data validation</li>
+          <li><strong>Best-of-k:</strong> Run k=5 times, record minimum for reduced noise</li>
+        </ul>
+        
+        <h4>🔍 K-Anomaly Detection</h4>
+        <ul>
+          <li><strong>Purpose:</strong> Detect infrastructure issues (runner problems, toolchain changes)</li>
+          <li><strong>Threshold:</strong> 80% of backends showing simultaneous regressions</li>
+          <li><strong>Action:</strong> Check CI runner logs and toolchain versions</li>
+        </ul>
+        
+        <h4>📊 Dashboard Features</h4>
+        <ul>
+          <li><strong>Ratio Overlays:</strong> Compare backends relative to baseline</li>
+          <li><strong>Data Health:</strong> Real-time freshness and diversity monitoring</li>
+          <li><strong>Interactive Filters:</strong> Test, backend, mode, and baseline selection</li>
+        </ul>
+      </div>
+      <button onclick="toggleAboutPanel()" class="close-btn">Close</button>
+    </div>
+    
+    <div class="charts">
         <div class="chart-container">
           <h3>Performance by Backend</h3>
           <canvas id="chartByBackend"></canvas>
@@ -263,6 +341,15 @@
 
     function ratio(seriesA, seriesB) {
       return seriesA.map((v, i) => (v && seriesB[i]) ? v / seriesB[i] : null);
+    }
+
+    function toggleAboutPanel() {
+      const panel = document.getElementById('about-panel');
+      if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+      } else {
+        panel.style.display = 'none';
+      }
     }
 
     function updateDataHealth(data) {
