@@ -1,0 +1,74 @@
+name: Matrix Smoke Test
+
+on:
+  pull_request:
+    paths:
+      - 'pcs/**'
+      - 'tests/**'
+  push:
+    branches: [main]
+
+jobs:
+  matrix-smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        backend: [rust, ts, go, csharp, julia, sql]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+      
+      - name: Test adapter with ${{ matrix.backend }}
+        run: |
+          python -c "
+          from pcs.core import PyToIR
+          from pcs.renderer_api import render
+          
+          # Test with over-full kwargs
+          parser = PyToIR()
+          ir = parser.parse('[x**2 for x in range(5)]')
+          
+          over_full_kwargs = {
+              'parallel': True,
+              'mode': 'broadcast',
+              'unsafe': True,
+              'explain': False,
+              'dialect': 'postgresql',
+              'int_type': 'i64',
+              'strict_types': True,
+              'threads': 8,
+              'no_explain': True,
+              'sql_dialect': 'sqlite',
+              'execute_sql': True,
+              'some_random_param': 'should_be_ignored'
+          }
+          
+          output = render('${{ matrix.backend }}', ir, **over_full_kwargs)
+          print(f'✅ ${{ matrix.backend }}: Generated {len(output)} characters')
+          assert len(output) > 0, 'Should generate non-empty output'
+          assert isinstance(output, str), 'Should return string'
+          "
+      
+      - name: Test basic functionality
+        run: |
+          python -c "
+          from pcs.core import PyToIR
+          from pcs.renderer_api import render
+          
+          parser = PyToIR()
+          ir = parser.parse('[x**2 for x in range(3)]')
+          
+          output = render('${{ matrix.backend }}', ir)
+          print(f'✅ ${{ matrix.backend }} basic: Generated {len(output)} characters')
+          assert len(output) > 0, 'Should generate non-empty output'
+          "

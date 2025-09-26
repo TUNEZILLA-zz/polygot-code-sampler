@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "polyglot-code-sampler"
-version = "0.3.0"
+version = "0.3.1"
 description = "Transform Python comprehensions across 5 ecosystems with parallel processing"
 readme = "README.md"
 license = "MIT"

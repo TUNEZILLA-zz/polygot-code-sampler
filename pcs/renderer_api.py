@@ -1,6 +1,6 @@
 from __future__ import annotations
 import inspect
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Protocol
 
 # Import concrete backends
 from pcs.renderers.rust import render_rust            # noqa: F401
@@ -10,7 +10,13 @@ from pcs.renderers.csharp import render_csharp        # noqa: F401
 from pcs.renderers.julia import render_julia          # noqa: F401
 from pcs.renderers.sql import render_sql              # noqa: F401
 
-_BACKENDS: Dict[str, Callable[..., str]] = {
+
+class RendererFn(Protocol):
+    """Protocol for renderer functions to ensure type safety."""
+    def __call__(self, ir: Any, **kwargs: Any) -> str: ...
+
+
+_BACKENDS: Dict[str, RendererFn] = {
     "rust": render_rust,
     "ts": render_ts,
     "go": render_go,
