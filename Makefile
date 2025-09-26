@@ -184,10 +184,21 @@ endif
 	@echo "✅ Benchmark refresh complete!"
 
 # Demo data generation (no toolchains required)
+DEMO_SEED ?= 1337
+DEMO_DAYS ?= 7
+DEMO_BACKENDS ?= julia,rust,go,ts,csharp
+
 demo-data:
 	@echo "🎭 Generating synthetic benchmark data..."
-	python3 scripts/generate_demo_data.py --days 7 --backends julia,rust,go,ts,csharp --out site/benchmarks.json
+	@echo "📊 Days: $(DEMO_DAYS), Backends: $(DEMO_BACKENDS), Seed: $(DEMO_SEED)"
+	python3 scripts/generate_demo_data.py --days $(DEMO_DAYS) --backends $(DEMO_BACKENDS) --out site/benchmarks.json --seed $(DEMO_SEED)
 	@echo "✅ Demo data generated! Use 'make demo-serve' to preview dashboard."
+
+# Generate fat demo with 30 days of data
+demo-fat:
+	@echo "🍔 Generating fat demo data (30 days)..."
+	$(MAKE) demo-data DEMO_DAYS=30
+	@echo "✅ Fat demo data generated!"
 
 # Serve demo dashboard locally
 demo-serve:

@@ -417,6 +417,12 @@
           throw new Error('Invalid data format: expected array of benchmark results or object with results key');
         }
         
+        // Check for demo data and show label
+        const isDemo = (rows) => rows.some(r => (r.commit||'').startsWith('demo-'));
+        if (isDemo(benchmarkData)) {
+          document.body.insertAdjacentHTML('afterbegin', '<div style="position:fixed;top:8px;right:8px;background:#fde68a;padding:6px 10px;border-radius:8px;font:12px system-ui;z-index:1000;box-shadow:0 2px 4px rgba(0,0,0,0.1)">🎭 Demo data</div>');
+        }
+        
         if (!benchmarkData || !Array.isArray(benchmarkData)) {
           throw new Error('No valid benchmark data found');
         }

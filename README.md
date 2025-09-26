@@ -4,6 +4,8 @@
 
 [![Tests](https://img.shields.io/badge/tests-23%20passing-brightgreen.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler/actions) [![Benchmarks](https://img.shields.io/badge/benchmarks-⚡%20active-orange.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler/actions) [![Type Safety](https://img.shields.io/badge/type%20safety-mypy%20strict-blue.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler) [![Code Quality](https://img.shields.io/badge/code%20quality-ruff%20%2B%20black-black.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler) [![Go Parallel](https://img.shields.io/badge/Go%20Parallel-✅-green.svg)](https://github.com/TUNEZILLA-zz/polygot-code-sampler)
 
+**Dashboards:** [Production](https://tunezilla-zz.github.io/polygot-code-sampler/) · [Demo](https://tunezilla-zz.github.io/polygot-code-sampler/?demo=1)
+
 **Transform Python comprehensions into Rust, TypeScript, SQL, Go, and C# with a production-ready compiler pipeline!**
 
 ## ✨ Features
@@ -411,6 +413,12 @@ make demo-serve    # serves at http://localhost:8080
 - **Sizes**: `--n-list 100000,1000000,10000000`
 
 The generator writes daily NDJSON under `bench/results/YYYY-MM-DD.ndjson` and the dashboard array to `site/benchmarks.json`.
+
+**Quick Start (One-Liner):**
+```bash
+make demo-data && make demo-serve
+# http://localhost:8080
+```
 
 ```typescript
 // TypeScript Output

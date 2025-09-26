@@ -6,6 +6,7 @@ Benchmark aggregator - combines all NDJSON results into GitHub Pages data
 import json
 import pathlib
 import statistics
+import sys
 from datetime import datetime
 from typing import Dict, List, Any, Set
 
@@ -89,6 +90,16 @@ def load_all_results():
             print(f"   ... and {len(validation_warnings) - 5} more warnings")
     
     return all_rows
+
+def check_for_demo_data(rows):
+    """Check if any records contain demo data and refuse to publish if so."""
+    demo_commits = [r for r in rows if r.get("commit", "").startswith("demo-")]
+    if demo_commits:
+        print("❌ Refusing to publish: demo data detected")
+        print(f"   Found {len(demo_commits)} demo records with commits like: {demo_commits[0].get('commit', 'unknown')}")
+        print("   Demo data should only be used for local development and PR previews")
+        print("   Use 'make demo-clean' to remove demo data before production aggregation")
+        sys.exit(1)
 
 def filter_outliers(data, field='mean_ns', threshold=3.0):
     """Remove outliers using z-score method (>3σ)"""
@@ -208,6 +219,9 @@ def main():
     if not all_data:
         print("❌ No benchmark data found")
         return
+
+    # Check for demo data and refuse to publish if found
+    check_for_demo_data(all_data)
 
     # Aggregate by day (keep best performance per day/backend/test/mode)
     aggregated_data = aggregate_by_day(all_data)
