@@ -9,6 +9,7 @@ from .renderers.rust import render_rust
 from .renderers.ts import render_ts
 from .renderers.csharp import render_csharp
 from .renderers.sql import render_sql
+from .renderers.julia import render_julia
 
 __all__ = [
     "__version__",
@@ -22,5 +23,6 @@ __all__ = [
     "render_rust",
     "render_ts", 
     "render_csharp",
-    "render_sql"
+    "render_sql",
+    "render_julia"
 ]

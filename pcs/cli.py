@@ -9,6 +9,7 @@ from .renderers.rust import render_rust
 from .renderers.ts import render_ts
 from .renderers.csharp import render_csharp
 from .renderers.sql import render_sql
+from .renderers.julia import render_julia
 
 def main():
     """Main CLI entry point"""
@@ -32,7 +33,7 @@ Examples:
     
     parser.add_argument(
         "--target",
-        choices=["rust", "ts", "go", "csharp", "sql"],
+        choices=["rust", "ts", "go", "csharp", "sql", "julia"],
         default="rust",
         help="Target language (default: rust)"
     )
@@ -40,7 +41,7 @@ Examples:
     parser.add_argument(
         "--parallel",
         action="store_true",
-        help="Enable parallel processing (Rayon/Rust, Web Workers/TS, Goroutines/Go, PLINQ/C#)"
+        help="Enable parallel processing (Rayon/Rust, Web Workers/TS, Goroutines/Go, PLINQ/C#, Threads/Julia)"
     )
     
     parser.add_argument(
@@ -87,6 +88,8 @@ Examples:
             if args.execute_sql:
                 execute_sql_and_display(output)
                 return
+        elif args.target == "julia":
+            output = render_julia(ir, parallel=args.parallel)
         else:
             print(f"Target '{args.target}' not yet implemented", file=sys.stderr)
             sys.exit(1)

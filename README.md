@@ -258,6 +258,35 @@ python3 pcs_step3_ts.py --code "sum(i * i for i in range(1000000) if i % 2 == 0)
 
 **The magic:** One Python comprehension → 5 production-ready implementations with native parallel processing! ✨
 
+## 🏗️ **Architecture: IR → Backend Pipeline**
+
+```
+Python Comprehension
+        ↓
+   AST Parser
+        ↓
+  Intermediate
+  Representation (IR)
+        ↓
+┌─────────────────────────────────────────────┐
+│           Backend Renderers                 │
+├─────────┬─────────┬─────────┬─────────┬─────┤
+│  Rust   │   TS    │   C#    │   SQL   │Julia│
+│ Rayon   │Workers  │ PLINQ   │ Query   │Thread│
+│         │         │         │ Engine  │     │
+└─────────┴─────────┴─────────┴─────────┴─────┘
+        ↓
+  Production Code
+```
+
+**Key Benefits:**
+- **Single Source of Truth**: One Python comprehension
+- **Language-Specific Optimization**: Each backend uses native patterns
+- **Parallel Processing**: All backends support parallel execution
+- **Type Safety**: Compile-time guarantees where available
+
+> 📖 **Learn More**: [Failure Cases & Fallback Strategies](docs/FAILURE_CASES.md) - Understanding when and why PCS falls back to sequential processing
+
 ## ⚡ **Performance Story: Five-Stack Parallel Parity**
 
 *Comprehensive performance analysis across all five backends*
@@ -311,37 +340,72 @@ SQL         ████████████ 1.0×
 
 ## 🚀 Quick Start
 
+**See the magic in action:**
+
+```python
+# Python Input
+sum(i*i for i in range(10) if i%2==0)
+```
+
+**Instantly transforms to:**
+
+```rust
+// Rust Output
+use std::collections::{HashMap, HashSet};
+
+fn program() -> i32 {
+    (0..10).filter(|&i| i % 2 == 0).map(|i| i * i).sum()
+}
+```
+
+```typescript
+// TypeScript Output
+function program(): number {
+    return Array.from({length: 10}, (_, i) => 0 + i)
+        .filter(i => i % 2 == 0)
+        .reduce((acc, i) => acc + (i * i), 0);
+}
+```
+
+```csharp
+// C# Output
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class Program
+{
+    public static int Execute()
+    {
+        return Enumerable.Range(0, 10)
+            .Where(i => i % 2 == 0)
+            .Sum(i => i * i);
+    }
+}
+```
+
+```julia
+# Julia Output
+function program()::Int
+    i = 0:9
+    mask = i % 2 == 0
+    i = i[mask]
+    return sum(i * i)
+end
+```
+
+**Try it yourself:**
+
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/polyglot-code-sampler.git
-cd polyglot-code-sampler
+# Install from PyPI (coming soon!)
+pip install polyglot-code-sampler
 
-# Install dependencies
-pip install pytest
-
-# Run the demo
-python pcs_step3_ts.py --demo
-
-# Transform a Python comprehension to Rust
-python pcs_step3_ts.py --code "squares = [x**2 for x in range(10)]" --target rust
-
-# Transform to TypeScript
-python pcs_step3_ts.py --code "squares = [x**2 for x in range(10)]" --target ts
-
-# Transform to SQL (PostgreSQL)
-python pcs_step3_ts.py --code "sum(i for i in range(10) if i % 2 == 0)" --target sql
-
-# Transform to SQL (SQLite)
-python pcs_step3_ts.py --code "sum(i for i in range(10) if i % 2 == 0)" --target sql --sql-dialect sqlite
-
-# Transform to Go
-python pcs_step3_ts.py --code "[i*2 for i in range(10) if i % 2 == 0]" --target go
-
-# Transform to C# (LINQ)
-python pcs_step3_ts.py --code "sum(i*i for i in range(10) if i % 2 == 0)" --target csharp
-
-# Transform to C# (PLINQ parallel)
-python pcs_step3_ts.py --code "sum(i*i for i in range(10) if i % 2 == 0)" --target csharp --parallel
+# Transform Python to any target
+pcs --code "sum(i*i for i in range(10) if i%2==0)" --target rust
+pcs --code "[x*x for x in range(5)]" --target ts
+pcs --code "sum(i for i in range(1000000))" --target csharp --parallel
+pcs --code "sum(i*i for i in range(10))" --target sql --execute-sql
+pcs --code "[x*x for x in range(5)]" --target julia --parallel
 ```
 
 ## 🧪 Testing
