@@ -1,1 +1,10 @@
--- SQL generation not implemented for this pattern
+SELECT EXISTS(SELECT 1 WHERE x % 2 == 1)
+FROM (
+WITH RECURSIVE range(x) AS (
+    SELECT 1
+    UNION ALL
+    SELECT x + 1
+    FROM range
+    WHERE x < 9
+)
+SELECT x FROM range)

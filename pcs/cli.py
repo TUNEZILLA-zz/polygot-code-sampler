@@ -6,12 +6,7 @@ import argparse
 import sys
 
 from .core import PyToIR
-from .renderers.csharp import render_csharp
-from .renderers.go import render_go
-from .renderers.julia import render_julia
-from .renderers.rust import render_rust
-from .renderers.sql import render_sql
-from .renderers.ts import render_ts
+from .renderer_api import render as render_generic
 
 
 def main():
@@ -84,26 +79,21 @@ Examples:
         parser_obj = PyToIR()
         ir = parser_obj.parse(args.code)
 
-        # Generate target code
-        if args.target == "rust":
-            output = render_rust(ir, parallel=args.parallel, int_type=args.int_type)
-        elif args.target == "ts":
-            output = render_ts(ir, parallel=args.parallel)
-        elif args.target == "csharp":
-            output = render_csharp(ir, parallel=args.parallel)
-        elif args.target == "sql":
-            output = render_sql(ir, dialect=args.sql_dialect)
-            if args.execute_sql:
-                execute_sql_and_display(output)
-                return
-        elif args.target == "go":
-            output = render_go(ir, parallel=args.parallel)
-        elif args.target == "julia":
-            output = render_julia(ir, parallel=args.parallel, mode=args.mode,
-                                explain=not args.no_explain, unsafe=args.unsafe)
-        else:
-            print(f"Target '{args.target}' not yet implemented", file=sys.stderr)
-            sys.exit(1)
+        # Generate target code using the adapter
+        output = render_generic(
+            args.target,
+            ir,
+            parallel=args.parallel,
+            mode=getattr(args, "mode", None),
+            unsafe=getattr(args, "unsafe", False),
+            explain=not getattr(args, "no_explain", False),
+            dialect=getattr(args, "sql_dialect", None),
+            int_type=getattr(args, "int_type", None),
+        )
+        
+        if args.target == "sql" and args.execute_sql:
+            execute_sql_and_display(output)
+            return
 
         print(output)
 

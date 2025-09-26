@@ -1,6 +1,6 @@
-// Rendered from IR (origin: python)
+use std::collections::{HashMap, HashSet};
 use rayon::prelude::*;
-pub fn par_step_range() -> Vec<_> {
-    let result = (0..100).into_par_iter().filter(|&x| (x - 0) % 2 == 0).map(move |x| x).collect::<Vec<_>>();
-    result
+
+pub fn par_step_range() -> Vec<i32> {
+    (0..100).step_by(2).into_par_iter().map(|x| x).collect()
 }

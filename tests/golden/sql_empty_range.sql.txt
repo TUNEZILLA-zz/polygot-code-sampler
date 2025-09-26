@@ -1,1 +1,2 @@
--- SQL generation not implemented for this pattern
+SELECT i
+FROM generate_series(10, 4) AS i

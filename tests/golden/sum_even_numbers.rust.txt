@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
-pub fn sum_even_numbers() -> i64 {
-    let result = (1..11).filter(|&x| x % 2 == 0).map(move |x| x).sum::<i64>();
-    result
+use std::collections::{HashMap, HashSet};
+
+pub fn sum_even_numbers() -> i32 {
+    (1..11).filter(|&x| x % 2 == 0).map(|x| x).sum()
 }

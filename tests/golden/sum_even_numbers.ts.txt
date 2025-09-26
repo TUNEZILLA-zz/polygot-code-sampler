@@ -1,5 +1,3 @@
-// Rendered from IR (origin: python)
-export function sum_even_numbers(): number|boolean {
-  const result = (Array.from({length: (11 - 1)}, (_, i) => i + 1)).filter((x) => x % 2 == 0).map((x) => x).reduce((a,b)=>a+b,0);
-  return result;
+export function sum_even_numbers(): number {
+    return Array.from({length: 10}, (_, i) => 1 + i).filter(x => x % 2 == 0).reduce((acc, x) => acc + (x), 0);
 }

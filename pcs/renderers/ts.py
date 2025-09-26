@@ -44,7 +44,7 @@ def render_ts(ir: IRComp, func_name: str = "program", parallel: bool = False) ->
     lines = []
 
     # Function signature
-    lines.append(f"function {func_name}(): {return_type} {{")
+    lines.append(f"export function {func_name}(): {return_type} {{")
 
     # Build the source range
     if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
@@ -139,7 +139,7 @@ self.onmessage = function(e) {{
     lines.append(worker_code)
 
     # Main function
-    lines.append(f"function {func_name}(): Promise<{return_type}> {{")
+    lines.append(f"export function {func_name}(): Promise<{return_type}> {{")
     lines.append("    return new Promise((resolve) => {")
     lines.append("        const numWorkers = navigator.hardwareConcurrency || 4;")
     lines.append("        const chunkSize = Math.ceil(1000000 / numWorkers);")

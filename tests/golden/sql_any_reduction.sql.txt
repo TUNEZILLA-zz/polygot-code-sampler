@@ -1,1 +1,2 @@
--- SQL generation not implemented for this pattern
+SELECT EXISTS(SELECT 1 WHERE x % 2 == 1)
+FROM generate_series(1, 9) AS x

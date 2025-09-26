@@ -47,7 +47,7 @@ def render_rust(ir: IRComp, func_name: str = "program", parallel: bool = False, 
     lines.append("")
 
     # Function signature
-    lines.append(f"fn {func_name}() -> {return_type} {{")
+    lines.append(f"pub fn {func_name}() -> {return_type} {{")
 
     # Build the source range
     if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):

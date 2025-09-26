@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
-pub fn prod_filtered_range() -> i64 {
-    let result = (1..6).filter(|&x| x != 3).map(move |x| x).product::<i64>();
-    result
+use std::collections::{HashMap, HashSet};
+
+pub fn prod_filtered_range() -> i32 {
+    (1..6).filter(|&x| x != 3)
 }

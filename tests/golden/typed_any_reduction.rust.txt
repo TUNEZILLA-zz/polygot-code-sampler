@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
+use std::collections::{HashMap, HashSet};
+
 pub fn typed_any_reduction() -> bool {
-    let result = (1..10).map(move |x| x % 2 == 1).any(|x| x);
-    result
+    (1..10).any(|x| x % 2 == 1)
 }

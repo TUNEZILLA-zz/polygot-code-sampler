@@ -5,12 +5,15 @@ Polyglot Code Sampler - Transform Python comprehensions across 5 ecosystems
 from .__version__ import __version__
 from .cli import main
 from .core import IRComp, IRGenerator, IRRange, IRReduce, PyToIR, TypeInfo
-from .renderers.csharp import render_csharp
-from .renderers.go import render_go
-from .renderers.julia import render_julia
-from .renderers.rust import render_rust
-from .renderers.sql import render_sql
-from .renderers.ts import render_ts
+from .renderer_api import (
+    render,
+    render_rust,
+    render_ts,
+    render_go,
+    render_csharp,
+    render_julia,
+    render_sql,
+)
 
 __all__ = [
     "__version__",
@@ -21,9 +24,11 @@ __all__ = [
     "IRReduce",
     "TypeInfo",
     "main",
+    "render",
     "render_rust",
     "render_ts",
+    "render_go",
     "render_csharp",
+    "render_julia",
     "render_sql",
-    "render_julia"
 ]

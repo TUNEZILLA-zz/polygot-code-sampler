@@ -1,5 +1,3 @@
-// Rendered from IR (origin: python)
-export function par_step_range(): any[] {
-  const result = (Array.from({length: Math.ceil((100 - 0) / 2)}, (_, i) => 0 + i*2)).map((x) => x);
-  return result;
+export function par_step_range(): number[] {
+    return Array.from({length: Math.ceil((100 - 0) / 2)}, (_, i) => 0 + i * 2).map(x => x);
 }

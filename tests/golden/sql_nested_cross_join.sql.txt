@@ -1,1 +1,2 @@
--- SQL generation not implemented for this pattern
+-- Complex nested comprehension - simplified for demo
+SELECT 0

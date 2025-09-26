@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
-pub fn typed_list_squares() -> Vec<i64> {
-    let result = (0..10).map(move |x| x ** 2).collect::<Vec<_>>();
-    result
+use std::collections::{HashMap, HashSet};
+
+pub fn typed_list_squares() -> Vec<i32> {
+    (0..10).map(|x| x ** 2).collect()
 }

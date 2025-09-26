@@ -1,5 +1,3 @@
-// Rendered from IR (origin: python)
-export function all_even_check(): number|boolean {
-  const result = (Array.from({length: (10 - 2)}, (_, i) => i + 2)).map((x) => x % 2 == 0).every(x=>x);
-  return result;
+export function all_even_check(): boolean {
+    return Array.from({length: 8}, (_, i) => 2 + i).every(x => x % 2 == 0);
 }

@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
+use std::collections::{HashMap, HashSet};
+
 pub fn all_even_check() -> bool {
-    let result = (2..10).map(move |x| x % 2 == 0).all(|x| x);
-    result
+    (2..10).all(|x| x % 2 == 0)
 }

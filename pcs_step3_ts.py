@@ -528,4 +528,14 @@ def execute_sql_and_display(sql_query: str, dialect: str = "sqlite") -> None:
         print(f"❌ Unsupported dialect: {dialect}")
 
 
+# Compatibility re-exports so tests don't break on param drift
+from pcs.renderer_api import (
+    render_rust as render_rust,
+    render_ts as render_ts,
+    render_go as render_go,
+    render_csharp as render_csharp,
+    render_julia as render_julia,
+    render_sql as render_sql,
+)
+
 if __name__=="__main__": cli()

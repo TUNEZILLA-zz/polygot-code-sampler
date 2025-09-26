@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-09-26T04:55:32.737042Z",
+  "timestamp": "2025-09-26T05:17:59.276330Z",
   "platform": "Enterprise Performance Monitoring",
   "version": "1.0",
   "tests": [
@@ -23,12 +23,26 @@
       "exit_code": 0,
       "stdout": "Schema OK\n",
       "stderr": ""
+    },
+    {
+      "test": "Regression Check",
+      "status": "\u2705 PASSED",
+      "exit_code": 0,
+      "stdout": "\u2705 No performance regressions detected\n",
+      "stderr": ""
+    },
+    {
+      "test": "K-Anomaly Detection",
+      "status": "\u274c FAILED",
+      "exit_code": 1,
+      "stdout": "\ud83d\udea8 K-Anomaly Detection Results:\n\n**Date: 2025-09-24**\n  Backends: 4/5 showing regressions (80.0%)\n  Likely Cause: Infrastructure issue (runner, toolchain, etc.)\n  Recommendation: Check CI runner logs, ",
+      "stderr": ""
     }
   ],
   "summary": {
-    "total": 3,
-    "passed": 3,
-    "failed": 0,
+    "total": 5,
+    "passed": 4,
+    "failed": 1,
     "timeout": 0
   }
 }

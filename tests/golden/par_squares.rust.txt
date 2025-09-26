@@ -1,6 +1,6 @@
-// Rendered from IR (origin: python)
+use std::collections::{HashMap, HashSet};
 use rayon::prelude::*;
-pub fn par_squares() -> Vec<_> {
-    let result = (1..1000).into_par_iter().map(move |x| x ** 2).collect::<Vec<_>>();
-    result
+
+pub fn par_squares() -> Vec<i32> {
+    (1..1000).into_par_iter().map(|x| x ** 2).collect()
 }

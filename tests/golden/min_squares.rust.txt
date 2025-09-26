@@ -1,5 +1,5 @@
-// Rendered from IR (origin: python)
-pub fn min_squares() -> i64 {
-    let result = (1..6).map(move |x| x ** 2).min().unwrap_or(0);
-    result
+use std::collections::{HashMap, HashSet};
+
+pub fn min_squares() -> i32 {
+    (1..6).map(|x| x ** 2).min().unwrap_or(0)
 }

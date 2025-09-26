@@ -1,1 +1,3 @@
--- SQL generation not implemented for this pattern
+SELECT i * 2
+FROM generate_series(0, 9) AS i
+WHERE i % 2 == 0

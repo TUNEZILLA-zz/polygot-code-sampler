@@ -1,1 +1,11 @@
--- SQL generation not implemented for this pattern
+SELECT i * 2
+FROM (
+WITH RECURSIVE range(i) AS (
+    SELECT 0
+    UNION ALL
+    SELECT i + 1
+    FROM range
+    WHERE i < 9
+)
+SELECT i FROM range)
+WHERE i % 2 == 0

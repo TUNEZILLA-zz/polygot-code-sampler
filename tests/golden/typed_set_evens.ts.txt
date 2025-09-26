@@ -1,5 +1,3 @@
-// Rendered from IR (origin: python)
 export function typed_set_evens(): Set<number> {
-  const result = new Set((Array.from({length: (10 - 0)}, (_, i) => i + 0)).filter((x) => x % 2 == 0).map((x) => x));
-  return result;
+    return Array.from({length: 10}, (_, i) => 0 + i).filter(x => x % 2 == 0).map(x => x).reduce((set, val) => set.add(val), new Set<number>());
 }
