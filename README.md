@@ -49,6 +49,19 @@
 - **Performance trend tracking** with non-blocking CI workflow
 - **Performance dashboard** for historical analysis and regression detection
 
+### ⚡ **Parallel Parity**
+
+PCS transforms the same Python comprehension into *parallel code* across 3 ecosystems:
+
+- **Rust** → `.into_par_iter()` (Rayon)
+- **Go** → goroutines + channels (`runtime.NumCPU` workers)
+- **TypeScript** → Web Workers (`navigator.hardwareConcurrency`)
+- **SQL** → Parallelism via DB query engine
+
+```python
+sum(i*i for i in range(100) if i % 2 == 0)
+```
+
 ## 🚀 **Polyglot Parallelism in Action**
 
 *The same Python comprehension transformed into 4 languages with parallel processing:*
