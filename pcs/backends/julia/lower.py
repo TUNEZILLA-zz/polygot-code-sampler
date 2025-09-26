@@ -61,10 +61,84 @@ def _lower_single_generator(jl: JL, ir: IRComp, gen: IRGenerator, mode: str, par
     # Generate the source range
     source_sym = _lower_source(jl, gen.source)
     
-    if ir.reduce:
-        return _lower_reduction(jl, ir, gen, source_sym, mode, parallel)
+    # Choose between loop and broadcast modes
+    if mode == "broadcast" and _should_use_broadcast(ir, gen):
+        return _lower_broadcast(jl, ir, gen, source_sym, parallel)
     else:
-        return _lower_collection(jl, ir, gen, source_sym, mode, parallel)
+        # Handle different operations in loop mode
+        if ir.reduce:
+            return _lower_reduction(jl, ir, gen, source_sym, mode, parallel)
+        else:
+            return _lower_collection(jl, ir, gen, source_sym, mode, parallel)
+
+def _should_use_broadcast(ir: IRComp, gen: IRGenerator) -> bool:
+    """Determine if broadcast mode is appropriate for this IR"""
+    # Use broadcast for simple element-wise operations
+    if ir.element and not any(char in ir.element for char in ['if', 'else', 'and', 'or']):
+        return True
+    # Use broadcast for simple reductions without complex filters
+    if ir.reduce and not gen.filters:
+        return True
+    return False
+
+def _lower_broadcast(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel: bool) -> str:
+    """Lower using broadcast/vectorized operations"""
+    if ir.reduce:
+        return _lower_broadcast_reduction(jl, ir, gen, source_sym, parallel)
+    else:
+        return _lower_broadcast_collection(jl, ir, gen, source_sym, parallel)
+
+def _lower_broadcast_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel: bool) -> str:
+    """Lower reduction using broadcast operations"""
+    reduce_op = ir.reduce
+    
+    if gen.filters:
+        # Use ifelse for dot-fusion: sum(ifelse.(condition, values, 0))
+        filter_expr = _lower_expression(gen.filters[0], gen.var)
+        if ir.element:
+            mapped_expr = _lower_expression(ir.element, gen.var)
+        else:
+            mapped_expr = gen.var
+        
+        # Create broadcast expression
+        broadcast_expr = f"ifelse.({filter_expr}, {mapped_expr}, 0)"
+        result_sym = gensym("result")
+        jl.w(f"{result_sym} = sum({broadcast_expr})")
+        return result_sym
+    else:
+        # Simple broadcast reduction
+        if ir.element:
+            mapped_expr = _lower_expression(ir.element, gen.var)
+        else:
+            mapped_expr = gen.var
+        
+        result_sym = gensym("result")
+        jl.w(f"{result_sym} = sum({mapped_expr})")
+        return result_sym
+
+def _lower_broadcast_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel: bool) -> str:
+    """Lower collection using broadcast operations"""
+    if gen.filters:
+        # Use logical indexing: xs[condition]
+        filter_expr = _lower_expression(gen.filters[0], gen.var)
+        if ir.element:
+            mapped_expr = _lower_expression(ir.element, gen.var)
+        else:
+            mapped_expr = gen.var
+        
+        result_sym = gensym("result")
+        jl.w(f"{result_sym} = {mapped_expr}[{filter_expr}]")
+        return result_sym
+    else:
+        # Simple broadcast mapping
+        if ir.element:
+            mapped_expr = _lower_expression(ir.element, gen.var)
+        else:
+            mapped_expr = gen.var
+        
+        result_sym = gensym("result")
+        jl.w(f"{result_sym} = {mapped_expr}")
+        return result_sym
 
 def _lower_source(jl: JL, source) -> str:
     """Lower source to Julia range"""
@@ -85,7 +159,7 @@ def _lower_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode
     # Check if operation is safe to parallelize
     if parallel and not _is_associative_reduction(reduce_op.kind):
         # Fall back to sequential for non-associative operations
-        jl.w("# Note: Sequential fallback - operation is not associative")
+        jl.w(_get_associativity_note(reduce_op.kind))
         parallel = False
     
     if parallel:
@@ -93,9 +167,29 @@ def _lower_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode
     else:
         return _lower_sequential_reduction(jl, ir, gen, source_sym, reduce_op)
 
+# Associativity whitelist for safe parallelization
+ASSOCIATIVE_OPS = {
+    "sum": ("Int", "Float64"),  # sum reduction
+    "prod": ("Int", "Float64"),  # product reduction
+    "max": ("Int", "Float64"),
+    "min": ("Int", "Float64"),
+    "+": ("Int", "Float64"),  # addition operator
+    "*": ("Int", "Float64"),  # multiplication operator
+    "|": ("Int",),  # bitwise OR
+    "&": ("Int",),  # bitwise AND
+    "^": ("Int",),  # bitwise XOR
+}
+
 def _is_associative_reduction(kind: str) -> bool:
     """Check if reduction operation is associative and safe to parallelize"""
-    return kind in ("sum", "prod", "max", "min")
+    return kind in ASSOCIATIVE_OPS
+
+def _get_associativity_note(kind: str) -> str:
+    """Get explanatory note for non-associative operations"""
+    if kind in ("any", "all"):
+        return f"# NOTE: sequential fallback — non-associative operation '{kind}'"
+    else:
+        return f"# NOTE: sequential fallback — operation '{kind}' not in associativity whitelist"
 
 def _lower_parallel_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, reduce_op) -> str:
     """Lower parallel reduction using thread-local partials"""
@@ -202,16 +296,48 @@ def _lower_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mod
 def _lower_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel: bool) -> str:
     """Lower dictionary comprehension"""
     if parallel:
-        # Parallel dict writes are not safe - fall back to sequential
-        jl.w("# Note: Sequential fallback - parallel dict writes are not thread-safe")
-        parallel = False
+        return _lower_parallel_dict_comprehension(jl, ir, gen, source_sym)
+    else:
+        return _lower_sequential_dict_comprehension(jl, ir, gen, source_sym)
+
+def _lower_parallel_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str) -> str:
+    """Lower parallel dictionary comprehension using shard pattern"""
+    result_sym = gensym("result")
+    shards_sym = gensym("shards")
     
+    # Create shards for each thread
+    jl.w(f"{shards_sym} = [Dict{{Int, Int}}() for _ in 1:nthreads()]")
+    
+    # Parallel loop with thread-local writes
+    with jl.block(f"@threads for {gen.var} in {source_sym}"):
+        # Apply filters
+        if gen.filters:
+            # Has filters - apply only when filter passes
+            for filter_expr in gen.filters:
+                with jl.block(f"if {_lower_expression(filter_expr, gen.var)}"):
+                    key_expr = _lower_expression(ir.key_expr or gen.var, gen.var)
+                    val_expr = _lower_expression(ir.val_expr or gen.var, gen.var)
+                    jl.w(f"{shards_sym}[threadid()][{key_expr}] = {val_expr}")
+        else:
+            # No filters
+            key_expr = _lower_expression(ir.key_expr or gen.var, gen.var)
+            val_expr = _lower_expression(ir.val_expr or gen.var, gen.var)
+            jl.w(f"{shards_sym}[threadid()][{key_expr}] = {val_expr}")
+    
+    # Merge shards serially
+    jl.w(f"{result_sym} = Dict{{Int, Int}}()")
+    with jl.block(f"@inbounds for s in {shards_sym}"):
+        with jl.block("for (k, v) in s"):
+            jl.w(f"{result_sym}[k] = v")
+    
+    return result_sym
+
+def _lower_sequential_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str) -> str:
+    """Lower sequential dictionary comprehension"""
     result_sym = gensym("dict")
     jl.w(f"{result_sym} = Dict{{Int, Int}}()")
     
-    loop_header = f"for {gen.var} in {source_sym}"
-    
-    with jl.block(loop_header):
+    with jl.block(f"for {gen.var} in {source_sym}"):
         # Apply filters
         if gen.filters:
             # Has filters - apply only when filter passes

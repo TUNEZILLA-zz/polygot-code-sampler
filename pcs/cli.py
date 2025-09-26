@@ -43,6 +43,8 @@ Examples:
         action="store_true",
         help="Enable parallel processing (Rayon/Rust, Web Workers/TS, Goroutines/Go, PLINQ/C#, Threads/Julia)"
     )
+    parser.add_argument("--mode", choices=["loops", "broadcast"], default="loops",
+                       help="Julia mode: loops (explicit) or broadcast (vectorized)")
     
     parser.add_argument(
         "--sql-dialect",
@@ -89,7 +91,7 @@ Examples:
                 execute_sql_and_display(output)
                 return
         elif args.target == "julia":
-            output = render_julia(ir, parallel=args.parallel)
+            output = render_julia(ir, parallel=args.parallel, mode=args.mode)
         else:
             print(f"Target '{args.target}' not yet implemented", file=sys.stderr)
             sys.exit(1)
