@@ -54,6 +54,13 @@ help:
 	@echo "  conductor-score-ensemble Conductor Score Ensemble"
 	@echo "  conductor-score-create Create Conductor Score"
 	@echo "  conductor-score-html Conductor Score HTML output"
+	@echo "  refraction-fx       Refraction Text FX (prism split)"
+	@echo "  refraction-glass-warp Glass Warp Refraction"
+	@echo "  refraction-ripple   Ripple Refraction (waveform)"
+	@echo "  refraction-spectral Spectral Ghosts Refraction"
+	@echo "  refraction-broken   Broken Glass Refraction"
+	@echo "  refraction-preset   Prism Rainbow Preset"
+	@echo "  refraction-html     Refraction HTML Gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -368,6 +375,42 @@ conductor-score-html:
 	@echo "🎼 Creating Conductor Score HTML..."
 	python3 scripts/conductor_score_cli.py --score "[Tremolo forte] TuneZilla [/]" --mode html --output out/conductor_score.html --intensity 0.8 --seed 42
 	@echo "🎼 Conductor Score HTML complete! Check out/conductor_score.html"
+
+# Refraction Text FX targets
+refraction-fx:
+	@echo "🌈 Running Refraction Text FX..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain refraction:type=prism,rainbow_gradient --intensity 0.8 --seed 42
+	@echo "🌈 Refraction Text FX complete!"
+
+refraction-glass-warp:
+	@echo "🌈 Running Glass Warp Refraction..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain refraction:type=glass_warp,neon_fx --intensity 0.9 --seed 42
+	@echo "🌈 Glass Warp Refraction complete!"
+
+refraction-ripple:
+	@echo "🌈 Running Ripple Refraction..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --chain refraction:type=ripple,waveform --intensity 0.8 --seed 42
+	@echo "🌈 Ripple Refraction complete!"
+
+refraction-spectral:
+	@echo "🌈 Running Spectral Ghosts Refraction..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain refraction:type=spectral,harmonics --intensity 0.9 --seed 42
+	@echo "🌈 Spectral Ghosts Refraction complete!"
+
+refraction-broken:
+	@echo "🌈 Running Broken Glass Refraction..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain refraction:type=broken,glitch_colors --intensity 0.8 --seed 42
+	@echo "🌈 Broken Glass Refraction complete!"
+
+refraction-preset:
+	@echo "🌈 Running Prism Rainbow Preset..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset prism_rainbow --intensity 0.9 --seed 42
+	@echo "🌈 Prism Rainbow Preset complete!"
+
+refraction-html:
+	@echo "🌈 Creating Refraction HTML Gallery..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain refraction:type=prism,rainbow_gradient,neon_fx --mode html --output out/refraction_fx.html --intensity 0.9 --seed 42
+	@echo "🌈 Refraction HTML complete! Check out/refraction_fx.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

@@ -611,6 +611,162 @@ def feedback(text: str, params: Dict[str, Any]) -> str:
     return result
 
 
+@fx("refraction")
+def refraction(text: str, params: Dict[str, Any]) -> str:
+    """Refraction effect - bending, splitting, warping text like light through glass"""
+    intensity = params.get("intensity", 0.75)
+    refraction_type = params.get("type", "prism")  # prism, glass_warp, ripple, spectral, broken
+    
+    if refraction_type == "prism":
+        return _refraction_prism(text, intensity, params)
+    elif refraction_type == "glass_warp":
+        return _refraction_glass_warp(text, intensity, params)
+    elif refraction_type == "ripple":
+        return _refraction_ripple(text, intensity, params)
+    elif refraction_type == "spectral":
+        return _refraction_spectral(text, intensity, params)
+    elif refraction_type == "broken":
+        return _refraction_broken(text, intensity, params)
+    else:
+        return text
+
+
+def _refraction_prism(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Prism split - text duplicated into multiple color layers"""
+    result = ""
+    
+    # Create color layers
+    colors = ["#ff0000", "#00ff00", "#0000ff"]  # RGB
+    offsets = [0, 1, 2]  # Character offsets
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add each color layer
+        for j, (color, offset) in enumerate(zip(colors, offsets)):
+            if j == 0:
+                # Base layer
+                if params.get("mode") == "html":
+                    result += f'<span style="color: {color}">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    ansi_color = _hex_to_ansi(color)
+                    result += f'\033[{ansi_color}m{char}\033[0m'
+                else:
+                    result += char
+            else:
+                # Offset layers
+                spacing = " " * offset
+                if params.get("mode") == "html":
+                    result += f'{spacing}<span style="color: {color}; opacity: 0.7">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    ansi_color = _hex_to_ansi(color)
+                    result += f'{spacing}\033[{ansi_color}m{char}\033[0m'
+                else:
+                    result += f'{spacing}{char}'
+    
+    return result
+
+
+def _refraction_glass_warp(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Glass warp - letters bent or stretched like viewed through curved glass"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate warp offset
+        warp_offset = int(math.sin(i * 0.5) * intensity * 3)
+        
+        # Apply glass warp
+        if params.get("mode") == "html":
+            result += f'<span style="transform: skew({warp_offset}deg); display: inline-block">{char}</span>'
+        else:
+            # Use combining characters for warp effect
+            warp_chars = ["͡", "͜", "͠", "͝", "͞"]
+            warp_char = warp_chars[i % len(warp_chars)]
+            result += f'{char}{warp_char}'
+    
+    return result
+
+
+def _refraction_ripple(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Ripple refraction - sinusoidal offset like waves on water"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate ripple offset
+        ripple_offset = int(math.sin(i * 0.3) * intensity * 5)
+        
+        # Apply ripple spacing
+        spacing = " " * max(0, ripple_offset)
+        result += spacing + char
+    
+    return result
+
+
+def _refraction_spectral(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Spectral ghosts - duplicate faint ghosts at different angles/transparency"""
+    result = ""
+    
+    # Create spectral layers
+    spectral_layers = 3
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Base character
+        result += char
+        
+        # Add spectral ghosts
+        for layer in range(int(spectral_layers * intensity)):
+            ghost_offset = (layer + 1) * 2
+            ghost_opacity = 0.3 - (layer * 0.1)
+            
+            if params.get("mode") == "html":
+                result += f'<span style="opacity: {ghost_opacity}; position: relative; left: {ghost_offset}px">{char}</span>'
+            else:
+                # Use combining characters for spectral effect
+                spectral_chars = ["͢", "͜", "͠", "͝", "͞"]
+                spectral_char = spectral_chars[layer % len(spectral_chars)]
+                result += f'{char}{spectral_char}'
+    
+    return result
+
+
+def _refraction_broken(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Broken refraction - split parts unpredictably like cracked glass"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Randomly split character
+        if random.random() < intensity * 0.6:
+            # Split character with random separators
+            separators = ["//", "||", "⧸", "⧹", "\\", "/"]
+            separator = random.choice(separators)
+            
+            if params.get("mode") == "html":
+                result += f'<span style="color: #ff0000">{char[0]}{separator}{char[1:] if len(char) > 1 else char}</span>'
+            else:
+                result += f'{char[0]}{separator}{char[1:] if len(char) > 1 else char}'
+        else:
+            result += char
+    
+    return result
+
+
 def _tremolo_amplitude(text: str, intensity: float, rate: float, params: Dict[str, Any]) -> str:
     """Amplitude tremolo - volume-like pulses"""
     result = ""
@@ -920,6 +1076,55 @@ def get_preset_pack() -> Dict[str, Dict[str, Any]]:
                 {"name": "harmonics", "params": {"harmonic_count": 2}}
             ],
             "Feedback sustain with tremolo and harmonics"
+        ),
+        "prism_split": create_preset(
+            "Prism Split",
+            [
+                {"name": "refraction", "params": {"type": "prism"}},
+                {"name": "rainbow_gradient", "params": {}}
+            ],
+            "Prism split with rainbow colors"
+        ),
+        "glass_warp": create_preset(
+            "Glass Warp",
+            [
+                {"name": "refraction", "params": {"type": "glass_warp"}},
+                {"name": "neon_fx", "params": {"glow": 1.2}}
+            ],
+            "Glass warp with neon glow"
+        ),
+        "ripple_refraction": create_preset(
+            "Ripple Refraction",
+            [
+                {"name": "refraction", "params": {"type": "ripple"}},
+                {"name": "waveform", "params": {"depth": 0.4}}
+            ],
+            "Ripple refraction with waveform"
+        ),
+        "spectral_ghosts": create_preset(
+            "Spectral Ghosts",
+            [
+                {"name": "refraction", "params": {"type": "spectral"}},
+                {"name": "harmonics", "params": {"harmonic_count": 2}}
+            ],
+            "Spectral ghosts with harmonics"
+        ),
+        "broken_glass": create_preset(
+            "Broken Glass",
+            [
+                {"name": "refraction", "params": {"type": "broken"}},
+                {"name": "glitch_colors", "params": {"glitch_factor": 0.8}}
+            ],
+            "Broken glass with glitch colors"
+        ),
+        "prism_rainbow": create_preset(
+            "Prism Rainbow",
+            [
+                {"name": "refraction", "params": {"type": "prism"}},
+                {"name": "rainbow_gradient", "params": {}},
+                {"name": "neon_fx", "params": {"glow": 1.5}}
+            ],
+            "Prism rainbow with neon glow"
         )
     }
 
