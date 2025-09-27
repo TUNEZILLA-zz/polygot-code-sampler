@@ -570,11 +570,49 @@ class CodeOpera:
         with open(self.output_dir / "opera" / "code_opera_data.json", "w") as f:
             json.dump(performance_data, f, indent=2)
         
+        # Create manifest for determinism verification
+        self._create_manifest(performance_data)
+        
         print(f"\n🎭 Code Opera Performance Complete!")
         print(f"📁 Check {self.output_dir}/opera/ for all artifacts")
         print(f"🌐 Open {harmony_file} to see the harmony visualization")
         
         return performance_data
+    
+    def _create_manifest(self, performance_data: Dict[str, Any]) -> None:
+        """Create manifest with content hash for determinism verification"""
+        import hashlib
+        
+        # Create content hash from voice files
+        content_data = ""
+        voice_files = list((self.output_dir / "voices").glob("*_act_*.py"))
+        voice_files.sort()
+        
+        for voice_file in voice_files:
+            with open(voice_file, "r") as f:
+                content_data += f.read()
+        
+        content_hash = hashlib.sha256(content_data.encode()).hexdigest()
+        
+        # Create manifest
+        manifest = {
+            "seed": self.seed or "auto-generated",
+            "bpm": 96,  # Default BPM
+            "key": "C",
+            "acts": 3,
+            "key_path": ["C", "G", "C"],
+            "voices": list(self.voices.keys()),
+            "total_notes": len(voice_files),
+            "content_sha256": content_hash,
+            "timestamp": performance_data["timestamp"]
+        }
+        
+        # Save manifest
+        manifest_file = self.output_dir / "opera" / "manifest.json"
+        with open(manifest_file, "w") as f:
+            json.dump(manifest, f, indent=2)
+        
+        print(f"✅ Manifest created: {manifest_file}")
 
 
 def main():

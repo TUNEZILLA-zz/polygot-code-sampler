@@ -19,6 +19,12 @@ help:
 	@echo "  code-opera        Multi-voice creative coding performance"
 	@echo "  code-opera-seed   Code Opera with deterministic seed"
 	@echo "  code-opera-live   Live development server (port 8787)"
+	@echo "  code-opera-ui     Conductor panel UI server (port 8788)"
+	@echo "  code-opera-midi   Code Opera with MIDI export"
+	@echo "  code-opera-counterpoint  Code Opera with counterpoint guard"
+	@echo "  opera-snaps       Capture Code Opera performance screenshots"
+	@echo "  opera-test        Run Code Opera sanity tests"
+	@echo "  opera-showflow    Complete Code Opera showflow (demo)"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -121,6 +127,59 @@ code-opera-live:
 	@echo "🎭 Starting Code Opera live development server..."
 	python3 server.py
 	@echo "🎭 Live server running on http://localhost:8787"
+
+# Code Opera UI server
+code-opera-ui:
+	@echo "🎭 Starting Code Opera UI server..."
+	python3 -m http.server 8788 -d site
+	@echo "🎭 UI server running on http://localhost:8788"
+
+# Code Opera with MIDI export
+code-opera-midi:
+	@echo "🎭 Running Code Opera with MIDI export..."
+	python3 scripts/code_opera.py --seed "opera-$(shell date +%s)"
+	python3 scripts/opera_export_midi.py
+	@echo "🎭 Code Opera with MIDI complete! Check out/opera/opera.mid"
+
+# Code Opera with counterpoint guard
+code-opera-counterpoint:
+	@echo "🎭 Running Code Opera with counterpoint guard..."
+	python3 scripts/code_opera.py --seed "opera-$(shell date +%s)"
+	python3 scripts/counterpoint_guard.py
+	@echo "🎭 Code Opera with counterpoint guard complete!"
+
+# Code Opera headless capture
+opera-snaps:
+	@echo "🎭 Capturing Code Opera performance..."
+	node scripts/capture_opera.js http://localhost:8787/out/opera/code_opera_harmony.html
+	@echo "🎭 Screenshots captured in out/opera/snaps/"
+
+# Code Opera sanity tests
+opera-test:
+	@echo "🎭 Running Code Opera sanity tests..."
+	python3 tests/test_opera_sanity.py
+	@echo "🎭 Sanity tests complete!"
+
+# Code Opera complete showflow
+opera-showflow:
+	@echo "🎭 Code Opera Complete Showflow"
+	@echo "=============================="
+	@echo "1. Starting live server..."
+	@make code-opera-live &
+	@sleep 3
+	@echo "2. Running Code Opera with seed..."
+	@make code-opera-seed
+	@echo "3. Applying counterpoint guard..."
+	@python3 scripts/counterpoint_guard.py
+	@echo "4. Exporting MIDI..."
+	@python3 scripts/opera_export_midi.py
+	@echo "5. Running sanity tests..."
+	@make opera-test
+	@echo "6. Opening harmony visualization..."
+	@open out/opera/code_opera_harmony.html || echo "Open manually: out/opera/code_opera_harmony.html"
+	@echo "7. Opening MIDI file..."
+	@open out/opera/opera.mid || echo "Open manually: out/opera/opera.mid"
+	@echo "🎉 Code Opera showflow complete!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
