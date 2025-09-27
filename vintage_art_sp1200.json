@@ -1,0 +1,25 @@
+{
+  "profile": "sp1200",
+  "label": "SP-1200 (crunchy)",
+  "description": "Ultra-crunchy 80s sampler vibes - maximum constraints",
+  "degraders": {
+    "bit_depth": 12,
+    "sample_rate": 22050,
+    "buffer_size": 512,
+    "noise_floor": 0.1
+  },
+  "performance_impact": {
+    "precision_loss": "20 bits",
+    "sample_rate_loss": "25950Hz",
+    "buffer_size_loss": "3584B",
+    "noise_added": 0.1
+  },
+  "vintage_characteristics": [
+    "Single-threaded processing",
+    "No SIMD optimizations",
+    "No compiler optimizations",
+    "Manual memory management",
+    "Explicit type annotations",
+    "No modern language features"
+  ]
+}

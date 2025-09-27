@@ -123,6 +123,8 @@ ignore = [
 "__init__.py" = ["F401"]
 "creative_performance_art.py" = ["W293", "W291"]
 "stress_test_art.py" = ["W293", "W291"]
+"vintage_cli.py" = ["W293", "W291"]
+"pcs/vintage_profiles.py" = ["W293", "W291"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -136,7 +138,7 @@ no_implicit_optional = true
 warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
-module = ["creative_performance_art", "stress_test_art"]
+module = ["creative_performance_art", "stress_test_art", "vintage_cli", "pcs.vintage_profiles"]
 ignore_errors = true
 warn_unused_ignores = true
 warn_no_return = true

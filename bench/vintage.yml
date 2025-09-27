@@ -1,0 +1,182 @@
+# Code Live - Vintage Profiles Configuration
+# Like SP-1200 / MPC60 for compilers/runtimes
+# Time machine for code generation with classic sampler aesthetic
+
+version: 1
+profiles:
+  mpc60:
+    label: "MPC60 (1990s vibe)"
+    description: "Classic 90s computing - no async, manual loops, ES5 vibes"
+    global_degraders:
+      bit_depth: 16        # 16-bit precision vibes
+      sample_rate: 44100   # Classic CD quality
+      buffer_size: 1024    # Small buffers for that crunchy feel
+    rust:
+      toolchain: "rust:1.26"
+      edition: "2015"
+      features_off: [rayon, async_await, impl_trait, nonlexical_lifetimes, const_generics]
+      opts: ["-C", "opt-level=1", "-C", "target-cpu=generic"]
+      idioms: ["for_loops_only", "no_iterators", "manual_memory"]
+      degraders: ["no_simd", "32bit_math", "scalar_only"]
+    typescript:
+      target: "ES5"
+      features_off: [async_await, generators, arrow_functions, const_let, template_literals]
+      transpile: true
+      polyfills: ["Promise", "Array.from", "Object.assign"]
+      idioms: ["var_declarations", "function_expressions", "manual_loops"]
+    go:
+      version: "1.10"
+      features_off: [modules, generics, context, interfaces]
+      idioms: ["for_range_arrays", "no_context", "manual_slices"]
+      degraders: ["no_goroutines", "single_threaded"]
+    julia:
+      version: "0.6"
+      features_off: [broadcast, threading, generators]
+      idioms: ["for_loops", "manual_arrays", "no_dot_syntax"]
+      degraders: ["no_simd", "scalar_only", "32bit_float"]
+    sql:
+      dialect: "sqlite3"
+      features_off: [window_functions, cte, json_functions]
+      idioms: ["subqueries", "manual_joins", "no_cte"]
+
+  sp1200:
+    label: "SP-1200 (crunchy)"
+    description: "Ultra-crunchy 80s sampler vibes - maximum constraints"
+    global_degraders:
+      bit_depth: 12        # 12-bit sample depth
+      sample_rate: 22050   # Lower sample rate
+      buffer_size: 512     # Tiny buffers
+      noise_floor: 0.1     # Add some digital noise
+    rust:
+      toolchain: "rust:1.15"
+      edition: "2015"
+      features_off: [rayon, async_await, impl_trait, nonlexical_lifetimes, const_generics, match_guards]
+      opts: ["-C", "opt-level=0", "-C", "target-cpu=generic"]
+      idioms: ["for_loops_only", "no_iterators", "manual_memory", "explicit_types"]
+      degraders: ["no_simd", "32bit_math", "scalar_only", "no_inlining"]
+    typescript:
+      target: "ES3"
+      features_off: [async_await, generators, arrow_functions, const_let, template_literals, classes, modules]
+      transpile: true
+      polyfills: ["Promise", "Array.from", "Object.assign", "Array.prototype"]
+      idioms: ["var_declarations", "function_expressions", "manual_loops", "no_classes"]
+    go:
+      version: "1.8"
+      features_off: [modules, generics, context, interfaces, type_assertions]
+      idioms: ["for_range_arrays", "no_context", "manual_slices", "explicit_types"]
+      degraders: ["no_goroutines", "single_threaded", "no_optimization"]
+    julia:
+      version: "0.5"
+      features_off: [broadcast, threading, generators, dot_syntax]
+      idioms: ["for_loops", "manual_arrays", "no_dot_syntax", "explicit_types"]
+      degraders: ["no_simd", "scalar_only", "32bit_float", "no_optimization"]
+    sql:
+      dialect: "sqlite2"
+      features_off: [window_functions, cte, json_functions, subqueries]
+      idioms: ["manual_joins", "no_cte", "basic_aggregates"]
+
+  mpc2000xl:
+    label: "MPC2000XL (early 2000s)"
+    description: "Y2K era computing - some modern features but still constrained"
+    global_degraders:
+      bit_depth: 16        # 16-bit precision
+      sample_rate: 44100   # CD quality
+      buffer_size: 2048    # Medium buffers
+    rust:
+      toolchain: "rust:1.31"
+      edition: "2018"
+      features_off: [rayon, async_await, impl_trait, const_generics]
+      opts: ["-C", "opt-level=2", "-C", "target-cpu=generic"]
+      idioms: ["for_loops_preferred", "limited_iterators", "manual_memory"]
+      degraders: ["no_simd", "32bit_math", "scalar_only"]
+    typescript:
+      target: "ES2015"
+      features_off: [async_await, generators, arrow_functions]
+      transpile: true
+      polyfills: ["Promise", "Array.from", "Object.assign"]
+      idioms: ["const_let_ok", "function_expressions", "manual_loops"]
+    go:
+      version: "1.11"
+      features_off: [modules, generics]
+      idioms: ["for_range_arrays", "limited_context", "manual_slices"]
+      degraders: ["limited_goroutines", "single_threaded"]
+    julia:
+      version: "0.7"
+      features_off: [broadcast, threading]
+      idioms: ["for_loops", "manual_arrays", "limited_dot_syntax"]
+      degraders: ["no_simd", "scalar_only", "32bit_float"]
+    sql:
+      dialect: "postgresql9.2"
+      features_off: [window_functions, cte, json_functions]
+      idioms: ["subqueries", "manual_joins", "no_cte"]
+
+  y2k_web:
+    label: "Y2K Web (IE/ES3)"
+    description: "Internet Explorer 6 era - maximum web compatibility"
+    global_degraders:
+      bit_depth: 8         # 8-bit color depth vibes
+      sample_rate: 8000    # Low quality audio
+      buffer_size: 256     # Tiny buffers
+    typescript:
+      target: "ES3"
+      features_off: [async_await, generators, arrow_functions, const_let, template_literals, classes, modules, promises]
+      transpile: true
+      polyfills: ["Array.prototype", "Object.prototype", "String.prototype"]
+      idioms: ["var_declarations", "function_expressions", "manual_loops", "no_classes", "no_promises"]
+    rust:
+      toolchain: "rust:1.0"
+      edition: "2015"
+      features_off: [rayon, async_await, impl_trait, nonlexical_lifetimes, const_generics, match_guards, if_let]
+      opts: ["-C", "opt-level=0", "-C", "target-cpu=generic"]
+      idioms: ["for_loops_only", "no_iterators", "manual_memory", "explicit_types", "no_match"]
+      degraders: ["no_simd", "32bit_math", "scalar_only", "no_inlining", "no_optimization"]
+
+  postgres_92:
+    label: "Postgres 9.2 (pre-window)"
+    description: "Classic SQL before window functions"
+    sql:
+      dialect: "postgresql9.2"
+      features_off: [window_functions, cte, json_functions, lateral_joins]
+      idioms: ["subqueries", "manual_joins", "no_cte", "basic_aggregates"]
+      degraders: ["no_parallel", "single_threaded", "basic_indexing"]
+
+  go_pre_modules:
+    label: "Go pre-modules (1.10)"
+    description: "Go before the module system"
+    go:
+      version: "1.10"
+      features_off: [modules, generics, context, interfaces, type_assertions, go_routines]
+      idioms: ["for_range_arrays", "no_context", "manual_slices", "explicit_types", "no_goroutines"]
+      degraders: ["no_goroutines", "single_threaded", "no_optimization", "no_reflection"]
+
+  julia_pre_broadcast:
+    label: "Julia pre-broadcast (0.6)"
+    description: "Julia before the broadcast revolution"
+    julia:
+      version: "0.6"
+      features_off: [broadcast, threading, generators, dot_syntax, multiple_dispatch]
+      idioms: ["for_loops", "manual_arrays", "no_dot_syntax", "explicit_types", "no_multiple_dispatch"]
+      degraders: ["no_simd", "scalar_only", "32bit_float", "no_optimization", "no_threading"]
+
+# Capability matrix for validation
+capabilities:
+  rust:
+    modern: ["rayon", "async_await", "impl_trait", "const_generics", "simd", "optimization"]
+    mpc60: ["for_loops", "manual_memory", "32bit_math"]
+    sp1200: ["for_loops", "manual_memory", "32bit_math", "no_optimization"]
+  typescript:
+    modern: ["async_await", "generators", "arrow_functions", "const_let", "template_literals", "classes"]
+    mpc60: ["var_declarations", "function_expressions", "manual_loops"]
+    sp1200: ["var_declarations", "function_expressions", "manual_loops", "no_classes"]
+  go:
+    modern: ["modules", "generics", "context", "interfaces", "goroutines"]
+    mpc60: ["for_range_arrays", "manual_slices"]
+    sp1200: ["for_range_arrays", "manual_slices", "no_goroutines"]
+  julia:
+    modern: ["broadcast", "threading", "generators", "dot_syntax", "simd"]
+    mpc60: ["for_loops", "manual_arrays"]
+    sp1200: ["for_loops", "manual_arrays", "no_simd"]
+  sql:
+    modern: ["window_functions", "cte", "json_functions", "lateral_joins"]
+    mpc60: ["subqueries", "manual_joins"]
+    sp1200: ["manual_joins", "basic_aggregates"]
