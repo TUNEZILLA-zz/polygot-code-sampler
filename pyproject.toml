@@ -124,6 +124,7 @@ ignore = [
 "scripts/**" = ["B007", "B023", "F841", "E722", "E402", "UP007", "UP038", "F821"]
 "server*.py" = ["B904", "F841", "E722", "UP007", "UP038", "F821"]
 "pcs_step3_ts*.py" = ["F811", "E402", "F821", "UP038"]
+"pcs_step*.py" = ["UP038"]
 "server/routes.py" = ["F403", "F405", "F841", "B904", "UP038"]
 "tests/test_mixer_core.py" = ["F403", "F405", "E712"]
 "pcs/**" = ["UP007", "UP038"]
