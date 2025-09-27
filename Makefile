@@ -129,6 +129,13 @@ help:
 	@echo "  touring-rig-redo Redo Last Action"
 	@echo "  touring-rig-status Show Touring Rig Status"
 	@echo "  touring-rig-server Start Touring Rig API Server"
+	@echo "  stage-proof-load Load Stage-Proof Scene"
+	@echo "  stage-proof-acceptance Run Stage-Proof Acceptance Test"
+	@echo "  stage-proof-intensity Set Global Intensity (0-120%)"
+	@echo "  stage-proof-blackout Toggle Blackout"
+	@echo "  stage-proof-white-bloom Toggle White Bloom"
+	@echo "  stage-proof-lightning-flash Toggle Lightning Flash"
+	@echo "  stage-proof-status Show Stage-Proof Status"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -827,6 +834,42 @@ touring-rig-server:
 	@echo "🚀 Starting Touring Rig API Server..."
 	python3 server_touring_rig.py
 	@echo "🚀 Touring Rig API Server started!"
+
+# Stage-Proof targets
+stage-proof-load:
+	@echo "🎛️ Loading Stage-Proof Scene..."
+	python3 scripts/stage_proof_cli.py --load presets/scenes/tour_opener.json --text "Code Live"
+	@echo "🎛️ Stage-Proof Scene loaded!"
+
+stage-proof-acceptance:
+	@echo "🧪 Running Stage-Proof Acceptance Test..."
+	python3 scripts/stage_proof_cli.py --acceptance-test
+	@echo "🧪 Stage-Proof Acceptance Test complete!"
+
+stage-proof-intensity:
+	@echo "🎛️ Setting Global Intensity..."
+	python3 scripts/stage_proof_cli.py --intensity 85.5
+	@echo "🎛️ Global intensity set!"
+
+stage-proof-blackout:
+	@echo "🌑 Toggling Blackout..."
+	python3 scripts/stage_proof_cli.py --blackout true
+	@echo "🌑 Blackout toggled!"
+
+stage-proof-white-bloom:
+	@echo "💡 Toggling White Bloom..."
+	python3 scripts/stage_proof_cli.py --white-bloom true
+	@echo "💡 White bloom toggled!"
+
+stage-proof-lightning-flash:
+	@echo "⚡ Toggling Lightning Flash..."
+	python3 scripts/stage_proof_cli.py --lightning-flash true
+	@echo "⚡ Lightning flash toggled!"
+
+stage-proof-status:
+	@echo "📊 Showing Stage-Proof Status..."
+	python3 scripts/stage_proof_cli.py --status
+	@echo "📊 Stage-Proof status displayed!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

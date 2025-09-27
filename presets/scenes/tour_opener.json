@@ -1,0 +1,38 @@
+{
+  "id": "tour-opener-v1",
+  "seed": 4242,
+  "routing": "serial",
+  "macros": { "color": 0.65, "space": 0.35, "motion": 0.4, "crunch": 0.55 },
+  "fx": [
+    { "type": "distortion", "drive": 0.7, "tone": 0.6, "mix": 0.5, "bypass": false },
+    { "type": "chorus", "depth": 0.35, "rate_hz": 0.2, "width": 0.8, "mix": 0.7 },
+    { "type": "echo", "time_ms": 180, "feedback": 0.35, "color": 0.4, "mix": 0.4 }
+  ],
+  "sidechain": {
+    "enabled": true,
+    "maps": [
+      { "metric": "qps", "target": "chorus.rate_hz", "curve": "soft_knee", "min": 0.05, "max": 0.8, "strength": 0.6 },
+      { "metric": "p95", "target": "echo.time_ms", "curve": "ease_out", "min": 120, "max": 320, "strength": 0.4 },
+      { "metric": "error_rate", "target": "distortion.drive", "curve": "hold_then_drop", "min": 0.45, "max": 0.85, "strength": 0.5 }
+    ]
+  },
+  "safety": { "strobe_hz_max": 8, "frame_ms_p95_cap": 12 },
+  "macro_maps": {
+    "color": [
+      { "target": "chromatic.offset", "range": [0.05, 0.6], "curve": "ease_in" },
+      { "target": "neon.glow", "range": [0.1, 0.9], "curve": "linear" }
+    ],
+    "space": [
+      { "target": "echo.time_ms", "range": [90, 380], "curve": "ease_out" },
+      { "target": "reverb.mix", "range": [0.1, 0.85], "curve": "soft_knee" }
+    ],
+    "motion": [
+      { "target": "lfo.rate_hz", "range": [0.05, 1.2] },
+      { "target": "trail.length", "range": [0.0, 0.8] }
+    ],
+    "crunch": [
+      { "target": "distortion.drive", "range": [0.2, 0.95] },
+      { "target": "stutter.amount", "range": [0.0, 0.5] }
+    ]
+  }
+}
