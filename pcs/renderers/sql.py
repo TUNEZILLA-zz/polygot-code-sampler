@@ -21,7 +21,7 @@ def render_sql(ir: IRComp, func_name: str = "program", dialect: str = "sqlite") 
     lines = []
 
     # Build the source range
-    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
+    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, "start"):
         gen = ir.generators[0]
         start, stop, step = gen.source.start, gen.source.stop, gen.source.step
 
@@ -30,7 +30,9 @@ def render_sql(ir: IRComp, func_name: str = "program", dialect: str = "sqlite") 
             if step == 1:
                 range_clause = f"generate_series({start}, {stop - 1}) AS {gen.var}"
             else:
-                range_clause = f"generate_series({start}, {stop - 1}, {step}) AS {gen.var}"
+                range_clause = (
+                    f"generate_series({start}, {stop - 1}, {step}) AS {gen.var}"
+                )
         else:  # sqlite
             if step == 1:
                 range_clause = f"""
@@ -107,4 +109,3 @@ SELECT {gen.var} FROM range"""
         lines.append("SELECT 0")
 
     return "\n".join(lines)
-

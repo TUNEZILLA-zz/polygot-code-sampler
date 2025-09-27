@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Audio Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .audio-simulator {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .main-controls {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .audio-rack {
+            width: 400px;
+            background: linear-gradient(180deg, #ff6b6b, #ff8e8e, #ffa8a8);
+            border-left: 3px solid #ff4757;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .audio-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ff4757;
+        }
+
+        .audio-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .audio-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .audio-label {
+            font-size: 14px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .audio-slider {
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .audio-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .audio-toggle {
+            width: 50px;
+            height: 25px;
+            background: #ff4757;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle.active {
+            background: #2ed573;
+        }
+
+        .audio-toggle::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle.active::after {
+            transform: translateX(25px);
+        }
+
+        .waveform-display {
+            width: 100%;
+            height: 200px;
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waveform-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            top: 50%;
+            transform: translateY(-50%);
+            animation: waveMove 2s linear infinite;
+        }
+
+        @keyframes waveMove {
+            0% { left: 0; width: 0; }
+            50% { left: 50%; width: 50%; }
+            100% { left: 100%; width: 0; }
+        }
+
+        .spectrum-analyzer {
+            width: 100%;
+            height: 150px;
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spectrum-bar {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(180deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px 10px 0 0;
+            animation: spectrumBounce 1s ease-in-out infinite;
+        }
+
+        .spectrum-bar:nth-child(1) { left: 10px; animation-delay: 0s; }
+        .spectrum-bar:nth-child(2) { left: 40px; animation-delay: 0.1s; }
+        .spectrum-bar:nth-child(3) { left: 70px; animation-delay: 0.2s; }
+        .spectrum-bar:nth-child(4) { left: 100px; animation-delay: 0.3s; }
+        .spectrum-bar:nth-child(5) { left: 130px; animation-delay: 0.4s; }
+        .spectrum-bar:nth-child(6) { left: 160px; animation-delay: 0.5s; }
+        .spectrum-bar:nth-child(7) { left: 190px; animation-delay: 0.6s; }
+        .spectrum-bar:nth-child(8) { left: 220px; animation-delay: 0.7s; }
+        .spectrum-bar:nth-child(9) { left: 250px; animation-delay: 0.8s; }
+        .spectrum-bar:nth-child(10) { left: 280px; animation-delay: 0.9s; }
+
+        @keyframes spectrumBounce {
+            0%, 100% { height: 20px; }
+            50% { height: 120px; }
+        }
+
+        .backend-instrument {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ff4757;
+        }
+
+        .instrument-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .instrument-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .instrument-slider {
+            width: 100px;
+            height: 15px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .instrument-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .audio-visualizer {
+            width: 100%;
+            height: 300px;
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .visualizer-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff6b6b, transparent);
+            animation: visualizerPulse 2s ease-in-out infinite;
+        }
+
+        .visualizer-circle:nth-child(1) {
+            width: 50px;
+            height: 50px;
+            top: 50%;
+            left: 25%;
+            animation-delay: 0s;
+        }
+
+        .visualizer-circle:nth-child(2) {
+            width: 30px;
+            height: 30px;
+            top: 30%;
+            left: 50%;
+            animation-delay: 0.5s;
+        }
+
+        .visualizer-circle:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 70%;
+            left: 75%;
+            animation-delay: 1s;
+        }
+
+        @keyframes visualizerPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .performance-meter {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .meter-bar {
+            flex: 1;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .audio-emoji {
+            font-size: 20px;
+            margin: 0 5px;
+        }
+
+        .code-output {
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .audio-comment {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+
+        .waveform-comment {
+            color: #ffa8a8;
+            font-style: italic;
+        }
+
+        .spectrum-comment {
+            color: #ff8e8e;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="audio-simulator">
+        <div class="main-controls">
+            <h1>🎵 Code Live - Audio Simulator</h1>
+            <p>The Ableton Live of Code + Compiler Physics + DSP Simulation</p>
+
+            <div class="code-output" id="codeOutput">
+                <div class="audio-comment">// 🎵 Welcome to Code Live Audio Simulator! 🎵</div>
+                <div class="waveform-comment">// 🌊 Compiler Physics: AST/IR waves moving through the pipeline</div>
+                <div class="spectrum-comment">// 🎚️ DSP Simulation: Optimization filters processing code tone</div>
+                <div class="audio-comment">// 🎛️ Production Studio: Each backend is a virtual instrument</div>
+            </div>
+
+            <div class="waveform-display" id="waveformDisplay">
+                <div class="waveform-line"></div>
+            </div>
+
+            <div class="spectrum-analyzer" id="spectrumAnalyzer">
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-bar"></div>
+            </div>
+
+            <div class="audio-visualizer" id="audioVisualizer">
+                <div class="visualizer-circle"></div>
+                <div class="visualizer-circle"></div>
+                <div class="visualizer-circle"></div>
+            </div>
+
+            <div class="performance-meter">
+                <span class="audio-emoji">🎵</span>
+                <div class="meter-bar">
+                    <div class="meter-fill" id="performanceMeter" style="width: 75%"></div>
+                </div>
+                <span class="audio-emoji">🎶</span>
+            </div>
+        </div>
+
+        <div class="audio-rack">
+            <h2>🎚️ Audio Rack</h2>
+
+            <!-- Compiler Physics Section -->
+            <div class="audio-section">
+                <div class="audio-title">🌊 Compiler Physics</div>
+                <div class="audio-control">
+                    <span class="audio-label">Wave Speed</span>
+                    <input type="range" class="audio-slider" id="waveSpeed" min="0" max="100" value="50">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Reflections</span>
+                    <input type="range" class="audio-slider" id="reflections" min="0" max="100" value="30">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Diffraction</span>
+                    <input type="range" class="audio-slider" id="diffraction" min="0" max="100" value="40">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Doppler Effect</span>
+                    <input type="range" class="audio-slider" id="doppler" min="0" max="100" value="60">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Enable</span>
+                    <div class="audio-toggle active" id="physicsToggle"></div>
+                </div>
+            </div>
+
+            <!-- DSP Simulation Section -->
+            <div class="audio-section">
+                <div class="audio-title">🎚️ DSP Simulation</div>
+                <div class="audio-control">
+                    <span class="audio-label">Low-Pass Filter</span>
+                    <input type="range" class="audio-slider" id="lowPass" min="0" max="100" value="70">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Compressor</span>
+                    <input type="range" class="audio-slider" id="compressor" min="0" max="100" value="50">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Distortion</span>
+                    <input type="range" class="audio-slider" id="distortion" min="0" max="100" value="20">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">EQ High</span>
+                    <input type="range" class="audio-slider" id="eqHigh" min="0" max="100" value="60">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">EQ Mid</span>
+                    <input type="range" class="audio-slider" id="eqMid" min="0" max="100" value="40">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">EQ Low</span>
+                    <input type="range" class="audio-slider" id="eqLow" min="0" max="100" value="80">
+                </div>
+            </div>
+
+            <!-- Backend Instruments -->
+            <div class="audio-section">
+                <div class="audio-title">🎹 Backend Instruments</div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">🦀 Rust - FM Synth</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="rustVolume" min="0" max="100" value="80">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Frequency</span>
+                        <input type="range" class="instrument-slider" id="rustFreq" min="0" max="100" value="60">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Modulation</span>
+                        <input type="range" class="instrument-slider" id="rustMod" min="0" max="100" value="40">
+                    </div>
+                </div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">📘 Julia - Granular Synth</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="juliaVolume" min="0" max="100" value="60">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Grain Size</span>
+                        <input type="range" class="instrument-slider" id="juliaGrain" min="0" max="100" value="70">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Chaos</span>
+                        <input type="range" class="instrument-slider" id="juliaChaos" min="0" max="100" value="80">
+                    </div>
+                </div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">🗄️ SQL - Sampler</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="sqlVolume" min="0" max="100" value="70">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Sample Rate</span>
+                        <input type="range" class="instrument-slider" id="sqlRate" min="0" max="100" value="50">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Loop</span>
+                        <input type="range" class="instrument-slider" id="sqlLoop" min="0" max="100" value="30">
+                    </div>
+                </div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">⚡ TypeScript - Digital Synth</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="tsVolume" min="0" max="100" value="75">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Oscillator</span>
+                        <input type="range" class="instrument-slider" id="tsOsc" min="0" max="100" value="55">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Filter</span>
+                        <input type="range" class="instrument-slider" id="tsFilter" min="0" max="100" value="45">
+                    </div>
+                </div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">🐹 Go - Analog Synth</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="goVolume" min="0" max="100" value="65">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Warmth</span>
+                        <input type="range" class="instrument-slider" id="goWarmth" min="0" max="100" value="70">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Resonance</span>
+                        <input type="range" class="instrument-slider" id="goResonance" min="0" max="100" value="35">
+                    </div>
+                </div>
+
+                <div class="backend-instrument">
+                    <div class="instrument-name">🔷 C# - PLINQ Synth</div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Volume</span>
+                        <input type="range" class="instrument-slider" id="csharpVolume" min="0" max="100" value="70">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Parallel</span>
+                        <input type="range" class="instrument-slider" id="csharpParallel" min="0" max="100" value="60">
+                    </div>
+                    <div class="instrument-controls">
+                        <span class="audio-label">Enterprise</span>
+                        <input type="range" class="instrument-slider" id="csharpEnterprise" min="0" max="100" value="85">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Effects -->
+            <div class="audio-section">
+                <div class="audio-title">🎛️ Audio Effects</div>
+                <div class="audio-control">
+                    <span class="audio-label">Reverb</span>
+                    <input type="range" class="audio-slider" id="reverb" min="0" max="100" value="30">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Delay</span>
+                    <input type="range" class="audio-slider" id="delay" min="0" max="100" value="20">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Chorus</span>
+                    <input type="range" class="audio-slider" id="chorus" min="0" max="100" value="40">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Flanger</span>
+                    <input type="range" class="audio-slider" id="flanger" min="0" max="100" value="25">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Phaser</span>
+                    <input type="range" class="audio-slider" id="phaser" min="0" max="100" value="35">
+                </div>
+            </div>
+
+            <!-- Master Controls -->
+            <div class="audio-section">
+                <div class="audio-title">🎚️ Master Controls</div>
+                <div class="audio-control">
+                    <span class="audio-label">Master Volume</span>
+                    <input type="range" class="audio-slider" id="masterVolume" min="0" max="100" value="75">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Master EQ</span>
+                    <input type="range" class="audio-slider" id="masterEQ" min="0" max="100" value="50">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Master Compressor</span>
+                    <input type="range" class="audio-slider" id="masterComp" min="0" max="100" value="60">
+                </div>
+                <div class="audio-control">
+                    <span class="audio-label">Master Limiter</span>
+                    <input type="range" class="audio-slider" id="masterLimit" min="0" max="100" value="80">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Code-to-Audio Mapping System
+        class CodeAudioSimulator {
+            constructor() {
+                this.initializeControls();
+                this.startAudioLoop();
+                this.initializeBackendInstruments();
+            }
+
+            initializeControls() {
+                // Compiler Physics
+                document.getElementById('waveSpeed').addEventListener('input', (e) => {
+                    this.updateWaveSpeed(e.target.value);
+                });
+
+                document.getElementById('reflections').addEventListener('input', (e) => {
+                    this.updateReflections(e.target.value);
+                });
+
+                document.getElementById('diffraction').addEventListener('input', (e) => {
+                    this.updateDiffraction(e.target.value);
+                });
+
+                document.getElementById('doppler').addEventListener('input', (e) => {
+                    this.updateDoppler(e.target.value);
+                });
+
+                document.getElementById('physicsToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.togglePhysics();
+                });
+
+                // DSP Simulation
+                document.getElementById('lowPass').addEventListener('input', (e) => {
+                    this.updateLowPass(e.target.value);
+                });
+
+                document.getElementById('compressor').addEventListener('input', (e) => {
+                    this.updateCompressor(e.target.value);
+                });
+
+                document.getElementById('distortion').addEventListener('input', (e) => {
+                    this.updateDistortion(e.target.value);
+                });
+
+                document.getElementById('eqHigh').addEventListener('input', (e) => {
+                    this.updateEQHigh(e.target.value);
+                });
+
+                document.getElementById('eqMid').addEventListener('input', (e) => {
+                    this.updateEQMid(e.target.value);
+                });
+
+                document.getElementById('eqLow').addEventListener('input', (e) => {
+                    this.updateEQLow(e.target.value);
+                });
+
+                // Backend Instruments
+                document.getElementById('rustVolume').addEventListener('input', (e) => {
+                    this.updateRustVolume(e.target.value);
+                });
+
+                document.getElementById('juliaVolume').addEventListener('input', (e) => {
+                    this.updateJuliaVolume(e.target.value);
+                });
+
+                document.getElementById('sqlVolume').addEventListener('input', (e) => {
+                    this.updateSQLVolume(e.target.value);
+                });
+
+                document.getElementById('tsVolume').addEventListener('input', (e) => {
+                    this.updateTSVolume(e.target.value);
+                });
+
+                document.getElementById('goVolume').addEventListener('input', (e) => {
+                    this.updateGoVolume(e.target.value);
+                });
+
+                document.getElementById('csharpVolume').addEventListener('input', (e) => {
+                    this.updateCSharpVolume(e.target.value);
+                });
+
+                // Audio Effects
+                document.getElementById('reverb').addEventListener('input', (e) => {
+                    this.updateReverb(e.target.value);
+                });
+
+                document.getElementById('delay').addEventListener('input', (e) => {
+                    this.updateDelay(e.target.value);
+                });
+
+                document.getElementById('chorus').addEventListener('input', (e) => {
+                    this.updateChorus(e.target.value);
+                });
+
+                document.getElementById('flanger').addEventListener('input', (e) => {
+                    this.updateFlanger(e.target.value);
+                });
+
+                document.getElementById('phaser').addEventListener('input', (e) => {
+                    this.updatePhaser(e.target.value);
+                });
+
+                // Master Controls
+                document.getElementById('masterVolume').addEventListener('input', (e) => {
+                    this.updateMasterVolume(e.target.value);
+                });
+
+                document.getElementById('masterEQ').addEventListener('input', (e) => {
+                    this.updateMasterEQ(e.target.value);
+                });
+
+                document.getElementById('masterComp').addEventListener('input', (e) => {
+                    this.updateMasterComp(e.target.value);
+                });
+
+                document.getElementById('masterLimit').addEventListener('input', (e) => {
+                    this.updateMasterLimit(e.target.value);
+                });
+            }
+
+            updateWaveSpeed(value) {
+                const speed = value / 100;
+                document.documentElement.style.setProperty('--wave-speed', `${speed}s`);
+                this.updateCodeOutput();
+            }
+
+            updateReflections(value) {
+                const reflections = value / 100;
+                this.reflections = reflections;
+                this.updateCodeOutput();
+            }
+
+            updateDiffraction(value) {
+                const diffraction = value / 100;
+                this.diffraction = diffraction;
+                this.updateCodeOutput();
+            }
+
+            updateDoppler(value) {
+                const doppler = value / 100;
+                this.doppler = doppler;
+                this.updateCodeOutput();
+            }
+
+            togglePhysics() {
+                const isActive = document.getElementById('physicsToggle').classList.contains('active');
+                if (isActive) {
+                    document.getElementById('waveformDisplay').style.display = 'block';
+                } else {
+                    document.getElementById('waveformDisplay').style.display = 'none';
+                }
+            }
+
+            updateLowPass(value) {
+                const lowPass = value / 100;
+                this.lowPass = lowPass;
+                this.updateCodeOutput();
+            }
+
+            updateCompressor(value) {
+                const compressor = value / 100;
+                this.compressor = compressor;
+                this.updateCodeOutput();
+            }
+
+            updateDistortion(value) {
+                const distortion = value / 100;
+                this.distortion = distortion;
+                this.updateCodeOutput();
+            }
+
+            updateEQHigh(value) {
+                const eqHigh = value / 100;
+                this.eqHigh = eqHigh;
+                this.updateCodeOutput();
+            }
+
+            updateEQMid(value) {
+                const eqMid = value / 100;
+                this.eqMid = eqMid;
+                this.updateCodeOutput();
+            }
+
+            updateEQLow(value) {
+                const eqLow = value / 100;
+                this.eqLow = eqLow;
+                this.updateCodeOutput();
+            }
+
+            updateRustVolume(value) {
+                const volume = value / 100;
+                this.rustVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateJuliaVolume(value) {
+                const volume = value / 100;
+                this.juliaVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateSQLVolume(value) {
+                const volume = value / 100;
+                this.sqlVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateTSVolume(value) {
+                const volume = value / 100;
+                this.tsVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateGoVolume(value) {
+                const volume = value / 100;
+                this.goVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateCSharpVolume(value) {
+                const volume = value / 100;
+                this.csharpVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateReverb(value) {
+                const reverb = value / 100;
+                this.reverb = reverb;
+                this.updateCodeOutput();
+            }
+
+            updateDelay(value) {
+                const delay = value / 100;
+                this.delay = delay;
+                this.updateCodeOutput();
+            }
+
+            updateChorus(value) {
+                const chorus = value / 100;
+                this.chorus = chorus;
+                this.updateCodeOutput();
+            }
+
+            updateFlanger(value) {
+                const flanger = value / 100;
+                this.flanger = flanger;
+                this.updateCodeOutput();
+            }
+
+            updatePhaser(value) {
+                const phaser = value / 100;
+                this.phaser = phaser;
+                this.updateCodeOutput();
+            }
+
+            updateMasterVolume(value) {
+                const volume = value / 100;
+                this.masterVolume = volume;
+                this.updateCodeOutput();
+            }
+
+            updateMasterEQ(value) {
+                const eq = value / 100;
+                this.masterEQ = eq;
+                this.updateCodeOutput();
+            }
+
+            updateMasterComp(value) {
+                const comp = value / 100;
+                this.masterComp = comp;
+                this.updateCodeOutput();
+            }
+
+            updateMasterLimit(value) {
+                const limit = value / 100;
+                this.masterLimit = limit;
+                this.updateCodeOutput();
+            }
+
+            updateCodeOutput() {
+                const output = document.getElementById('codeOutput');
+                let content = '';
+
+                // Compiler Physics
+                if (document.getElementById('physicsToggle').classList.contains('active')) {
+                    content += '<div class="audio-comment">// 🌊 Compiler Physics: AST/IR waves moving through the pipeline</div>';
+                    content += `<div class="waveform-comment">// Wave Speed: ${document.getElementById('waveSpeed').value}%</div>`;
+                    content += `<div class="waveform-comment">// Reflections: ${document.getElementById('reflections').value}%</div>`;
+                    content += `<div class="waveform-comment">// Diffraction: ${document.getElementById('diffraction').value}%</div>`;
+                    content += `<div class="waveform-comment">// Doppler Effect: ${document.getElementById('doppler').value}%</div>`;
+                }
+
+                // DSP Simulation
+                content += '<div class="spectrum-comment">// 🎚️ DSP Simulation: Optimization filters processing code tone</div>';
+                content += `<div class="spectrum-comment">// Low-Pass Filter: ${document.getElementById('lowPass').value}%</div>`;
+                content += `<div class="spectrum-comment">// Compressor: ${document.getElementById('compressor').value}%</div>`;
+                content += `<div class="spectrum-comment">// Distortion: ${document.getElementById('distortion').value}%</div>`;
+                content += `<div class="spectrum-comment">// EQ (High/Mid/Low): ${document.getElementById('eqHigh').value}%/${document.getElementById('eqMid').value}%/${document.getElementById('eqLow').value}%</div>`;
+
+                // Backend Instruments
+                content += '<div class="audio-comment">// 🎹 Backend Instruments: Virtual synthesizers for each backend</div>';
+                content += `<div class="audio-comment">// 🦀 Rust FM Synth: ${document.getElementById('rustVolume').value}% volume</div>`;
+                content += `<div class="audio-comment">// 📘 Julia Granular Synth: ${document.getElementById('juliaVolume').value}% volume</div>`;
+                content += `<div class="audio-comment">// 🗄️ SQL Sampler: ${document.getElementById('sqlVolume').value}% volume</div>`;
+                content += `<div class="audio-comment">// ⚡ TypeScript Digital Synth: ${document.getElementById('tsVolume').value}% volume</div>`;
+                content += `<div class="audio-comment">// 🐹 Go Analog Synth: ${document.getElementById('goVolume').value}% volume</div>`;
+                content += `<div class="audio-comment">// 🔷 C# PLINQ Synth: ${document.getElementById('csharpVolume').value}% volume</div>`;
+
+                // Audio Effects
+                content += '<div class="audio-comment">// 🎛️ Audio Effects: Processing the code tone</div>';
+                content += `<div class="audio-comment">// Reverb: ${document.getElementById('reverb').value}% | Delay: ${document.getElementById('delay').value}%</div>`;
+                content += `<div class="audio-comment">// Chorus: ${document.getElementById('chorus').value}% | Flanger: ${document.getElementById('flanger').value}%</div>`;
+                content += `<div class="audio-comment">// Phaser: ${document.getElementById('phaser').value}%</div>`;
+
+                // Master Controls
+                content += '<div class="audio-comment">// 🎚️ Master Controls: Final processing</div>';
+                content += `<div class="audio-comment">// Master Volume: ${document.getElementById('masterVolume').value}%</div>`;
+                content += `<div class="audio-comment">// Master EQ: ${document.getElementById('masterEQ').value}% | Compressor: ${document.getElementById('masterComp').value}%</div>`;
+                content += `<div class="audio-comment">// Master Limiter: ${document.getElementById('masterLimit').value}%</div>`;
+
+                output.innerHTML = content;
+            }
+
+            startAudioLoop() {
+                setInterval(() => {
+                    // Simulate audio performance metrics
+                    const performance = Math.random() * 100;
+                    document.getElementById('performanceMeter').style.width = `${performance}%`;
+
+                    // Update spectrum analyzer
+                    const bars = document.querySelectorAll('.spectrum-bar');
+                    bars.forEach((bar, index) => {
+                        const height = Math.random() * 100 + 20;
+                        bar.style.height = `${height}px`;
+                    });
+
+                    // Update visualizer
+                    const circles = document.querySelectorAll('.visualizer-circle');
+                    circles.forEach((circle, index) => {
+                        const scale = Math.random() * 2 + 0.5;
+                        circle.style.transform = `scale(${scale})`;
+                    });
+                }, 100);
+            }
+
+            initializeBackendInstruments() {
+                // Initialize backend instrument controls
+                this.rustVolume = 0.8;
+                this.juliaVolume = 0.6;
+                this.sqlVolume = 0.7;
+                this.tsVolume = 0.75;
+                this.goVolume = 0.65;
+                this.csharpVolume = 0.7;
+
+                // Initialize audio effects
+                this.reverb = 0.3;
+                this.delay = 0.2;
+                this.chorus = 0.4;
+                this.flanger = 0.25;
+                this.phaser = 0.35;
+
+                // Initialize master controls
+                this.masterVolume = 0.75;
+                this.masterEQ = 0.5;
+                this.masterComp = 0.6;
+                this.masterLimit = 0.8;
+            }
+        }
+
+        // Initialize the Code-to-Audio Simulator
+        document.addEventListener('DOMContentLoaded', () => {
+            new CodeAudioSimulator();
+        });
+    </script>
+</body>
+</html>

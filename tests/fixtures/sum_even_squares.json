@@ -10,7 +10,7 @@
       "description": "Sequential loops mode - baseline implementation"
     },
     {
-      "name": "broadcast_sequential", 
+      "name": "broadcast_sequential",
       "flags": {"mode": "broadcast", "parallel": false},
       "golden_file": "broadcast_seq.jl.golden",
       "description": "Broadcast mode - vectorized implementation"
@@ -18,7 +18,7 @@
     {
       "name": "loops_parallel",
       "flags": {"mode": "loops", "parallel": true},
-      "golden_file": "loops_parallel.jl.golden", 
+      "golden_file": "loops_parallel.jl.golden",
       "description": "Parallel loops mode - thread-local partials"
     },
     {

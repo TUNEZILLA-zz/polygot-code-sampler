@@ -10,6 +10,7 @@ from typing import Any, List
 @dataclass
 class JL:
     """Julia code emitter with indentation and block management"""
+
     code: List[str]
     indent: int = 0
 
@@ -27,8 +28,10 @@ class JL:
         """Render the complete Julia code"""
         return "\n".join(self.code)
 
+
 class _Block:
     """Context manager for Julia code blocks"""
+
     def __init__(self, jl: JL, footer: str):
         self.jl = jl
         self.footer = footer
@@ -40,14 +43,16 @@ class _Block:
         self.jl.indent -= 1
         self.jl.w(self.footer)
 
+
 def jl_var(name: str) -> str:
     """Sanitize Julia identifiers"""
     # Replace hyphens with underscores, ensure valid Julia identifier
     sanitized = name.replace("-", "_")
     # Ensure it starts with a letter or underscore
-    if not re.match(r'^[a-zA-Z_]', sanitized):
+    if not re.match(r"^[a-zA-Z_]", sanitized):
         sanitized = f"_{sanitized}"
     return sanitized
+
 
 def literal(v: Any) -> str:
     """Convert Python literals to Julia literals"""
@@ -68,6 +73,7 @@ def literal(v: Any) -> str:
     else:
         raise NotImplementedError(f"Unsupported literal type: {type(v)}")
 
+
 def gensym(prefix: str = "var") -> str:
     """Generate unique Julia symbols"""
     if not hasattr(gensym, "_counter"):
@@ -75,9 +81,11 @@ def gensym(prefix: str = "var") -> str:
     gensym._counter += 1
     return f"{prefix}{gensym._counter}"
 
+
 def reset_gensym():
     """Reset gensym counter for deterministic output"""
     gensym._counter = 0
+
 
 def julia_operator(op: str) -> str:
     """Map Python operators to Julia operators"""

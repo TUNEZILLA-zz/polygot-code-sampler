@@ -130,7 +130,7 @@ We're excited to see how the community uses this platform! Some ideas:
 
 - **Complete Feature Overview**: [LAUNCH_POST.md](LAUNCH_POST.md)
 - **Validation Results**: [VALIDATION_REPORT.md](VALIDATION_REPORT.md)
-- **Live Dashboard**: [Production](https://tunezilla-zz.github.io/polygot-code-sampler/) · [Demo](https://tunezilla-zz.github.io/polygot-code-sampler/?demo=1)
+- **Live Dashboard**: [Production](https://tunezilla-zz.github.io/polyglot-code-sampler/) · [Demo](https://tunezilla-zz.github.io/polyglot-code-sampler/?demo=1)
 
 ## **🎉 Celebrate With Us!**
 
@@ -145,4 +145,3 @@ This is a **major milestone** for the Polyglot Code Sampler project. We've trans
 ---
 
 **Tags**: `#performance-monitoring` `#enterprise-platform` `#observability` `#launch` `#celebration`
-

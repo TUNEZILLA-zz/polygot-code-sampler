@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Code Performance Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .studio-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .input-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .python-input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 1rem;
+            color: #e0e0e0;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .mixer-section {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+            text-align: center;
+        }
+
+        .track-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .track {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #3a3a4e;
+            position: relative;
+        }
+
+        .track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .track-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4ecdc4;
+        }
+
+        .track-icon {
+            font-size: 1.2rem;
+        }
+
+        .fader-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .fader {
+            flex: 1;
+            height: 120px;
+            background: linear-gradient(to top, #1a1a2e, #2a2a3e);
+            border-radius: 6px;
+            position: relative;
+            border: 1px solid #4a4a5e;
+        }
+
+        .fader-track {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to top, #ff6b6b, #4ecdc4);
+            border-radius: 2px;
+            transform: translateX(-50%);
+        }
+
+        .fader-knob {
+            position: absolute;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .fader-knob:hover {
+            transform: translateX(-50%) scale(1.2);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.6);
+        }
+
+        .fader-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            font-weight: 600;
+        }
+
+        .fader-value {
+            font-size: 0.8rem;
+            color: #4ecdc4;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .effects-rack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .effect {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #3a3a4e;
+            text-align: center;
+        }
+
+        .effect-name {
+            font-size: 0.8rem;
+            color: #4ecdc4;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #3a3a4e;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        .timeline-section {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .timeline-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .play-button {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #1a1a2e;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+        }
+
+        .play-button.playing {
+            background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+        }
+
+        .timeline-slider {
+            flex: 1;
+            height: 6px;
+            background: #3a3a4e;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .timeline-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+        }
+
+        .timeline-track {
+            background: #1a1a2e;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .keyframe {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+        }
+
+        .keyframe:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.6);
+        }
+
+        .keyframe.selected {
+            background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6);
+        }
+
+        .quantize-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quantize-button {
+            background: #1a1a2e;
+            border: 1px solid #4a4a5e;
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quantize-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .quantize-button.active {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-color: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        .ramp-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .ramp-select {
+            background: #1a1a2e;
+            border: 1px solid #4a4a5e;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .output-section {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .code-preview {
+            background: #0a0a0a;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 0.8rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-header {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            color: #1a1a2e;
+            padding: 6px 10px;
+            border-radius: 4px 4px 0 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin: -15px -15px 10px -15px;
+            text-align: center;
+        }
+
+        .loading {
+            color: #4ecdc4;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            color: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .studio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .track-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="statusIndicator">🎬 Studio Ready</div>
+
+    <div class="studio-container">
+        <div class="header">
+            <h1>🎬 Code Performance Studio</h1>
+            <p>Timeline-based code transformation with keyframes, quantization, and ramps</p>
+        </div>
+
+        <!-- Python Input -->
+        <div class="input-section">
+            <div class="input-title">🐍 Python Input</div>
+            <textarea class="python-input" id="pythonInput" placeholder="Enter your Python comprehension here...">[x * x for x in range(0, 100) if x % 2 == 0]</textarea>
+        </div>
+
+        <!-- Studio Grid -->
+        <div class="studio-grid">
+            <!-- Mixer Section -->
+            <div class="mixer-section">
+                <h2 class="section-title">🎚️ Live Mixer</h2>
+                <div class="track-grid">
+                    <!-- Rust Track -->
+                    <div class="track">
+                        <div class="track-header">
+                            <div class="track-name">🦀 Rust</div>
+                            <div class="track-icon">🥁</div>
+                        </div>
+                        <div class="fader-container">
+                            <div class="fader-label">GAIN</div>
+                            <div class="fader" data-track="rust">
+                                <div class="fader-track"></div>
+                                <div class="fader-knob" style="top: 30%"></div>
+                            </div>
+                            <div class="fader-value">30%</div>
+                        </div>
+                    </div>
+
+                    <!-- Julia Track -->
+                    <div class="track">
+                        <div class="track-header">
+                            <div class="track-name">🔬 Julia</div>
+                            <div class="track-icon">🎹</div>
+                        </div>
+                        <div class="fader-container">
+                            <div class="fader-label">GAIN</div>
+                            <div class="fader" data-track="julia">
+                                <div class="fader-track"></div>
+                                <div class="fader-knob" style="top: 60%"></div>
+                            </div>
+                            <div class="fader-value">40%</div>
+                        </div>
+                    </div>
+
+                    <!-- SQL Track -->
+                    <div class="track">
+                        <div class="track-header">
+                            <div class="track-name">🗄️ SQL</div>
+                            <div class="track-icon">🎤</div>
+                        </div>
+                        <div class="fader-container">
+                            <div class="fader-label">GAIN</div>
+                            <div class="fader" data-track="sql">
+                                <div class="fader-track"></div>
+                                <div class="fader-knob" style="top: 80%"></div>
+                            </div>
+                            <div class="fader-value">20%</div>
+                        </div>
+                    </div>
+
+                    <!-- TypeScript Track -->
+                    <div class="track">
+                        <div class="track-header">
+                            <div class="track-name">📱 TypeScript</div>
+                            <div class="track-icon">🎸</div>
+                        </div>
+                        <div class="fader-container">
+                            <div class="fader-label">GAIN</div>
+                            <div class="fader" data-track="ts">
+                                <div class="fader-track"></div>
+                                <div class="fader-knob" style="top: 45%"></div>
+                            </div>
+                            <div class="fader-value">55%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Effects Rack -->
+                <div class="effects-rack">
+                    <div class="effect">
+                        <div class="effect-name">Pushdown</div>
+                        <div class="toggle-switch active" data-effect="predicate_pushdown">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="effect">
+                        <div class="effect-name">Folding</div>
+                        <div class="toggle-switch active" data-effect="constant_folding">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="effect">
+                        <div class="effect-name">Safety</div>
+                        <div class="toggle-switch active" data-effect="parallel_safety">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                    <div class="effect">
+                        <div class="effect-name">Inference</div>
+                        <div class="toggle-switch" data-effect="type_inference">
+                            <div class="toggle-knob"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Section -->
+            <div class="timeline-section">
+                <h2 class="section-title">⏱️ Timeline</h2>
+
+                <!-- Timeline Controls -->
+                <div class="timeline-controls">
+                    <button class="play-button" id="playButton" onclick="togglePlayback()">▶️ Play</button>
+                    <input type="range" class="timeline-slider" id="timelineSlider" min="0" max="100" value="0">
+                    <span id="timelineTime">0s</span>
+                </div>
+
+                <!-- Quantize Controls -->
+                <div class="quantize-controls">
+                    <button class="quantize-button" onclick="quantizeToPreset('hifi')">🎵 Hi-Fi</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('punchy')">⚡ Punchy</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('lofi')">🎧 Lo-Fi</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('sql')">🎛️ SQL</button>
+                    <button class="quantize-button" onclick="quantizeToGrid()">📐 Grid</button>
+                </div>
+
+                <!-- Ramp Controls -->
+                <div class="ramp-controls">
+                    <label>Ramp Type:</label>
+                    <select class="ramp-select" id="rampType">
+                        <option value="linear">Linear</option>
+                        <option value="exponential">Exponential</option>
+                        <option value="logarithmic">Logarithmic</option>
+                        <option value="sine">Sine</option>
+                    </select>
+                    <label>Duration:</label>
+                    <input type="range" id="rampDuration" min="1" max="10" value="3">
+                    <span id="rampDurationValue">3s</span>
+                </div>
+
+                <!-- Timeline Track -->
+                <div class="timeline-track" id="timelineTrack">
+                    <div class="keyframe" style="left: 10%; top: 50%;" data-time="10" onclick="selectKeyframe(this)"></div>
+                    <div class="keyframe" style="left: 50%; top: 30%;" data-time="50" onclick="selectKeyframe(this)"></div>
+                    <div class="keyframe" style="left: 80%; top: 70%;" data-time="80" onclick="selectKeyframe(this)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-section">
+            <h2 class="section-title">🎧 Live Output</h2>
+            <div class="output-grid" id="outputGrid">
+                <!-- Live code outputs will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Studio State
+        const studioState = {
+            pythonInput: '[x * x for x in range(0, 100) if x % 2 == 0]',
+            tracks: {
+                rust: 30,
+                julia: 40,
+                sql: 20,
+                ts: 55
+            },
+            effects: {
+                predicate_pushdown: true,
+                constant_folding: true,
+                parallel_safety: true,
+                type_inference: false
+            },
+            keyframes: [
+                { time: 10, tracks: { rust: 20, julia: 30, sql: 10, ts: 40 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: false } },
+                { time: 50, tracks: { rust: 60, julia: 50, sql: 30, ts: 70 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { time: 80, tracks: { rust: 80, julia: 70, sql: 50, ts: 90 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } }
+            ],
+            currentTime: 0,
+            isPlaying: false,
+            playbackInterval: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeMixer();
+            initializeTimeline();
+            generateCode();
+        });
+
+        function initializeMixer() {
+            // Fader interactions
+            document.querySelectorAll('.fader').forEach(fader => {
+                const knob = fader.querySelector('.fader-knob');
+                const valueDisplay = fader.parentElement.querySelector('.fader-value');
+                const trackName = fader.dataset.track;
+
+                let isDragging = false;
+
+                const updateFader = (y) => {
+                    const rect = fader.getBoundingClientRect();
+                    const percentage = Math.max(0, Math.min(100, 100 - ((y - rect.top) / rect.height) * 100));
+                    knob.style.top = percentage + '%';
+                    valueDisplay.textContent = Math.round(percentage) + '%';
+                    studioState.tracks[trackName] = Math.round(percentage);
+
+                    // Auto-generate code
+                    debounceGenerate();
+                };
+
+                knob.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        updateFader(e.clientY);
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+
+                fader.addEventListener('click', (e) => {
+                    updateFader(e.clientY);
+                });
+            });
+
+            // Toggle switches
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('active');
+                    const effect = toggle.dataset.effect;
+                    if (effect) {
+                        studioState.effects[effect] = toggle.classList.contains('active');
+                    }
+                    debounceGenerate();
+                });
+            });
+
+            // Python input
+            document.getElementById('pythonInput').addEventListener('input', (e) => {
+                studioState.pythonInput = e.target.value;
+                debounceGenerate();
+            });
+        }
+
+        function initializeTimeline() {
+            // Timeline slider
+            const timelineSlider = document.getElementById('timelineSlider');
+            const timelineTime = document.getElementById('timelineTime');
+
+            timelineSlider.addEventListener('input', (e) => {
+                studioState.currentTime = parseInt(e.target.value);
+                timelineTime.textContent = `${studioState.currentTime}s`;
+                updateMixerFromTimeline();
+                generateCode();
+            });
+
+            // Ramp duration
+            const rampDuration = document.getElementById('rampDuration');
+            const rampDurationValue = document.getElementById('rampDurationValue');
+
+            rampDuration.addEventListener('input', (e) => {
+                rampDurationValue.textContent = `${e.target.value}s`;
+            });
+        }
+
+        function updateMixerFromTimeline() {
+            // Interpolate between keyframes
+            const currentTime = studioState.currentTime;
+            const keyframes = studioState.keyframes;
+
+            // Find surrounding keyframes
+            let beforeKeyframe = null;
+            let afterKeyframe = null;
+
+            for (let i = 0; i < keyframes.length; i++) {
+                if (keyframes[i].time <= currentTime) {
+                    beforeKeyframe = keyframes[i];
+                }
+                if (keyframes[i].time >= currentTime && !afterKeyframe) {
+                    afterKeyframe = keyframes[i];
+                    break;
+                }
+            }
+
+            if (beforeKeyframe && afterKeyframe) {
+                // Interpolate between keyframes
+                const rampType = document.getElementById('rampType').value;
+                const t = (currentTime - beforeKeyframe.time) / (afterKeyframe.time - beforeKeyframe.time);
+                const easedT = applyEasing(t, rampType);
+
+                // Interpolate tracks
+                Object.keys(studioState.tracks).forEach(track => {
+                    const beforeValue = beforeKeyframe.tracks[track];
+                    const afterValue = afterKeyframe.tracks[track];
+                    const interpolatedValue = beforeValue + (afterValue - beforeValue) * easedT;
+                    studioState.tracks[track] = Math.round(interpolatedValue);
+                });
+
+                // Interpolate effects
+                Object.keys(studioState.effects).forEach(effect => {
+                    const beforeValue = beforeKeyframe.effects[effect];
+                    const afterValue = afterKeyframe.effects[effect];
+                    studioState.effects[effect] = beforeValue || afterValue;
+                });
+            } else if (beforeKeyframe) {
+                // Use before keyframe
+                studioState.tracks = { ...beforeKeyframe.tracks };
+                studioState.effects = { ...beforeKeyframe.effects };
+            }
+
+            // Update UI
+            updateMixerUI();
+        }
+
+        function applyEasing(t, type) {
+            switch (type) {
+                case 'linear':
+                    return t;
+                case 'exponential':
+                    return t * t;
+                case 'logarithmic':
+                    return Math.sqrt(t);
+                case 'sine':
+                    return 0.5 * (1 - Math.cos(Math.PI * t));
+                default:
+                    return t;
+            }
+        }
+
+        function updateMixerUI() {
+            // Update faders
+            Object.entries(studioState.tracks).forEach(([track, value]) => {
+                const fader = document.querySelector(`[data-track="${track}"]`);
+                if (fader) {
+                    const knob = fader.querySelector('.fader-knob');
+                    const valueDisplay = fader.parentElement.querySelector('.fader-value');
+                    knob.style.top = value + '%';
+                    valueDisplay.textContent = value + '%';
+                }
+            });
+
+            // Update effects
+            Object.entries(studioState.effects).forEach(([effect, active]) => {
+                const toggle = document.querySelector(`[data-effect="${effect}"]`);
+                if (toggle) {
+                    toggle.classList.toggle('active', active);
+                }
+            });
+        }
+
+        function togglePlayback() {
+            const playButton = document.getElementById('playButton');
+
+            if (studioState.isPlaying) {
+                // Stop playback
+                clearInterval(studioState.playbackInterval);
+                studioState.isPlaying = false;
+                playButton.textContent = '▶️ Play';
+                playButton.classList.remove('playing');
+            } else {
+                // Start playback
+                studioState.isPlaying = true;
+                playButton.textContent = '⏸️ Pause';
+                playButton.classList.add('playing');
+
+                studioState.playbackInterval = setInterval(() => {
+                    studioState.currentTime += 1;
+                    if (studioState.currentTime > 100) {
+                        studioState.currentTime = 0;
+                    }
+
+                    document.getElementById('timelineSlider').value = studioState.currentTime;
+                    document.getElementById('timelineTime').textContent = `${studioState.currentTime}s`;
+                    updateMixerFromTimeline();
+                    generateCode();
+                }, 100);
+            }
+        }
+
+        function selectKeyframe(keyframe) {
+            // Remove previous selection
+            document.querySelectorAll('.keyframe').forEach(kf => kf.classList.remove('selected'));
+
+            // Select current keyframe
+            keyframe.classList.add('selected');
+
+            // Load keyframe data
+            const time = parseInt(keyframe.dataset.time);
+            const keyframeData = studioState.keyframes.find(kf => kf.time === time);
+
+            if (keyframeData) {
+                studioState.tracks = { ...keyframeData.tracks };
+                studioState.effects = { ...keyframeData.effects };
+                updateMixerUI();
+                generateCode();
+            }
+        }
+
+        function quantizeToPreset(preset) {
+            const presets = {
+                hifi: { tracks: { rust: 30, julia: 20, sql: 10, ts: 25 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: false } },
+                punchy: { tracks: { rust: 90, julia: 80, sql: 30, ts: 70 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                lofi: { tracks: { rust: 15, julia: 10, sql: 5, ts: 20 }, effects: { predicate_pushdown: false, constant_folding: false, parallel_safety: false, type_inference: false } },
+                sql: { tracks: { rust: 20, julia: 15, sql: 95, ts: 10 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: false, type_inference: true } }
+            };
+
+            const config = presets[preset];
+            if (config) {
+                studioState.tracks = { ...config.tracks };
+                studioState.effects = { ...config.effects };
+                updateMixerUI();
+                generateCode();
+            }
+        }
+
+        function quantizeToGrid() {
+            // Quantize faders to 25% increments
+            Object.keys(studioState.tracks).forEach(track => {
+                const value = studioState.tracks[track];
+                const quantized = Math.round(value / 25) * 25;
+                studioState.tracks[track] = quantized;
+            });
+
+            updateMixerUI();
+            generateCode();
+        }
+
+        // Debounced generation
+        let generateTimeout;
+        function debounceGenerate() {
+            clearTimeout(generateTimeout);
+            generateTimeout = setTimeout(generateCode, 300);
+        }
+
+        function showStatus(message) {
+            const indicator = document.getElementById('statusIndicator');
+            indicator.textContent = message;
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        async function generateCode() {
+            const outputGrid = document.getElementById('outputGrid');
+
+            // Clear previous outputs
+            outputGrid.innerHTML = '';
+
+            // Get active tracks
+            const activeTracks = Object.entries(studioState.tracks)
+                .filter(([_, level]) => level > 20)
+                .sort((a, b) => b[1] - a[1]);
+
+            if (activeTracks.length === 0) {
+                outputGrid.innerHTML = '<div class="code-preview"><div class="loading">🎚️ Turn up some faders to generate code!</div></div>';
+                return;
+            }
+
+            // Generate code for each active track
+            for (const [track, level] of activeTracks) {
+                const codePreview = document.createElement('div');
+                codePreview.className = 'code-preview';
+                codePreview.innerHTML = `
+                    <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                    <div class="loading">🔄 Generating ${track} code...</div>
+                `;
+                outputGrid.appendChild(codePreview);
+
+                try {
+                    // Simulate code generation
+                    await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+
+                    const code = generateDemoCode(track, level);
+
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <pre>${code}</pre>
+                    `;
+                } catch (error) {
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <div class="error">❌ Error generating ${track} code: ${error.message}</div>
+                    `;
+                }
+            }
+
+            showStatus('✅ Code generated!');
+        }
+
+        function generateDemoCode(track, level) {
+            const parallel = level > 60;
+            const unsafe = level > 85;
+
+            const demos = {
+                rust: `use rayon::prelude::*;
+
+pub fn process_data() -> Vec<i32> {
+    (0..100)
+        ${parallel ? '.into_par_iter()' : '.iter()'}
+        .filter(|&x| x % 2 == 0)
+        .map(|x| x * x)
+        .collect()
+}`,
+                julia: `function process_data()
+    x = 0:99
+    mask = x .% 2 .== 0
+    ${parallel ? 'Threads.@threads' : ''} return (x .* x)[mask]
+end`,
+                sql: `WITH series AS (
+    SELECT generate_series(0, 99) AS x
+)
+SELECT x * x AS result
+FROM series
+WHERE x % 2 = 0;`,
+                ts: `export ${parallel ? 'async ' : ''}function processData(): ${parallel ? 'Promise<number[]>' : 'number[]'} {
+    const data = Array.from({length: 100}, (_, i) => i);
+    ${parallel ? `return new Promise((resolve) => {
+        const worker = new Worker('processor.js');
+        worker.postMessage(data);
+        worker.onmessage = (e) => resolve(e.data);
+    });` : `return data
+        .filter(x => x % 2 === 0)
+        .map(x => x * x);`}
+}`
+            };
+
+            return demos[track] || `// Demo code for ${track}`;
+        }
+
+        function getTrackIcon(track) {
+            const icons = { rust: '🦀', julia: '🔬', sql: '🗄️', ts: '📱' };
+            return icons[track] || '🎵';
+        }
+
+        function getTrackName(track) {
+            const names = { rust: 'Rust', julia: 'Julia', sql: 'SQL', ts: 'TypeScript' };
+            return names[track] || track;
+        }
+    </script>
+</body>
+</html>

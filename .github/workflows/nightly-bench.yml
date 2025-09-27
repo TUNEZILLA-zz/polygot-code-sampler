@@ -11,7 +11,7 @@ jobs:
     env:
       PCS_BENCH_N: "1000000"
       CPU_INFO: "GitHub Actions Runner"
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,10 +98,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Add new benchmark results
           git add bench/results/*.ndjson
-          
+
           # Check if there are changes to commit
           if git diff --staged --quiet; then
             echo "No new benchmark results to commit"
@@ -135,11 +135,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-    
+
     env:
       PCS_BENCH_N: "100000"
       CPU_INFO: "${{ matrix.os }}"
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -172,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: bench
     if: always()
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -192,11 +192,11 @@ jobs:
       - name: Check for performance regressions
         run: |
           echo "🔍 Checking for performance regressions..."
-          
+
           # Simple regression check: compare latest results with previous day
           if [ -f "bench/results/$(date -u -d 'yesterday' +%Y-%m-%d).ndjson" ]; then
             echo "📊 Comparing with previous day's results..."
-            
+
             # This would implement actual regression detection logic
             # For now, just report that the check was performed
             echo "✅ Performance regression check completed"
@@ -211,26 +211,26 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             // Check if benchmark results exist
             const resultsDir = 'bench/results';
             if (fs.existsSync(resultsDir)) {
               const files = fs.readdirSync(resultsDir);
               const today = new Date().toISOString().split('T')[0];
               const todayFile = files.find(f => f.startsWith(today));
-              
+
               if (todayFile) {
                 const results = fs.readFileSync(path.join(resultsDir, todayFile), 'utf8');
                 const lines = results.trim().split('\n').filter(line => line.trim());
-                
+
                 let comment = '## 🚀 Nightly Benchmark Results\n\n';
                 comment += `**Date:** ${today}\n`;
                 comment += `**Total Results:** ${lines.length}\n\n`;
-                
+
                 // Parse and summarize results
                 const backends = new Set();
                 const tests = new Set();
-                
+
                 lines.forEach(line => {
                   try {
                     const data = JSON.parse(line);
@@ -240,11 +240,11 @@ jobs:
                     // Skip invalid JSON
                   }
                 });
-                
+
                 comment += `**Backends:** ${Array.from(backends).join(', ')}\n`;
                 comment += `**Tests:** ${Array.from(tests).join(', ')}\n\n`;
-                comment += '📊 [View full dashboard](https://tunezilla-zz.github.io/polygot-code-sampler/)\n';
-                
+                comment += '📊 [View full dashboard](https://tunezilla-zz.github.io/polyglot-code-sampler/)\n';
+
                 github.rest.issues.createComment({
                   issue_number: context.issue.number,
                   owner: context.repo.owner,

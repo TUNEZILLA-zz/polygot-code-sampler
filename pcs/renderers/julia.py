@@ -6,7 +6,14 @@ from ..backends.julia import lower_program
 from ..core import IRComp
 
 
-def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False, mode: str = "auto", explain: bool = True, unsafe: bool = False) -> str:
+def render_julia(
+    ir: IRComp,
+    func_name: str = "program",
+    parallel: bool = False,
+    mode: str = "auto",
+    explain: bool = True,
+    unsafe: bool = False,
+) -> str:
     """
     Julia backend with broadcast/vectorized support:
       list -> Vector{Int}
@@ -20,15 +27,21 @@ def render_julia(ir: IRComp, func_name: str = "program", parallel: bool = False,
       - Leverages Julia's high-performance array operations
     """
     # Use the new comprehensive Julia backend
-    return lower_program(ir, mode=mode, parallel=parallel, explain=explain, unsafe=unsafe)
+    return lower_program(
+        ir, mode=mode, parallel=parallel, explain=explain, unsafe=unsafe
+    )
+
 
 def _should_use_broadcast(ir: IRComp, gen) -> bool:
     """Determine if broadcast syntax is appropriate"""
     # Use broadcast for simple element-wise operations
-    if ir.element and not any(char in ir.element for char in ['if', 'else', 'and', 'or']):
+    if ir.element and not any(
+        char in ir.element for char in ["if", "else", "and", "or"]
+    ):
         return True
     # Use loops for complex logic
     return False
+
 
 def _render_julia_broadcast(ir: IRComp, gen, range_expr: str, parallel: bool) -> list:
     """Render using Julia's broadcast syntax"""
@@ -83,9 +96,12 @@ def _render_julia_broadcast(ir: IRComp, gen, range_expr: str, parallel: bool) ->
         elif ir.kind == "dict":
             key_expr = ir.key_expr or "0"
             val_expr = ir.val_expr or "0"
-            lines.append(f"    return Dict({key_expr} => {val_expr} for {gen.var} in {gen.var})")
+            lines.append(
+                f"    return Dict({key_expr} => {val_expr} for {gen.var} in {gen.var})"
+            )
 
     return lines
+
 
 def _render_julia_loop(ir: IRComp, gen, range_expr: str, parallel: bool) -> list:
     """Render using explicit loops"""

@@ -70,7 +70,7 @@ template: |
 
   This release includes performance improvements across multiple backends:
   - **Rust**: Rayon parallel processing optimizations
-  - **TypeScript**: Web Workers efficiency improvements  
+  - **TypeScript**: Web Workers efficiency improvements
   - **Go**: Goroutine scheduling enhancements
   - **C#**: PLINQ parallel execution improvements
   - **Julia**: Thread-local storage optimizations
@@ -98,10 +98,10 @@ template: |
   # Try the central renderer API
   from pcs.renderer_api import render
   from pcs.core import PyToIR
-  
+
   parser = PyToIR()
   ir = parser.parse("[x**2 for x in range(10) if x % 2 == 0]")
-  
+
   # Generate code for any backend
   rust_code = render("rust", ir, parallel=True)
   ts_code = render("ts", ir, parallel=True)
@@ -109,11 +109,11 @@ template: |
 
   ## 🔗 Links
 
-  - **Live Dashboard**: [Production](https://tunezilla-zz.github.io/polygot-code-sampler/) | [Demo](https://tunezilla-zz.github.io/polygot-code-sampler/?demo=1)
+  - **Live Dashboard**: [Production](https://tunezilla-zz.github.io/polyglot-code-sampler/) | [Demo](https://tunezilla-zz.github.io/polyglot-code-sampler/?demo=1)
   - **Documentation**: [RENDERER_API.md](docs/RENDERER_API.md)
   - **Migration Guide**: [CHANGELOG.md](CHANGELOG.md)
   - **Performance Reports**: [VALIDATION_REPORT.md](VALIDATION_REPORT.md)
 
   ---
 
-  **Full Changelog**: https://github.com/TUNEZILLA-zz/polygot-code-sampler/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+  **Full Changelog**: https://github.com/TUNEZILLA-zz/polyglot-code-sampler/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

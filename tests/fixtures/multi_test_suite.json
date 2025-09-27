@@ -15,7 +15,7 @@
           "golden_file": "sum_even_squares_loops_seq.jl.golden"
         },
         {
-          "name": "broadcast_sequential", 
+          "name": "broadcast_sequential",
           "flags": {"mode": "broadcast", "parallel": false},
           "golden_file": "sum_even_squares_broadcast_seq.jl.golden"
         },
@@ -143,4 +143,3 @@
     }
   }
 }
-

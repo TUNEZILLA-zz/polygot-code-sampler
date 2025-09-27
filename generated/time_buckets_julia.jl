@@ -2,10 +2,10 @@
 module PCS_Generated_9d46
 
     const PCS_Generated = PCS_Generated_9d46
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Int
         # NOTE: auto-selected broadcast mode for small N=1000
         # NOTE: gensym reset at emit start for deterministic output

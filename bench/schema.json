@@ -3,7 +3,7 @@
   "description": "PCS Benchmark Data Schema",
   "fields": [
     "commit",
-    "timestamp", 
+    "timestamp",
     "os",
     "cpu",
     "backend",
@@ -30,9 +30,8 @@
   "required_fields": [
     "commit",
     "timestamp",
-    "backend", 
+    "backend",
     "test",
     "mean_ns"
   ]
 }
-

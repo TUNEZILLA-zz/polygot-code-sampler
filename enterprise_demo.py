@@ -16,32 +16,32 @@ def generate_enterprise_demo():
             "name": "Customer Order Processing",
             "description": "Calculate total revenue from completed high-value orders",
             "python": "sum(order.total * 1.1 for order in orders if order.status == 'completed' and order.total > 100)",
-            "use_case": "E-commerce revenue calculation with tax"
+            "use_case": "E-commerce revenue calculation with tax",
         },
         {
             "name": "Employee Performance Analysis",
             "description": "Find top performers with high sales and low returns",
             "python": "[emp.name for emp in employees if emp.sales > 100000 and emp.return_rate < 0.05]",
-            "use_case": "HR analytics and performance reviews"
+            "use_case": "HR analytics and performance reviews",
         },
         {
             "name": "Inventory Management",
             "description": "Identify low-stock items that need reordering",
             "python": "{item.name: item.reorder_level for item in inventory if item.stock < item.reorder_level}",
-            "use_case": "Supply chain optimization"
+            "use_case": "Supply chain optimization",
         },
         {
             "name": "Financial Risk Assessment",
             "description": "Calculate portfolio risk for high-risk investments",
             "python": "sum(asset.value * asset.risk_score for asset in portfolio if asset.risk_score > 0.7)",
-            "use_case": "Financial services risk management"
+            "use_case": "Financial services risk management",
         },
         {
             "name": "Customer Segmentation",
             "description": "Identify premium customers for targeted marketing",
             "python": "{customer.id: customer.lifetime_value for customer in customers if customer.lifetime_value > 10000 and customer.engagement_score > 0.8}",
-            "use_case": "Marketing automation and personalization"
-        }
+            "use_case": "Marketing automation and personalization",
+        },
     ]
 
     print("🏢 **Enterprise Business Logic Showcase**")
@@ -62,11 +62,15 @@ def generate_enterprise_demo():
 
         # Parse to IR
         parser = PyToIR()
-        ir = parser.parse(example['python'])
+        ir = parser.parse(example["python"])
 
         # Generate sample outputs
-        rust_output = render_rust(ir, func_name=f"{example['name'].lower().replace(' ', '_')}_rust")
-        csharp_output = render_csharp(ir, func_name=f"{example['name'].replace(' ', '')}CSharp")
+        rust_output = render_rust(
+            ir, func_name=f"{example['name'].lower().replace(' ', '_')}_rust"
+        )
+        csharp_output = render_csharp(
+            ir, func_name=f"{example['name'].replace(' ', '')}CSharp"
+        )
 
         demo_markdown += f"""
 ### {i}. **{example['name']}**
@@ -124,6 +128,7 @@ python3 pcs_step3_ts.py --code "{item.name: item.reorder_level for item in inven
 
     return demo_markdown
 
+
 if __name__ == "__main__":
     demo = generate_enterprise_demo()
     print(demo)
@@ -133,4 +138,3 @@ if __name__ == "__main__":
         f.write(demo)
 
     print("\n💾 Enterprise demo saved to: ENTERPRISE_SHOWCASE.md")
-

@@ -1,0 +1,31 @@
+# Code Live - Tool Version Constraints
+# Pin tool versions to ensure CI parity with local development
+
+# Pre-commit hooks
+pre-commit==4.3.0
+pre-commit-hooks==4.6.0
+check-jsonschema==0.28.4
+
+# Python formatting and linting
+black==24.1.1
+ruff==0.1.8
+mypy==1.8.0
+
+# JavaScript/TypeScript
+eslint==8.56.0
+prettier==3.1.0
+
+# Testing
+pytest==8.0.0
+pytest-cov==4.1.0
+
+# Git LFS
+git-lfs==3.7.0
+
+# Build tools
+build==1.0.3
+twine==4.0.2
+
+# Node.js tools
+npm==10.2.0
+node==20.10.0

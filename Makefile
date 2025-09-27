@@ -1,229 +1,156 @@
-# Makefile for Polyglot Code Sampler - Julia Backend Dev Workflow
+# Makefile for Code Live - The Ableton Live of Code
 
-.PHONY: help test-julia test-fixtures test-differential benchmark-julia clean-julia dev-workflow
+.PHONY: help build start stop restart logs clean test lint format
 
 # Default target
 help:
-	@echo "🚀 Polyglot Code Sampler - Julia Backend Dev Workflow"
-	@echo "=================================================="
+	@echo "🎛️ Code Live - The Ableton Live of Code"
+	@echo "======================================"
 	@echo ""
-	@echo "Available targets:"
-	@echo "  test-julia      - Run all Julia backend tests"
-	@echo "  test-fixtures   - Test IR fixture → 4 goldens regression safety net"
-	@echo "  test-differential - Run differential tests (IR → Julia vs reference)"
-	@echo "  benchmark-julia - Run Julia performance benchmarks"
-	@echo "  dev-workflow    - Complete dev workflow (test + benchmark)"
-	@echo "  clean-julia     - Clean Julia test artifacts"
-	@echo ""
-	@echo "Benchmark targets:"
-	@echo "  bench           - Run all backend benchmarks (Julia, Rust, Go, TS, C#)"
-	@echo "  bench-agg       - Aggregate benchmark results for dashboard"
-	@echo "  bench-publish   - Publish benchmark dashboard to GitHub Pages"
-	@echo "  bench-full      - Run benchmarks and aggregate results"
-	@echo "  bench-status    - Show benchmark status and results"
-	@echo ""
-	@echo "Phase 2: Advanced benchmarking:"
-	@echo "  bench-multi     - Run comprehensive multi-test benchmark suite"
-	@echo "  trend-alerts    - Check for performance regressions with alerts"
-	@echo "  bench-phase2    - Complete Phase 2 benchmark suite"
-	@echo "  dashboard-preview - Preview enhanced dashboard locally"
-	@echo ""
-	@echo "Quick refresh:"
-	@echo "  bench-refresh   - One-liner: run benchmarks, aggregate, commit & push"
-	@echo ""
-	@echo "Performance canaries:"
-	@echo "  canary          - Run micro canary benchmark (fast regression detection)"
-	@echo "  canary-baseline - Set current performance as baseline"
+	@echo "Available commands:"
+	@echo "  build     - Build Docker images"
+	@echo "  start     - Start all services"
+	@echo "  stop      - Stop all services"
+	@echo "  restart   - Restart all services"
+	@echo "  logs      - View service logs"
+	@echo "  clean     - Clean up containers and volumes"
+	@echo "  test      - Run tests"
+	@echo "  lint      - Run linting"
+	@echo "  format    - Format code"
+	@echo "  status    - Check service status"
+	@echo "  health    - Check service health"
 	@echo ""
 
-# Test Julia backend
-test-julia:
-	@echo "🧪 Running Julia Backend Tests..."
-	python3 -m pytest tests/test_one_ir_many_goldens.py -v
-	@echo "✅ Julia backend tests completed"
+# Build Docker images
+build:
+	@echo "🔨 Building Code Live services..."
+	docker-compose build
 
-# Test fixture golden files
-test-fixtures:
-	@echo "🧪 Testing IR Fixture → 4 Goldens Regression Safety Net..."
-	python3 scripts/test_fixture_goldens.py
-	@echo "✅ Fixture golden tests completed"
+# Start all services
+start:
+	@echo "🚀 Starting Code Live services..."
+	./scripts/start.sh
 
-# Run differential tests
-test-differential:
-	@echo "🧪 Running Differential Tests (IR → Julia vs Reference)..."
-	python3 scripts/test_differential.py
-	@echo "✅ Differential tests completed"
+# Stop all services
+stop:
+	@echo "🛑 Stopping Code Live services..."
+	./scripts/stop.sh
 
-# Run Julia performance benchmarks
-benchmark-julia:
-	@echo "⚡ Running Julia Performance Benchmarks..."
-	@if command -v julia >/dev/null 2>&1; then \
-		echo "📊 Sequential vs Parallel Performance Comparison:"; \
-		julia --project -e 'include("examples/julia/sanity_perf_check.jl")'; \
-		echo "✅ Julia benchmarks completed"; \
-	else \
-		echo "⚠️  Julia not found - skipping benchmarks"; \
-		echo "   Install Julia to run performance benchmarks"; \
-	fi
+# Restart all services
+restart: stop start
 
-# Complete dev workflow
-dev-workflow: test-julia test-fixtures test-differential benchmark-julia
-	@echo ""
-	@echo "🎉 Complete Dev Workflow Completed!"
-	@echo "✅ All tests passed"
-	@echo "✅ Regression safety net intact"
-	@echo "✅ Performance benchmarks completed"
-	@echo ""
-	@echo "🚀 Julia backend is ready for production!"
+# View service logs
+logs:
+	@echo "📋 Viewing Code Live logs..."
+	docker-compose logs -f
 
-# Clean Julia test artifacts
-clean-julia:
-	@echo "🧹 Cleaning Julia test artifacts..."
-	@rm -f tests/generated_*.jl
-	@rm -f tests/diff_*.jl
-	@rm -f *.jl
-	@echo "✅ Julia artifacts cleaned"
+# Clean up containers and volumes
+clean:
+	@echo "🗑️ Cleaning up Code Live..."
+	docker-compose down -v --rmi all
+	docker system prune -f
 
-# Quick test (for development)
-quick-test:
-	@echo "⚡ Quick Julia Backend Test..."
-	python3 -m pcs --code "sum(i*i for i in range(1, 10) if i%2==0)" --target julia --mode auto --parallel
-	@echo "✅ Quick test completed"
+# Run tests
+test:
+	@echo "🧪 Running Code Live tests..."
+	docker-compose exec code-live python -m pytest tests/ -v
 
-# Generate all golden files from fixture
-regenerate-goldens:
-	@echo "🔄 Regenerating Golden Files from Fixture..."
-	@echo "⚠️  This will overwrite existing golden files!"
-	@read -p "Continue? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-	python3 scripts/regenerate_goldens.py
-	@echo "✅ Golden files regenerated"
+# Run linting
+lint:
+	@echo "🔍 Running Code Live linting..."
+	docker-compose exec code-live python -m flake8 .
+	docker-compose exec code-live python -m mypy .
 
-# Show Julia backend status
+# Format code
+format:
+	@echo "🎨 Formatting Code Live code..."
+	docker-compose exec code-live python -m black .
+	docker-compose exec code-live python -m isort .
+
+# Check service status
 status:
-	@echo "📊 Julia Backend Status:"
-	@echo "========================"
-	@echo "Python version: $$(python3 --version)"
-	@echo "Julia version: $$(julia --version 2>/dev/null || echo 'Not installed')"
-	@echo "PCS version: $$(python3 -m pcs --version 2>/dev/null || echo 'Not available')"
-	@echo ""
-	@echo "Test files:"
-	@ls -la tests/fixtures/ 2>/dev/null || echo "  No fixtures found"
-	@ls -la tests/golden/julia/ 2>/dev/null || echo "  No golden files found"
-	@echo ""
-	@echo "Scripts:"
-	@ls -la scripts/test_*.py 2>/dev/null || echo "  No test scripts found"
+	@echo "📊 Code Live service status:"
+	docker-compose ps
 
-# Benchmark targets
-bench:
-	@echo "🚀 Running all backend benchmarks..."
-	python3 scripts/bench_all.py
+# Check service health
+health:
+	@echo "🏥 Checking Code Live health..."
+	@curl -f http://localhost:8787/health && echo "✅ Backend is healthy" || echo "❌ Backend is not responding"
 
-bench-agg:
-	@echo "📊 Aggregating benchmark results..."
-	python3 scripts/aggregate_bench.py
+# Development targets
+dev:
+	@echo "🔧 Starting development environment..."
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
-bench-publish:
-	@echo "📈 Publishing benchmark dashboard..."
-	@if command -v gh-pages >/dev/null 2>&1; then \
-		gh-pages -d site; \
-	else \
-		echo "⚠️  gh-pages not found. Install with: npm install -g gh-pages"; \
-		echo "   Or use GitHub Actions for automatic publishing"; \
-	fi
+dev-logs:
+	@echo "📋 Viewing development logs..."
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
 
-bench-full: bench bench-agg
-	@echo "🎉 Full benchmark suite completed!"
+# Production targets
+prod:
+	@echo "🚀 Starting production environment..."
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-bench-status:
-	@echo "📊 Benchmark Status:"
-	@echo "==================="
-	@echo "Results directory:"
-	@ls -la bench/results/ 2>/dev/null || echo "  No results found"
-	@echo ""
-	@echo "Site directory:"
-	@ls -la site/ 2>/dev/null || echo "  No site files found"
-	@echo ""
-	@echo "Last benchmark:"
-	@ls -t bench/results/*.ndjson 2>/dev/null | head -1 | xargs ls -la 2>/dev/null || echo "  No benchmarks found"
+prod-logs:
+	@echo "📋 Viewing production logs..."
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml logs -f
 
-# Phase 2: Advanced benchmarking features
-bench-multi:
-	@echo "🚀 Running multi-test benchmark suite..."
-	python3 scripts/bench_multi_test.py
+# Database targets
+db-migrate:
+	@echo "🗄️ Running database migrations..."
+	docker-compose exec code-live python -m alembic upgrade head
 
-trend-alerts:
-	@echo "🔍 Checking for performance regressions..."
-	python3 scripts/trend_alerts.py
+db-seed:
+	@echo "🌱 Seeding database..."
+	docker-compose exec code-live python scripts/seed_db.py
 
-bench-phase2: bench-multi bench-agg trend-alerts
-	@echo "🎉 Phase 2 benchmark suite completed!"
+# Backup and restore
+backup:
+	@echo "💾 Creating backup..."
+	docker-compose exec code-live python scripts/backup.py
 
-# Enhanced dashboard features
-dashboard-preview:
-	@echo "📈 Previewing enhanced dashboard..."
-	@if command -v python3 >/dev/null 2>&1; then \
-		cd site && python3 -m http.server 8080; \
-	else \
-		echo "⚠️  Python3 not found. Open site/index.html in your browser"; \
-	fi
+restore:
+	@echo "🔄 Restoring from backup..."
+	docker-compose exec code-live python scripts/restore.py
 
-# One-liner refresh: run benchmarks, aggregate, commit & push
-bench-refresh:
-	@echo "🔄 Running complete benchmark refresh..."
-	@echo "1️⃣ Running benchmarks..."
-	$(MAKE) bench
-	@echo "2️⃣ Aggregating results..."
-	$(MAKE) bench-agg
-	@echo "3️⃣ Checking for regressions..."
-	python3 scripts/regression_check.py --input site/benchmarks.json
-	@echo "4️⃣ Committing and pushing..."
-	git add bench/results site/benchmarks.json
-ifdef DRY_RUN
-	@echo "🔍 DRY RUN: Would commit with message: bench: refresh $(shell date -u +%Y-%m-%d)"
-	@echo "🔍 DRY RUN: Would push to origin main"
-else
-	git commit -m "bench: refresh $(shell date -u +%Y-%m-%d)" || echo "No changes to commit"
+# Monitoring
+monitor:
+	@echo "📊 Starting monitoring..."
+	docker-compose exec code-live python scripts/monitor.py
+
+# Performance testing
+perf:
+	@echo "⚡ Running performance tests..."
+	docker-compose exec code-live python scripts/performance_test.py
+
+# Security scan
+security:
+	@echo "🔒 Running security scan..."
+	docker-compose exec code-live python -m safety check
+	docker-compose exec code-live python -m bandit -r .
+
+# Update dependencies
+update:
+	@echo "📦 Updating dependencies..."
+	docker-compose exec code-live pip install --upgrade -r requirements.txt
+
+# Generate documentation
+docs:
+	@echo "📚 Generating documentation..."
+	docker-compose exec code-live python -m sphinx-build -b html docs/ docs/_build/html
+
+# Deploy to production
+deploy:
+	@echo "🚀 Deploying to production..."
 	git push origin main
-endif
-	@echo "✅ Benchmark refresh complete!"
+	# Add your deployment script here
 
-# Demo data generation (no toolchains required)
-DEMO_SEED ?= 1337
-DEMO_DAYS ?= 7
-DEMO_BACKENDS ?= julia,rust,go,ts,csharp
-
-demo-data:
-	@echo "🎭 Generating synthetic benchmark data..."
-	@echo "📊 Days: $(DEMO_DAYS), Backends: $(DEMO_BACKENDS), Seed: $(DEMO_SEED)"
-	python3 scripts/generate_demo_data.py --days $(DEMO_DAYS) --backends $(DEMO_BACKENDS) --out site/benchmarks.json --seed $(DEMO_SEED)
-	@echo "✅ Demo data generated! Use 'make demo-serve' to preview dashboard."
-
-# Generate fat demo with 30 days of data
-demo-fat:
-	@echo "🍔 Generating fat demo data (30 days)..."
-	$(MAKE) demo-data DEMO_DAYS=30
-	@echo "✅ Fat demo data generated!"
-
-# Serve demo dashboard locally
-demo-serve:
-	@echo "🚀 Starting demo dashboard server..."
-	@echo "📊 Dashboard will be available at http://localhost:8080"
-	@echo "⏹️  Press Ctrl+C to stop"
-	python3 -m http.server --directory site 8080
-
-# Clean demo data
-demo-clean:
-	@echo "🧹 Cleaning demo data..."
-	rm -f site/benchmarks.json
-	rm -f bench/results/*.ndjson || true
-	@echo "✅ Demo data cleaned!"
-
-# Performance canaries
-canary:
-	@echo "🚀 Running micro canary benchmark..."
-	python3 scripts/canary_bench.py
-
-canary-baseline:
-	@echo "📊 Setting current performance as baseline..."
-	python3 scripts/canary_bench.py
-	@echo "✅ Baseline updated!"
+# Quick start for new users
+quickstart: build start
+	@echo "🎉 Code Live is ready!"
+	@echo "🌐 Access at: http://localhost:8787"
+	@echo "📱 Interfaces:"
+	@echo "   • Code Live: http://localhost:8787/site/code-live.html"
+	@echo "   • Code DAW: http://localhost:8787/site/code-daw.html"
+	@echo "   • Code Motion: http://localhost:8787/site/code-motion.html"
+	@echo "   • Playground: http://localhost:8787/site/playground.html"

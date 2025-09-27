@@ -17,7 +17,7 @@ assignees: []
 
 ### **Affected Backend**
 - [ ] Rust
-- [ ] TypeScript  
+- [ ] TypeScript
 - [ ] Go
 - [ ] C#
 - [ ] Julia

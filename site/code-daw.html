@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎛️ Code DAW - Digital Audio Workstation for Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .daw-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .input-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .python-input {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 1rem;
+            color: #e0e0e0;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .daw-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .clip-launcher {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e2e);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+            text-align: center;
+        }
+
+        .clip-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .clip {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border: 2px solid #4a4a5e;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .clip:hover {
+            border-color: #4ecdc4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+        }
+
+        .clip.playing {
+            border-color: #ff6b6b;
+            background: linear-gradient(145deg, #2e1e1e, #3e2a2a);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .clip.recording {
+            border-color: #ffa500;
+            background: linear-gradient(145deg, #2e2a1e, #3e3a2a);
+            box-shadow: 0 4px 12px rgba(255, 165, 0, 0.4);
+        }
+
+        .clip-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4ecdc4;
+            margin-bottom: 5px;
+        }
+
+        .clip-description {
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+        }
+
+        .clip-status {
+            font-size: 0.6rem;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        .clip-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background: #1a1a2e;
+            border: 1px solid #4a4a5e;
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .control-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .control-button.active {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-color: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        .macro-knobs {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #3a3a4e;
+        }
+
+        .knob-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .knob {
+            text-align: center;
+        }
+
+        .knob-label {
+            font-size: 0.8rem;
+            color: #4ecdc4;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .knob-control {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #1a1a2e, #2a2a3e);
+            border: 2px solid #4a4a5e;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+
+        .knob-control:hover {
+            border-color: #4ecdc4;
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+        }
+
+        .knob-indicator {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            width: 3px;
+            height: 20px;
+            background: #4ecdc4;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            transform-origin: bottom center;
+            transition: transform 0.3s ease;
+        }
+
+        .knob-value {
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+
+        .crossfader {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #3a3a4e;
+            margin-bottom: 20px;
+        }
+
+        .crossfader-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .crossfader-slider {
+            flex: 1;
+            height: 8px;
+            background: #3a3a4e;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .crossfader-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+        }
+
+        .crossfader-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        .bus-routing {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #3a3a4e;
+        }
+
+        .bus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .bus {
+            background: #0a0a0a;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .bus-name {
+            font-size: 0.9rem;
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .bus-sends {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .send-button {
+            background: #1a1a2e;
+            border: 1px solid #4a4a5e;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.7rem;
+        }
+
+        .send-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .send-button.active {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            border-color: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        .output-section {
+            background: linear-gradient(145deg, #1e1e2e, #2a2a3e);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #4a4a5e;
+        }
+
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .code-preview {
+            background: #0a0a0a;
+            border: 1px solid #4a4a5e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 0.8rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-header {
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            color: #1a1a2e;
+            padding: 6px 10px;
+            border-radius: 4px 4px 0 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin: -15px -15px 10px -15px;
+            text-align: center;
+        }
+
+        .loading {
+            color: #4ecdc4;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, #4ecdc4, #45b7d1);
+            color: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .daw-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .clip-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .knob-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="statusIndicator">🎛️ DAW Ready</div>
+
+    <div class="daw-container">
+        <div class="header">
+            <h1>🎛️ Code DAW</h1>
+            <p>Digital Audio Workstation for Code Generation</p>
+        </div>
+
+        <!-- Python Input -->
+        <div class="input-section">
+            <div class="input-title">🐍 Python Input</div>
+            <textarea class="python-input" id="pythonInput" placeholder="Enter your Python comprehension here...">[x * x for x in range(0, 100) if x % 2 == 0]</textarea>
+        </div>
+
+        <!-- DAW Grid -->
+        <div class="daw-grid">
+            <!-- Clip Launcher -->
+            <div class="clip-launcher">
+                <h2 class="section-title">🎵 Clip Launcher</h2>
+
+                <div class="clip-controls">
+                    <button class="control-button" onclick="recordClip()">🔴 Record</button>
+                    <button class="control-button" onclick="clearAllClips()">🗑️ Clear All</button>
+                    <button class="control-button" onclick="playAllClips()">▶️ Play All</button>
+                    <button class="control-button" onclick="stopAllClips()">⏹️ Stop All</button>
+                </div>
+
+                <div class="clip-grid" id="clipGrid">
+                    <!-- Clips will be generated here -->
+                </div>
+            </div>
+
+            <!-- Macro Knobs & Controls -->
+            <div class="macro-knobs">
+                <h2 class="section-title">🎛️ Macro Knobs</h2>
+
+                <div class="knob-grid">
+                    <div class="knob">
+                        <div class="knob-label">Performance</div>
+                        <div class="knob-control" data-knob="performance" onclick="rotateKnob(event, 'performance')">
+                            <div class="knob-indicator" id="performanceIndicator"></div>
+                        </div>
+                        <div class="knob-value" id="performanceValue">50%</div>
+                    </div>
+
+                    <div class="knob">
+                        <div class="knob-label">Parallelism</div>
+                        <div class="knob-control" data-knob="parallelism" onclick="rotateKnob(event, 'parallelism')">
+                            <div class="knob-indicator" id="parallelismIndicator"></div>
+                        </div>
+                        <div class="knob-value" id="parallelismValue">50%</div>
+                    </div>
+
+                    <div class="knob">
+                        <div class="knob-label">Safety</div>
+                        <div class="knob-control" data-knob="safety" onclick="rotateKnob(event, 'safety')">
+                            <div class="knob-indicator" id="safetyIndicator"></div>
+                        </div>
+                        <div class="knob-value" id="safetyValue">50%</div>
+                    </div>
+
+                    <div class="knob">
+                        <div class="knob-label">Optimization</div>
+                        <div class="knob-control" data-knob="optimization" onclick="rotateKnob(event, 'optimization')">
+                            <div class="knob-indicator" id="optimizationIndicator"></div>
+                        </div>
+                        <div class="knob-value" id="optimizationValue">50%</div>
+                    </div>
+                </div>
+
+                <!-- Crossfader -->
+                <div class="crossfader">
+                    <div class="section-title">🎚️ Crossfader</div>
+                    <div class="crossfader-control">
+                        <span>Sequential</span>
+                        <input type="range" class="crossfader-slider" id="crossfaderSlider" min="0" max="100" value="50">
+                        <span>Parallel</span>
+                    </div>
+                    <div class="crossfader-labels">
+                        <span>Rust</span>
+                        <span>Julia</span>
+                        <span>SQL</span>
+                        <span>TypeScript</span>
+                    </div>
+                </div>
+
+                <!-- Bus Routing -->
+                <div class="bus-routing">
+                    <div class="section-title">🚌 Bus Routing</div>
+                    <div class="bus-grid">
+                        <div class="bus">
+                            <div class="bus-name">🦀 Rust Bus</div>
+                            <div class="bus-sends">
+                                <button class="send-button" data-bus="rust" data-send="parallel">Parallel</button>
+                                <button class="send-button" data-bus="rust" data-send="unsafe">Unsafe</button>
+                                <button class="send-button" data-bus="rust" data-send="optimize">Optimize</button>
+                            </div>
+                        </div>
+
+                        <div class="bus">
+                            <div class="bus-name">🔬 Julia Bus</div>
+                            <div class="bus-sends">
+                                <button class="send-button" data-bus="julia" data-send="broadcast">Broadcast</button>
+                                <button class="send-button" data-bus="julia" data-send="threads">Threads</button>
+                                <button class="send-button" data-bus="julia" data-send="vectorize">Vectorize</button>
+                            </div>
+                        </div>
+
+                        <div class="bus">
+                            <div class="bus-name">🗄️ SQL Bus</div>
+                            <div class="bus-sends">
+                                <button class="send-button" data-bus="sql" data-send="pushdown">Pushdown</button>
+                                <button class="send-button" data-bus="sql" data-send="index">Index</button>
+                                <button class="send-button" data-bus="sql" data-send="window">Window</button>
+                            </div>
+                        </div>
+
+                        <div class="bus">
+                            <div class="bus-name">📱 TS Bus</div>
+                            <div class="bus-sends">
+                                <button class="send-button" data-bus="ts" data-send="workers">Workers</button>
+                                <button class="send-button" data-bus="ts" data-send="async">Async</button>
+                                <button class="send-button" data-bus="ts" data-send="types">Types</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="output-section">
+            <h2 class="section-title">🎧 Live Output</h2>
+            <div class="output-grid" id="outputGrid">
+                <!-- Live code outputs will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DAW State
+        const dawState = {
+            pythonInput: '[x * x for x in range(0, 100) if x % 2 == 0]',
+            clips: [],
+            macroKnobs: {
+                performance: 50,
+                parallelism: 50,
+                safety: 50,
+                optimization: 50
+            },
+            crossfader: 50,
+            busRouting: {
+                rust: { parallel: false, unsafe: false, optimize: false },
+                julia: { broadcast: false, threads: false, vectorize: false },
+                sql: { pushdown: false, index: false, window: false },
+                ts: { workers: false, async: false, types: false }
+            },
+            playingClips: new Set()
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDAW();
+            generateCode();
+        });
+
+        function initializeDAW() {
+            // Crossfader
+            const crossfaderSlider = document.getElementById('crossfaderSlider');
+            crossfaderSlider.addEventListener('input', (e) => {
+                dawState.crossfader = parseInt(e.target.value);
+                generateCode();
+            });
+
+            // Bus routing
+            document.querySelectorAll('.send-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const bus = button.dataset.bus;
+                    const send = button.dataset.send;
+
+                    button.classList.toggle('active');
+                    dawState.busRouting[bus][send] = button.classList.contains('active');
+                    generateCode();
+                });
+            });
+
+            // Python input
+            document.getElementById('pythonInput').addEventListener('input', (e) => {
+                dawState.pythonInput = e.target.value;
+                generateCode();
+            });
+
+            // Initialize clips
+            initializeClips();
+        }
+
+        function initializeClips() {
+            const clipGrid = document.getElementById('clipGrid');
+            const clipTemplates = [
+                { name: 'Hi-Fi', description: 'Clean Sequential', icon: '🎵' },
+                { name: 'Punchy', description: 'Aggressive Parallel', icon: '⚡' },
+                { name: 'Lo-Fi', description: 'Minimal Optimized', icon: '🎧' },
+                { name: 'SQL Club', description: 'Database Heavy', icon: '🎛️' },
+                { name: 'Rust Core', description: 'Rust Focused', icon: '🦀' },
+                { name: 'Julia Sci', description: 'Scientific Computing', icon: '🔬' },
+                { name: 'Web Dev', description: 'TypeScript Heavy', icon: '📱' },
+                { name: 'Data Flow', description: 'SQL Optimized', icon: '🗄️' }
+            ];
+
+            clipTemplates.forEach((template, index) => {
+                const clip = document.createElement('div');
+                clip.className = 'clip';
+                clip.dataset.clipId = index;
+                clip.innerHTML = `
+                    <div class="clip-name">${template.icon} ${template.name}</div>
+                    <div class="clip-description">${template.description}</div>
+                    <div class="clip-status">Ready</div>
+                `;
+
+                clip.addEventListener('click', () => playClip(index));
+                clipGrid.appendChild(clip);
+            });
+        }
+
+        function rotateKnob(event, knobName) {
+            const knob = event.currentTarget;
+            const rect = knob.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const angle = Math.atan2(event.clientY - centerY, event.clientX - centerX);
+            const degrees = (angle * 180 / Math.PI + 90 + 360) % 360;
+            const value = Math.round(degrees / 3.6); // Convert to 0-100
+
+            dawState.macroKnobs[knobName] = value;
+
+            // Update UI
+            const indicator = document.getElementById(`${knobName}Indicator`);
+            const valueDisplay = document.getElementById(`${knobName}Value`);
+
+            indicator.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+            valueDisplay.textContent = `${value}%`;
+
+            generateCode();
+        }
+
+        function playClip(clipId) {
+            const clip = document.querySelector(`[data-clip-id="${clipId}"]`);
+            const clipTemplates = [
+                { tracks: { rust: 30, julia: 20, sql: 10, ts: 25 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: false } },
+                { tracks: { rust: 90, julia: 80, sql: 30, ts: 70 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { tracks: { rust: 15, julia: 10, sql: 5, ts: 20 }, effects: { predicate_pushdown: false, constant_folding: false, parallel_safety: false, type_inference: false } },
+                { tracks: { rust: 20, julia: 15, sql: 95, ts: 10 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: false, type_inference: true } },
+                { tracks: { rust: 95, julia: 20, sql: 10, ts: 30 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { tracks: { rust: 20, julia: 95, sql: 10, ts: 30 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { tracks: { rust: 20, julia: 30, sql: 10, ts: 95 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { tracks: { rust: 20, julia: 30, sql: 95, ts: 10 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: false, type_inference: true } }
+            ];
+
+            if (clip.classList.contains('playing')) {
+                // Stop clip
+                clip.classList.remove('playing');
+                clip.querySelector('.clip-status').textContent = 'Ready';
+                dawState.playingClips.delete(clipId);
+            } else {
+                // Play clip
+                clip.classList.add('playing');
+                clip.querySelector('.clip-status').textContent = 'Playing';
+                dawState.playingClips.add(clipId);
+
+                // Apply clip configuration
+                const config = clipTemplates[clipId];
+                if (config) {
+                    // Apply tracks and effects
+                    Object.assign(dawState, config);
+                    updateUI();
+                }
+            }
+
+            generateCode();
+        }
+
+        function recordClip() {
+            showStatus('🔴 Recording clip...');
+
+            // Create new clip from current state
+            const newClip = {
+                name: `Clip ${dawState.clips.length + 1}`,
+                description: 'Custom Recording',
+                tracks: { ...dawState.tracks },
+                effects: { ...dawState.effects },
+                macroKnobs: { ...dawState.macroKnobs },
+                crossfader: dawState.crossfader,
+                busRouting: { ...dawState.busRouting }
+            };
+
+            dawState.clips.push(newClip);
+            showStatus('✅ Clip recorded!');
+        }
+
+        function clearAllClips() {
+            document.querySelectorAll('.clip').forEach(clip => {
+                clip.classList.remove('playing');
+                clip.querySelector('.clip-status').textContent = 'Ready';
+            });
+            dawState.playingClips.clear();
+            generateCode();
+        }
+
+        function playAllClips() {
+            document.querySelectorAll('.clip').forEach((clip, index) => {
+                if (!clip.classList.contains('playing')) {
+                    playClip(index);
+                }
+            });
+        }
+
+        function stopAllClips() {
+            clearAllClips();
+        }
+
+        function updateUI() {
+            // Update macro knobs
+            Object.entries(dawState.macroKnobs).forEach(([knob, value]) => {
+                const indicator = document.getElementById(`${knob}Indicator`);
+                const valueDisplay = document.getElementById(`${knob}Value`);
+                const degrees = (value / 100) * 360;
+
+                indicator.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+                valueDisplay.textContent = `${value}%`;
+            });
+
+            // Update crossfader
+            document.getElementById('crossfaderSlider').value = dawState.crossfader;
+
+            // Update bus routing
+            Object.entries(dawState.busRouting).forEach(([bus, sends]) => {
+                Object.entries(sends).forEach(([send, active]) => {
+                    const button = document.querySelector(`[data-bus="${bus}"][data-send="${send}"]`);
+                    if (button) {
+                        button.classList.toggle('active', active);
+                    }
+                });
+            });
+        }
+
+        function showStatus(message) {
+            const indicator = document.getElementById('statusIndicator');
+            indicator.textContent = message;
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+
+        async function generateCode() {
+            const outputGrid = document.getElementById('outputGrid');
+
+            // Clear previous outputs
+            outputGrid.innerHTML = '';
+
+            // Get active tracks based on crossfader and macro knobs
+            const tracks = {
+                rust: Math.min(100, dawState.macroKnobs.performance + (dawState.crossfader - 50)),
+                julia: Math.min(100, dawState.macroKnobs.parallelism + (dawState.crossfader - 50)),
+                sql: Math.min(100, dawState.macroKnobs.optimization + (100 - dawState.crossfader)),
+                ts: Math.min(100, dawState.macroKnobs.safety + (dawState.crossfader - 50))
+            };
+
+            const activeTracks = Object.entries(tracks)
+                .filter(([_, level]) => level > 20)
+                .sort((a, b) => b[1] - a[1]);
+
+            if (activeTracks.length === 0) {
+                outputGrid.innerHTML = '<div class="code-preview"><div class="loading">🎚️ Turn up some knobs to generate code!</div></div>';
+                return;
+            }
+
+            // Generate code for each active track
+            for (const [track, level] of activeTracks) {
+                const codePreview = document.createElement('div');
+                codePreview.className = 'code-preview';
+                codePreview.innerHTML = `
+                    <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                    <div class="loading">🔄 Generating ${track} code...</div>
+                `;
+                outputGrid.appendChild(codePreview);
+
+                try {
+                    // Simulate code generation
+                    await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+
+                    const code = generateDemoCode(track, level);
+
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <pre>${code}</pre>
+                    `;
+                } catch (error) {
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <div class="error">❌ Error generating ${track} code: ${error.message}</div>
+                    `;
+                }
+            }
+
+            showStatus('✅ Code generated!');
+        }
+
+        function generateDemoCode(track, level) {
+            const parallel = level > 60;
+            const unsafe = level > 85;
+
+            const demos = {
+                rust: `use rayon::prelude::*;
+
+pub fn process_data() -> Vec<i32> {
+    (0..100)
+        ${parallel ? '.into_par_iter()' : '.iter()'}
+        .filter(|&x| x % 2 == 0)
+        .map(|x| x * x)
+        .collect()
+}`,
+                julia: `function process_data()
+    x = 0:99
+    mask = x .% 2 .== 0
+    ${parallel ? 'Threads.@threads' : ''} return (x .* x)[mask]
+end`,
+                sql: `WITH series AS (
+    SELECT generate_series(0, 99) AS x
+)
+SELECT x * x AS result
+FROM series
+WHERE x % 2 = 0;`,
+                ts: `export ${parallel ? 'async ' : ''}function processData(): ${parallel ? 'Promise<number[]>' : 'number[]'} {
+    const data = Array.from({length: 100}, (_, i) => i);
+    ${parallel ? `return new Promise((resolve) => {
+        const worker = new Worker('processor.js');
+        worker.postMessage(data);
+        worker.onmessage = (e) => resolve(e.data);
+    });` : `return data
+        .filter(x => x % 2 === 0)
+        .map(x => x * x);`}
+}`
+            };
+
+            return demos[track] || `// Demo code for ${track}`;
+        }
+
+        function getTrackIcon(track) {
+            const icons = { rust: '🦀', julia: '🔬', sql: '🗄️', ts: '📱' };
+            return icons[track] || '🎵';
+        }
+
+        function getTrackName(track) {
+            const names = { rust: 'Rust', julia: 'Julia', sql: 'SQL', ts: 'TypeScript' };
+            return names[track] || track;
+        }
+    </script>
+</body>
+</html>

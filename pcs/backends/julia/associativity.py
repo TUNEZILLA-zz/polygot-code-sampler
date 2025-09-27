@@ -15,21 +15,25 @@ ASSOC_TABLE = {
     "^": {"types": {"Int"}, "identity": "0"},
 }
 
+
 def is_associative(op: str, elem_type: str) -> bool:
     """Check if operation is associative for given type"""
     if op not in ASSOC_TABLE:
         return False
     return elem_type in ASSOC_TABLE[op]["types"]
 
+
 def get_associative_ops() -> set:
     """Get all associative operations"""
     return set(ASSOC_TABLE.keys())
+
 
 def get_supported_types(op: str) -> set:
     """Get supported types for an operation"""
     if op not in ASSOC_TABLE:
         return set()
     return ASSOC_TABLE[op]["types"]
+
 
 def assoc_identity(op: str, elem_type: str) -> str:
     """Get identity element for associative operation"""
@@ -46,6 +50,7 @@ def assoc_identity(op: str, elem_type: str) -> str:
 
     return ident
 
+
 def get_parallel_note(op: str, elem_type: str) -> str:
     """Generate NOTE comment for parallelization"""
     if not is_associative(op, elem_type):
@@ -53,6 +58,7 @@ def get_parallel_note(op: str, elem_type: str) -> str:
 
     identity = assoc_identity(op, elem_type)
     return f"# NOTE: parallelized with thread-local partials (op '{op}', identity {identity}, type {elem_type})"
+
 
 def get_associativity_explanation(op: str, elem_type: str) -> str:
     """Get detailed explanation of associativity decision"""
@@ -64,4 +70,3 @@ def get_associativity_explanation(op: str, elem_type: str) -> str:
         return f"Type '{elem_type}' not supported for '{op}' (supported: {supported_types})"
 
     return f"Operation '{op}' is associative for type '{elem_type}'"
-

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Visual Effects System</title>
+    <style>
+        :root {
+            /* Theme Variables */
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+            --theme-text: #e0e0e0;
+            --theme-text-muted: #a0a0a0;
+
+            /* Performance Metrics */
+            --latency-p50: 12ms;
+            --latency-p95: 45ms;
+            --success-rate: 85%;
+            --queue-depth: 3;
+            --request-rate: 12.4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            background: var(--theme-background);
+            color: var(--theme-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Scene - Dynamic Grain + Vignette */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.3) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><filter id="noise"><feTurbulence baseFrequency="0.9" numOctaves="4" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/></filter></defs><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.1"/></svg>');
+            background-blend-mode: overlay;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Parallax Starfield */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: 1s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Theme Rooms */
+        .theme-studio {
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+        }
+
+        .theme-neon {
+            --theme-primary: #00ff88;
+            --theme-secondary: #ff0088;
+            --theme-accent: #ffaa00;
+            --theme-background: #0a0a0a;
+            --theme-surface: #1a1a1a;
+        }
+
+        .theme-paper {
+            --theme-primary: #8b4513;
+            --theme-secondary: #d2691e;
+            --theme-accent: #cd853f;
+            --theme-background: #f5f5dc;
+            --theme-surface: #ffffff;
+            --theme-text: #2c2c2c;
+        }
+
+        /* Main Container */
+        .visual-effects-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Performance Spectrum Bars */
+        .spectrum-analyzer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .spectrum-bars {
+            display: flex;
+            align-items: end;
+            height: 80px;
+            gap: 2px;
+        }
+
+        .spectrum-bar {
+            flex: 1;
+            background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
+            border-radius: 2px;
+            animation: spectrumPulse 0.5s ease-in-out infinite;
+        }
+
+        .spectrum-bar:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+
+        .spectrum-bar:nth-child(even) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes spectrumPulse {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Queue Heat Haze */
+        .queue-heat-haze {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 50% 50%, transparent 0%, rgba(255, 100, 100, 0.1) 100%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .queue-heat-haze.active {
+            opacity: 1;
+            animation: heatShimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes heatShimmer {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(2px); }
+        }
+
+        /* Glitch Hint on Fallback */
+        .glitch-hint {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glitch-hint::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            transform: translateX(-100%);
+            animation: glitchScan 0.12s ease-in-out;
+        }
+
+        @keyframes glitchScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Fader Glow + Motorized Snap */
+        .fader {
+            position: relative;
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(90deg, #333, #666);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fader:hover {
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .fader:active {
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+        }
+
+        .fader-thumb {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .fader-thumb:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Knob Inertia + Spring */
+        .knob {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #667eea, #764ba2, #ff6b6b, #667eea);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .knob:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .knob-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: white;
+            transform: translateX(-50%);
+            border-radius: 1px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Click Rings & Trail Lines */
+        .click-rings {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .click-ring {
+            position: absolute;
+            border: 2px solid rgba(102, 126, 234, 0.6);
+            border-radius: 50%;
+            animation: ringExpand 0.6s ease-out forwards;
+        }
+
+        @keyframes ringExpand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+
+        /* Chromatic Scanline CRT Theme */
+        .crt-theme {
+            position: relative;
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .crt-theme::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+            pointer-events: none;
+        }
+
+        .crt-theme::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.1) 50%, transparent 100%);
+            animation: scanline 2s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* Live Diff Shimmer */
+        .diff-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diff-shimmer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            animation: shimmer 0.3s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Velocity Spacing for Lolcat-ish Emphasis */
+        .velocity-spacing {
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+        }
+
+        .velocity-spacing.high-energy {
+            letter-spacing: 0.3em;
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Oscilloscope Border */
+        .oscilloscope-border {
+            position: relative;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, #667eea, #764ba2) border-box;
+            border-radius: 10px;
+        }
+
+        .oscilloscope-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: conic-gradient(from 0deg, #667eea, #764ba2, #ff6b6b, #667eea);
+            border-radius: 10px;
+            z-index: -1;
+            animation: oscilloscope 2s linear infinite;
+        }
+
+        @keyframes oscilloscope {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Logo Alive - Health Indicator */
+        .logo-alive {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-alive.healthy {
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .logo-alive.warning {
+            color: #ffaa00;
+            text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+            animation: warningPulse 1s ease-in-out infinite;
+        }
+
+        .logo-alive.error {
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: errorBlink 0.5s ease-in-out infinite;
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes errorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Visual Quality Switch */
+        .visual-quality-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quality-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 0 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quality-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 0 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 100px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .demo-section {
+            background: var(--theme-surface);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--theme-text);
+        }
+
+        .demo-description {
+            color: var(--theme-text-muted);
+            margin-bottom: 20px;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: var(--theme-text-muted);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .spectrum-analyzer {
+                width: 250px;
+                height: 80px;
+            }
+
+            .main-content {
+                padding: 80px 10px 10px;
+            }
+
+            .demo-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --theme-text: #ffffff;
+                --theme-background: #000000;
+                --theme-surface: #333333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Scene -->
+    <div class="starfield" id="starfield"></div>
+    <div class="queue-heat-haze" id="queueHeatHaze"></div>
+    <div class="click-rings" id="clickRings"></div>
+
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-button active" data-theme="studio">Studio</button>
+        <button class="theme-button" data-theme="neon">Neon</button>
+        <button class="theme-button" data-theme="paper">Paper</button>
+    </div>
+
+    <!-- Visual Quality Switch -->
+    <div class="visual-quality-switch">
+        <button class="quality-button active" data-quality="off">Off</button>
+        <button class="quality-button" data-quality="balanced">Balanced</button>
+        <button class="quality-button" data-quality="high">High</button>
+    </div>
+
+    <!-- Performance Spectrum Analyzer -->
+    <div class="spectrum-analyzer">
+        <div class="spectrum-bars" id="spectrumBars"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="visual-effects-container">
+        <div class="main-content">
+            <h1 class="logo-alive healthy">Code Live Visual Effects</h1>
+            <p>Genuinely cool visuals that fit your unique environment</p>
+
+            <!-- Demo Sections -->
+            <div class="demo-section">
+                <h2 class="demo-title">🎛️ Fader Glow + Motorized Snap</h2>
+                <p class="demo-description">Tactile feel with CSS box-shadow pulse on drag and snap to quantized positions</p>
+                <div class="demo-controls">
+                    <div class="control-group">
+                        <div class="fader" id="fader">
+                            <div class="fader-thumb" id="faderThumb"></div>
+                        </div>
+                        <div class="control-label">Latency Control</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2 class="demo-title">🎚️ Knob Inertia + Spring</h2>
+                <p class="demo-description">Analog realism with critically-damped spring interpolation</p>
+                <div class="demo-controls">
+                    <div class="control-group">
+                        <div class="knob" id="knob">
+                            <div class="knob-indicator"></div>
+                        </div>
+                        <div class="control-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2 class="demo-title">📺 CRT Theme (Toggle)</h2>
+                <p class="demo-description">Memorable, retro, readable with layered gradients for scanlines</p>
+                <div class="demo-controls">
+                    <button id="crtToggle" class="theme-button">Toggle CRT</button>
+                    <div class="control-group">
+                        <div class="crt-theme" id="crtDemo">
+                            <pre>// Code Live Visual Effects
+const latency = 12.4; // ms
+const successRate = 85.8; // %
+const queueDepth = 3; // requests</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2 class="demo-title">✨ Live Diff Shimmer</h2>
+                <p class="demo-description">Show what changed with highlight added lines and shimmer gradient</p>
+                <div class="demo-controls">
+                    <button id="diffShimmer" class="theme-button">Trigger Shimmer</button>
+                    <div class="control-group">
+                        <div class="diff-shimmer" id="diffDemo">
+                            <pre>// Before
+const result = processData(input);
+
+// After
+const result = processData(input, { parallel: true });</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2 class="demo-title">🎵 Velocity Spacing</h2>
+                <p class="demo-description">Lolcat-ish emphasis with scale letter-spacing and hue by energy</p>
+                <div class="demo-controls">
+                    <div class="control-group">
+                        <div class="velocity-spacing" id="velocityDemo">
+                            <span>Code Live Visual Effects</span>
+                        </div>
+                        <div class="control-label">Energy Level</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2 class="demo-title">🌊 Oscilloscope Border</h2>
+                <p class="demo-description">Subtle musical tie-in with waveform along container edge</p>
+                <div class="demo-controls">
+                    <div class="control-group">
+                        <div class="oscilloscope-border" id="oscilloscopeDemo">
+                            <div style="padding: 20px; text-align: center;">
+                                <h3>Performance Metrics</h3>
+                                <p>Latency: 12.4ms</p>
+                                <p>Success Rate: 85.8%</p>
+                                <p>Queue Depth: 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Visual Effects System JavaScript
+        class VisualEffectsSystem {
+            constructor() {
+                this.initializeStarfield();
+                this.initializeControls();
+                this.initializeThemeSwitcher();
+                this.initializeQualitySwitch();
+                this.startPerformanceMonitoring();
+                this.initializeClickRings();
+            }
+
+            initializeStarfield() {
+                const starfield = document.getElementById('starfield');
+                const starCount = 200;
+
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.width = Math.random() * 3 + 1 + 'px';
+                    star.style.height = star.style.width;
+                    star.style.animationDelay = Math.random() * 2 + 's';
+                    starfield.appendChild(star);
+                }
+            }
+
+            initializeControls() {
+                // Fader
+                const fader = document.getElementById('fader');
+                const faderThumb = document.getElementById('faderThumb');
+                let isDragging = false;
+
+                fader.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    this.updateFaderPosition(e, fader, faderThumb);
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        this.updateFaderPosition(e, fader, faderThumb);
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+
+                // Knob
+                const knob = document.getElementById('knob');
+                let knobRotation = 0;
+
+                knob.addEventListener('click', () => {
+                    knobRotation += 45;
+                    knob.style.transform = `rotate(${knobRotation}deg)`;
+                });
+
+                // CRT Toggle
+                const crtToggle = document.getElementById('crtToggle');
+                const crtDemo = document.getElementById('crtDemo');
+
+                crtToggle.addEventListener('click', () => {
+                    crtDemo.classList.toggle('crt-theme');
+                });
+
+                // Diff Shimmer
+                const diffShimmer = document.getElementById('diffShimmer');
+                const diffDemo = document.getElementById('diffDemo');
+
+                diffShimmer.addEventListener('click', () => {
+                    diffDemo.classList.add('diff-shimmer');
+                    setTimeout(() => {
+                        diffDemo.classList.remove('diff-shimmer');
+                    }, 300);
+                });
+
+                // Velocity Spacing
+                const velocityDemo = document.getElementById('velocityDemo');
+                let energyLevel = 0;
+
+                setInterval(() => {
+                    energyLevel = Math.random();
+                    if (energyLevel > 0.7) {
+                        velocityDemo.classList.add('high-energy');
+                    } else {
+                        velocityDemo.classList.remove('high-energy');
+                    }
+                }, 1000);
+            }
+
+            updateFaderPosition(e, fader, thumb) {
+                const rect = fader.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+
+                // Snap to quantized positions
+                const quantizedPercentage = Math.round(percentage / 10) * 10;
+                thumb.style.left = quantizedPercentage + '%';
+
+                // Update performance metrics
+                this.updatePerformanceMetrics(quantizedPercentage);
+            }
+
+            initializeThemeSwitcher() {
+                const themeButtons = document.querySelectorAll('.theme-button');
+
+                themeButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove active class from all buttons
+                        themeButtons.forEach(btn => btn.classList.remove('active'));
+
+                        // Add active class to clicked button
+                        button.classList.add('active');
+
+                        // Apply theme
+                        const theme = button.dataset.theme;
+                        document.body.className = `theme-${theme}`;
+
+                        // Save to localStorage
+                        localStorage.setItem('theme', theme);
+                    });
+                });
+
+                // Load saved theme
+                const savedTheme = localStorage.getItem('theme') || 'studio';
+                document.body.className = `theme-${savedTheme}`;
+                document.querySelector(`[data-theme="${savedTheme}"]`).classList.add('active');
+            }
+
+            initializeQualitySwitch() {
+                const qualityButtons = document.querySelectorAll('.quality-button');
+
+                qualityButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove active class from all buttons
+                        qualityButtons.forEach(btn => btn.classList.remove('active'));
+
+                        // Add active class to clicked button
+                        button.classList.add('active');
+
+                        // Apply quality settings
+                        const quality = button.dataset.quality;
+                        this.applyQualitySettings(quality);
+
+                        // Save to localStorage
+                        localStorage.setItem('visualQuality', quality);
+                    });
+                });
+
+                // Load saved quality
+                const savedQuality = localStorage.getItem('visualQuality') || 'off';
+                this.applyQualitySettings(savedQuality);
+                document.querySelector(`[data-quality="${savedQuality}"]`).classList.add('active');
+            }
+
+            applyQualitySettings(quality) {
+                const body = document.body;
+
+                // Remove existing quality classes
+                body.classList.remove('quality-off', 'quality-balanced', 'quality-high');
+
+                // Add new quality class
+                body.classList.add(`quality-${quality}`);
+
+                // Apply specific settings based on quality
+                if (quality === 'off') {
+                    // Disable all visual effects
+                    document.querySelectorAll('.starfield, .queue-heat-haze, .oscilloscope-border').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                } else if (quality === 'balanced') {
+                    // Enable basic effects
+                    document.querySelectorAll('.starfield, .queue-heat-haze, .oscilloscope-border').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                } else if (quality === 'high') {
+                    // Enable all effects
+                    document.querySelectorAll('.starfield, .queue-heat-haze, .oscilloscope-border').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                }
+            }
+
+            startPerformanceMonitoring() {
+                // Simulate performance metrics
+                setInterval(() => {
+                    const latency = 10 + Math.random() * 40;
+                    const successRate = 80 + Math.random() * 20;
+                    const queueDepth = Math.floor(Math.random() * 10);
+                    const requestRate = 5 + Math.random() * 15;
+
+                    // Update CSS variables
+                    document.documentElement.style.setProperty('--latency-p50', `${latency}ms`);
+                    document.documentElement.style.setProperty('--latency-p95', `${latency * 2}ms`);
+                    document.documentElement.style.setProperty('--success-rate', `${successRate}%`);
+                    document.documentElement.style.setProperty('--queue-depth', queueDepth.toString());
+                    document.documentElement.style.setProperty('--request-rate', requestRate.toFixed(1));
+
+                    // Update spectrum bars
+                    this.updateSpectrumBars(latency, successRate);
+
+                    // Update queue heat haze
+                    this.updateQueueHeatHaze(queueDepth);
+
+                    // Update logo health
+                    this.updateLogoHealth(successRate);
+
+                    // Update starfield density based on request rate
+                    this.updateStarfieldDensity(requestRate);
+                }, 1000);
+            }
+
+            updateSpectrumBars(latency, successRate) {
+                const spectrumBars = document.getElementById('spectrumBars');
+                const barCount = 64;
+
+                // Clear existing bars
+                spectrumBars.innerHTML = '';
+
+                // Create new bars
+                for (let i = 0; i < barCount; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'spectrum-bar';
+
+                    // Height based on latency and success rate
+                    const height = Math.random() * 100;
+                    bar.style.height = height + '%';
+
+                    // Color based on performance
+                    if (height > 80) {
+                        bar.style.background = 'linear-gradient(to top, #ff0000, #ffaa00)';
+                    } else if (height > 50) {
+                        bar.style.background = 'linear-gradient(to top, #ffaa00, #ffff00)';
+                    } else {
+                        bar.style.background = 'linear-gradient(to top, #00ff00, #ffff00)';
+                    }
+
+                    spectrumBars.appendChild(bar);
+                }
+            }
+
+            updateQueueHeatHaze(queueDepth) {
+                const queueHeatHaze = document.getElementById('queueHeatHaze');
+
+                if (queueDepth > 5) {
+                    queueHeatHaze.classList.add('active');
+                } else {
+                    queueHeatHaze.classList.remove('active');
+                }
+            }
+
+            updateLogoHealth(successRate) {
+                const logo = document.querySelector('.logo-alive');
+
+                if (successRate > 90) {
+                    logo.className = 'logo-alive healthy';
+                } else if (successRate > 70) {
+                    logo.className = 'logo-alive warning';
+                } else {
+                    logo.className = 'logo-alive error';
+                }
+            }
+
+            updateStarfieldDensity(requestRate) {
+                const starfield = document.getElementById('starfield');
+                const stars = starfield.querySelectorAll('.star');
+
+                // Show/hide stars based on request rate
+                stars.forEach((star, index) => {
+                    if (index < requestRate * 10) {
+                        star.style.display = 'block';
+                    } else {
+                        star.style.display = 'none';
+                    }
+                });
+            }
+
+            initializeClickRings() {
+                document.addEventListener('click', (e) => {
+                    const clickRings = document.getElementById('clickRings');
+                    const ring = document.createElement('div');
+                    ring.className = 'click-ring';
+                    ring.style.left = e.clientX - 50 + 'px';
+                    ring.style.top = e.clientY - 50 + 'px';
+
+                    clickRings.appendChild(ring);
+
+                    // Remove ring after animation
+                    setTimeout(() => {
+                        ring.remove();
+                    }, 600);
+                });
+            }
+        }
+
+        // Initialize the Visual Effects System
+        document.addEventListener('DOMContentLoaded', () => {
+            new VisualEffectsSystem();
+        });
+    </script>
+</body>
+</html>

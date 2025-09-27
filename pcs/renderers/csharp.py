@@ -5,7 +5,9 @@ C# renderer for Polyglot Code Sampler
 from ..core import IRComp
 
 
-def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False) -> str:
+def render_csharp(
+    ir: IRComp, func_name: str = "Program", parallel: bool = False
+) -> str:
     """
     C# LINQ backend with PLINQ parallel support:
       list -> List<int> (or List<T> with type inference)
@@ -33,6 +35,7 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
             (r"!=", "!="),
         ]
         import re
+
         result = expr
         for pattern, replacement in replacements:
             result = re.sub(pattern, replacement, result)
@@ -81,7 +84,7 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
     lines.append("    {")
 
     # Build the source range
-    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
+    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, "start"):
         gen = ir.generators[0]
         start, stop, step = gen.source.start, gen.source.stop, gen.source.step
 
@@ -89,7 +92,9 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
             source = f"Enumerable.Range({start}, {stop - start})"
         else:
             # For non-unit steps, use a custom range
-            source = f"Enumerable.Range(0, {stop - start}).Select(i => {start} + i * {step})"
+            source = (
+                f"Enumerable.Range(0, {stop - start}).Select(i => {start} + i * {step})"
+            )
 
         # Add parallel prefix if requested
         if parallel:
@@ -155,4 +160,3 @@ def render_csharp(ir: IRComp, func_name: str = "Program", parallel: bool = False
     lines.append("}")
 
     return "\n".join(lines)
-

@@ -73,7 +73,7 @@ function finalize_groups!(d::Dict; stable::Bool=false)
         for (k, v) in d
             # Stable by second field example (customize as needed)
             if length(v) > 1 && eltype(v) <: Tuple
-                sort!(v, by = x -> x[2]) 
+                sort!(v, by = x -> x[2])
             end
         end
     end

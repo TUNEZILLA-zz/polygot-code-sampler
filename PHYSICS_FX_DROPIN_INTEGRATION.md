@@ -104,14 +104,14 @@ if (mode !== "off") {
     metricsSource: '/metrics/snapshot',
     debounceMs: 100
   });
-  
+
   // Connect metrics to physics
   const updateLoop = () => {
     physicsFX.physicsFX.updateMetrics(latest);
     requestAnimationFrame(updateLoop);
   };
   updateLoop();
-  
+
   poll();
 }
 </script>
@@ -145,15 +145,15 @@ if (mode !== "off") {
 <body>
     <!-- Physics Canvas -->
     <canvas class="physics-canvas" id="physics-fx-canvas"></canvas>
-    
+
     <!-- Your existing content -->
     <div class="main-content">
         <!-- Your Code Live interface -->
     </div>
-    
+
     <script type="module">
         import { initPhysicsFX } from './scripts/physics-fx-production.js';
-        
+
         // Initialize physics FX
         const physicsFX = initPhysicsFX({
             canvas: document.getElementById('physics-fx-canvas'),
@@ -181,9 +181,9 @@ class CodeLive {
     initializePhysicsFX() {
         // Get mode from URL params or reduced motion
         const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('fx') || 
+        const mode = urlParams.get('fx') ||
                     (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'lite' : 'full');
-        
+
         if (mode === 'off') {
             return;
         }
@@ -213,12 +213,12 @@ class CodeLive {
         const updateLoop = () => {
             // Update your metrics
             this.updateMetrics();
-            
+
             // Update physics FX
             if (this.physicsFX) {
                 this.physicsFX.physicsFX.updateMetrics(this.metrics);
             }
-            
+
             requestAnimationFrame(updateLoop);
         };
         updateLoop();
@@ -252,13 +252,13 @@ class BoidsSwitch {
 
     update() {
         const errorRate = this.metrics.errorRate || 0;
-        
+
         // Cohesion goes down as error rate rises
         this.cohesion = Math.max(0.01, 0.1 - errorRate * 0.09);
-        
+
         // Separation increases with error rate
         this.separation = 0.1 + errorRate * 0.2;
-        
+
         // Apply boids forces to particles
         this.applyBoidsForces();
     }
@@ -282,10 +282,10 @@ class SpringTimeline {
         for (let i = 0; i < this.masses.length; i++) {
             const mass = this.masses[i];
             const target = i === targetIndex ? this.keyframes[i].value : mass.target;
-            
+
             // Spring force
             const springForce = (target - mass.position) * 0.1;
-            
+
             // Apply force
             mass.velocity += springForce;
             mass.velocity *= 0.9; // damping
@@ -309,7 +309,7 @@ class FluidBackground {
         // Update fluid simulation based on metrics
         const injectionVelocity = qps * 0.01;
         const dissipation = errorRate * 10.0;
-        
+
         // Apply to WebGL shader
         this.gl.uniform1f(this.qpsLocation, injectionVelocity);
         this.gl.uniform1f(this.errorRateLocation, dissipation);
@@ -332,12 +332,12 @@ class ClothBanner {
     update(throughput, p95) {
         // Apply wind based on throughput
         const windStrength = throughput * 0.01;
-        
+
         // Handle tears based on p95 spikes
         if (p95 > 200) {
             this.handleTears(p95);
         }
-        
+
         // Update cloth physics
         this.updateClothPhysics();
     }
@@ -358,11 +358,11 @@ function runLoadSweep() {
         qps += direction * 2;
         if (qps >= 120) direction = -1;
         else if (qps <= 0) direction = 1;
-        
+
         // Update metrics
         updateMetrics({ qps });
     }, 100);
-    
+
     setTimeout(() => clearInterval(interval), 10000);
 }
 ```
@@ -377,11 +377,11 @@ function runLatencySpike() {
         p95 += direction * 10;
         if (p95 >= 220) direction = -1;
         else if (p95 <= 40) direction = -1;
-        
+
         // Update metrics
         updateMetrics({ p95 });
     }, 100);
-    
+
     setTimeout(() => clearInterval(interval), 10000);
 }
 ```
@@ -396,11 +396,11 @@ function runErrorBurst() {
         errorRate += direction * 0.02;
         if (errorRate >= 0.2) direction = -1;
         else if (errorRate <= 0) direction = 1;
-        
+
         // Update metrics
         updateMetrics({ errorRate });
     }, 100);
-    
+
     setTimeout(() => clearInterval(interval), 10000);
 }
 ```
@@ -415,11 +415,11 @@ function runFallbackStorm() {
         fallbackRatio += direction * 0.01;
         if (fallbackRatio >= 0.3) direction = -1;
         else if (fallbackRatio <= 0) direction = 1;
-        
+
         // Update metrics
         updateMetrics({ fallbackRatio });
     }, 100);
-    
+
     setTimeout(() => clearInterval(interval), 10000);
 }
 ```

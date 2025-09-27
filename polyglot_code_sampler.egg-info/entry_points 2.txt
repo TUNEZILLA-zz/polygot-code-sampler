@@ -1,0 +1,5 @@
+[console_scripts]
+pcs = pcs.cli:main
+
+[gui_scripts]
+pcs-gui = pcs.gui:main

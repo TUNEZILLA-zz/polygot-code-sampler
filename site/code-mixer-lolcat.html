@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Lolcat FX Rack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .mixer-container {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .main-mixer {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lolcat-fx-rack {
+            width: 300px;
+            background: linear-gradient(180deg, #ff6b6b, #ff8e8e, #ffa8a8);
+            border-left: 3px solid #ff4757;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .fx-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ff4757;
+        }
+
+        .fx-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .fx-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .fx-label {
+            font-size: 14px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .fx-slider {
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .fx-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .fx-toggle {
+            width: 50px;
+            height: 25px;
+            background: #ff4757;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .fx-toggle.active {
+            background: #2ed573;
+        }
+
+        .fx-toggle::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .fx-toggle.active::after {
+            transform: translateX(25px);
+        }
+
+        .cat-sprite {
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            margin: 10px auto;
+            animation: catBounce 2s infinite;
+        }
+
+        .cat-sprite::before {
+            content: '=^.^=';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            color: #fff;
+        }
+
+        .cat-sprite::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 12px solid #ff6b6b;
+        }
+
+        @keyframes catBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nyan-cat {
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(90deg,
+                #ff0000, #ff8000, #ffff00, #80ff00,
+                #00ff00, #00ff80, #00ffff, #0080ff,
+                #0000ff, #8000ff, #ff00ff, #ff0080
+            );
+            border-radius: 15px;
+            margin: 10px 0;
+            animation: nyanRainbow 3s linear infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nyan-cat::before {
+            content: '🚀';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            animation: nyanMove 2s linear infinite;
+        }
+
+        @keyframes nyanRainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes nyanMove {
+            0% { left: 10px; }
+            100% { left: calc(100% - 30px); }
+        }
+
+        .paw-print {
+            width: 30px;
+            height: 30px;
+            background: #ff6b6b;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .paw-print::before,
+        .paw-print::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        .paw-print::before {
+            top: 5px;
+            left: 5px;
+        }
+
+        .paw-print::after {
+            top: 5px;
+            right: 5px;
+        }
+
+        .code-output {
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .rainbow-text {
+            background: linear-gradient(90deg,
+                #ff0000, #ff8000, #ffff00, #80ff00,
+                #00ff00, #00ff80, #00ffff, #0080ff,
+                #0000ff, #8000ff, #ff00ff, #ff0080
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowShift 2s linear infinite;
+        }
+
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .owo-text {
+            font-family: 'Comic Sans MS', cursive;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .cat-comment {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+
+        .performance-meter {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .meter-bar {
+            flex: 1;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .cat-emoji {
+            font-size: 20px;
+            margin: 0 5px;
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="mixer-container">
+        <div class="main-mixer">
+            <h1>🎛️ Code Live - Lolcat FX Rack</h1>
+            <p>The Ableton Live of Code + ShaderToy + Meme Engine</p>
+
+            <div class="code-output" id="codeOutput">
+                <div class="rainbow-text">// Welcome to Code Live Lolcat Mode! 🐈</div>
+                <div class="cat-comment">// =^.^= Purr-fect code generation =^.^=</div>
+                <div class="owo-text">// OwO What's this? A code generator? *notices your performance*</div>
+                <div class="rainbow-text">// 🚀🌈 Nyan Cat is watching your code... 🌈🚀</div>
+            </div>
+
+            <div class="performance-meter">
+                <span class="cat-emoji">🐈</span>
+                <div class="meter-bar">
+                    <div class="meter-fill" id="performanceMeter" style="width: 75%"></div>
+                </div>
+                <span class="cat-emoji">🚀</span>
+            </div>
+        </div>
+
+        <div class="lolcat-fx-rack">
+            <h2>🌈 Lolcat FX Rack</h2>
+
+            <!-- Rainbow Filter Section -->
+            <div class="fx-section">
+                <div class="fx-title">🌈 Rainbow Filter</div>
+                <div class="fx-control">
+                    <span class="fx-label">Rainbow Speed</span>
+                    <input type="range" class="fx-slider" id="rainbowSpeed" min="0" max="100" value="50">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Color Phase</span>
+                    <input type="range" class="fx-slider" id="colorPhase" min="0" max="100" value="25">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Enable</span>
+                    <div class="fx-toggle active" id="rainbowToggle"></div>
+                </div>
+            </div>
+
+            <!-- ASCII Cat Overlays -->
+            <div class="fx-section">
+                <div class="fx-title">🐱 ASCII Cat Overlays</div>
+                <div class="fx-control">
+                    <span class="fx-label">Cat Density</span>
+                    <input type="range" class="fx-slider" id="catDensity" min="0" max="100" value="30">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Success Cats</span>
+                    <div class="fx-toggle active" id="successCatsToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Angry Cats</span>
+                    <div class="fx-toggle" id="angryCatsToggle"></div>
+                </div>
+                <div class="cat-sprite"></div>
+            </div>
+
+            <!-- Meme FX Rack -->
+            <div class="fx-section">
+                <div class="fx-title">🎭 Meme FX Rack</div>
+                <div class="fx-control">
+                    <span class="fx-label">OwOifier</span>
+                    <div class="fx-toggle" id="owoifierToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Comic Sans</span>
+                    <div class="fx-toggle" id="comicSansToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Catify Code</span>
+                    <div class="fx-toggle" id="catifyToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Chaos Level</span>
+                    <input type="range" class="fx-slider" id="chaosLevel" min="0" max="100" value="20">
+                </div>
+            </div>
+
+            <!-- Visual Cat LFO -->
+            <div class="fx-section">
+                <div class="fx-title">🐈 Visual Cat LFO</div>
+                <div class="fx-control">
+                    <span class="fx-label">Tail Wag Speed</span>
+                    <input type="range" class="fx-slider" id="tailWagSpeed" min="0" max="100" value="40">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Zoomies Mode</span>
+                    <div class="fx-toggle" id="zoomiesToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Purr Frequency</span>
+                    <input type="range" class="fx-slider" id="purrFreq" min="0" max="100" value="60">
+                </div>
+            </div>
+
+            <!-- Nyan Cat Mode -->
+            <div class="fx-section">
+                <div class="fx-title">🚀 Nyan Cat Mode</div>
+                <div class="fx-control">
+                    <span class="fx-label">Nyan Trail</span>
+                    <div class="fx-toggle" id="nyanToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Rainbow Speed</span>
+                    <input type="range" class="fx-slider" id="nyanSpeed" min="0" max="100" value="70">
+                </div>
+                <div class="nyan-cat" id="nyanCat" style="display: none;"></div>
+            </div>
+
+            <!-- Pawprint Keyframes -->
+            <div class="fx-section">
+                <div class="fx-title">🐾 Pawprint Keyframes</div>
+                <div class="fx-control">
+                    <span class="fx-label">Paw Density</span>
+                    <input type="range" class="fx-slider" id="pawDensity" min="0" max="100" value="50">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Timeline Cats</span>
+                    <div class="fx-toggle active" id="timelineCatsToggle"></div>
+                </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <div class="paw-print"></div>
+                    <div class="paw-print"></div>
+                    <div class="paw-print"></div>
+                </div>
+            </div>
+
+            <!-- Easter Egg Modes -->
+            <div class="fx-section">
+                <div class="fx-title">🥚 Easter Egg Modes</div>
+                <div class="fx-control">
+                    <span class="fx-label">Nyan Mode</span>
+                    <div class="fx-toggle" id="nyanModeToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Cat Jam</span>
+                    <div class="fx-toggle" id="catJamToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Ceiling Cat</span>
+                    <div class="fx-toggle" id="ceilingCatToggle"></div>
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Glitch Cats</span>
+                    <div class="fx-toggle" id="glitchCatsToggle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lolcat FX Rack JavaScript
+        class LolcatFX {
+            constructor() {
+                this.initializeControls();
+                this.startPerformanceLoop();
+                this.initializeCatAnimations();
+            }
+
+            initializeControls() {
+                // Rainbow Filter
+                document.getElementById('rainbowSpeed').addEventListener('input', (e) => {
+                    this.updateRainbowSpeed(e.target.value);
+                });
+
+                document.getElementById('colorPhase').addEventListener('input', (e) => {
+                    this.updateColorPhase(e.target.value);
+                });
+
+                document.getElementById('rainbowToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleRainbow();
+                });
+
+                // ASCII Cat Overlays
+                document.getElementById('catDensity').addEventListener('input', (e) => {
+                    this.updateCatDensity(e.target.value);
+                });
+
+                document.getElementById('successCatsToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleSuccessCats();
+                });
+
+                document.getElementById('angryCatsToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleAngryCats();
+                });
+
+                // Meme FX Rack
+                document.getElementById('owoifierToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleOwOifier();
+                });
+
+                document.getElementById('comicSansToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleComicSans();
+                });
+
+                document.getElementById('catifyToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleCatify();
+                });
+
+                document.getElementById('chaosLevel').addEventListener('input', (e) => {
+                    this.updateChaosLevel(e.target.value);
+                });
+
+                // Visual Cat LFO
+                document.getElementById('tailWagSpeed').addEventListener('input', (e) => {
+                    this.updateTailWagSpeed(e.target.value);
+                });
+
+                document.getElementById('zoomiesToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleZoomies();
+                });
+
+                document.getElementById('purrFreq').addEventListener('input', (e) => {
+                    this.updatePurrFreq(e.target.value);
+                });
+
+                // Nyan Cat Mode
+                document.getElementById('nyanToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleNyanMode();
+                });
+
+                document.getElementById('nyanSpeed').addEventListener('input', (e) => {
+                    this.updateNyanSpeed(e.target.value);
+                });
+
+                // Easter Egg Modes
+                document.getElementById('nyanModeToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleNyanMode();
+                });
+
+                document.getElementById('catJamToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleCatJam();
+                });
+
+                document.getElementById('ceilingCatToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleCeilingCat();
+                });
+
+                document.getElementById('glitchCatsToggle').addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    this.toggleGlitchCats();
+                });
+            }
+
+            updateRainbowSpeed(value) {
+                const speed = value / 100;
+                document.documentElement.style.setProperty('--rainbow-speed', `${speed}s`);
+                this.updateCodeOutput();
+            }
+
+            updateColorPhase(value) {
+                const phase = value / 100;
+                document.documentElement.style.setProperty('--color-phase', `${phase * 360}deg`);
+                this.updateCodeOutput();
+            }
+
+            toggleRainbow() {
+                const isActive = document.getElementById('rainbowToggle').classList.contains('active');
+                if (isActive) {
+                    document.getElementById('codeOutput').classList.add('rainbow-text');
+                } else {
+                    document.getElementById('codeOutput').classList.remove('rainbow-text');
+                }
+            }
+
+            updateCatDensity(value) {
+                const density = value / 100;
+                this.catDensity = density;
+                this.updateCodeOutput();
+            }
+
+            toggleSuccessCats() {
+                const isActive = document.getElementById('successCatsToggle').classList.contains('active');
+                this.successCats = isActive;
+                this.updateCodeOutput();
+            }
+
+            toggleAngryCats() {
+                const isActive = document.getElementById('angryCatsToggle').classList.contains('active');
+                this.angryCats = isActive;
+                this.updateCodeOutput();
+            }
+
+            toggleOwOifier() {
+                const isActive = document.getElementById('owoifierToggle').classList.contains('active');
+                this.owoifier = isActive;
+                this.updateCodeOutput();
+            }
+
+            toggleComicSans() {
+                const isActive = document.getElementById('comicSansToggle').classList.contains('active');
+                if (isActive) {
+                    document.getElementById('codeOutput').classList.add('owo-text');
+                } else {
+                    document.getElementById('codeOutput').classList.remove('owo-text');
+                }
+            }
+
+            toggleCatify() {
+                const isActive = document.getElementById('catifyToggle').classList.contains('active');
+                this.catify = isActive;
+                this.updateCodeOutput();
+            }
+
+            updateChaosLevel(value) {
+                const chaos = value / 100;
+                this.chaosLevel = chaos;
+                this.updateCodeOutput();
+            }
+
+            updateTailWagSpeed(value) {
+                const speed = value / 100;
+                document.documentElement.style.setProperty('--tail-wag-speed', `${speed}s`);
+            }
+
+            toggleZoomies() {
+                const isActive = document.getElementById('zoomiesToggle').classList.contains('active');
+                if (isActive) {
+                    document.querySelector('.cat-sprite').style.animation = 'catBounce 0.5s infinite';
+                } else {
+                    document.querySelector('.cat-sprite').style.animation = 'catBounce 2s infinite';
+                }
+            }
+
+            updatePurrFreq(value) {
+                const freq = value / 100;
+                this.purrFreq = freq;
+            }
+
+            toggleNyanMode() {
+                const isActive = document.getElementById('nyanToggle').classList.contains('active');
+                if (isActive) {
+                    document.getElementById('nyanCat').style.display = 'block';
+                } else {
+                    document.getElementById('nyanCat').style.display = 'none';
+                }
+            }
+
+            updateNyanSpeed(value) {
+                const speed = value / 100;
+                document.documentElement.style.setProperty('--nyan-speed', `${speed}s`);
+            }
+
+            toggleCatJam() {
+                const isActive = document.getElementById('catJamToggle').classList.contains('active');
+                if (isActive) {
+                    document.querySelector('.cat-sprite').style.animation = 'catBounce 0.3s infinite';
+                } else {
+                    document.querySelector('.cat-sprite').style.animation = 'catBounce 2s infinite';
+                }
+            }
+
+            toggleCeilingCat() {
+                const isActive = document.getElementById('ceilingCatToggle').classList.contains('active');
+                if (isActive) {
+                    document.body.style.background = 'linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #ff6b6b)';
+                } else {
+                    document.body.style.background = 'linear-gradient(45deg, #1a1a2e, #16213e, #0f3460)';
+                }
+            }
+
+            toggleGlitchCats() {
+                const isActive = document.getElementById('glitchCatsToggle').classList.contains('active');
+                if (isActive) {
+                    document.getElementById('codeOutput').classList.add('glitch-effect');
+                } else {
+                    document.getElementById('codeOutput').classList.remove('glitch-effect');
+                }
+            }
+
+            updateCodeOutput() {
+                const output = document.getElementById('codeOutput');
+                let content = '';
+
+                // Rainbow text
+                if (document.getElementById('rainbowToggle').classList.contains('active')) {
+                    content += '<div class="rainbow-text">// 🌈 Rainbow code generation activated! 🌈</div>';
+                }
+
+                // Success cats
+                if (this.successCats) {
+                    content += '<div class="cat-comment">// =^.^= Purr-fect success! =^.^=</div>';
+                }
+
+                // Angry cats
+                if (this.angryCats) {
+                    content += '<div class="cat-comment">// >:3 Hiss! Error detected! >:3</div>';
+                }
+
+                // OwOifier
+                if (this.owoifier) {
+                    content += '<div class="owo-text">// OwO What\'s this? A code generator? *notices your performance*</div>';
+                }
+
+                // Catify
+                if (this.catify) {
+                    content += '<div class="cat-comment">// meow() // Cat function call</div>';
+                    content += '<div class="cat-comment">// purr() // Cat satisfaction</div>';
+                }
+
+                // Chaos level
+                if (this.chaosLevel > 0.5) {
+                    content += '<div class="rainbow-text">// 🐈💨 CHAOS MODE ACTIVATED! 🐈💨</div>';
+                }
+
+                output.innerHTML = content;
+            }
+
+            startPerformanceLoop() {
+                setInterval(() => {
+                    // Simulate performance metrics
+                    const performance = Math.random() * 100;
+                    document.getElementById('performanceMeter').style.width = `${performance}%`;
+
+                    // Update cat animations based on performance
+                    if (performance > 80) {
+                        document.querySelector('.cat-sprite').style.animation = 'catBounce 0.5s infinite';
+                    } else if (performance < 30) {
+                        document.querySelector('.cat-sprite').style.animation = 'catBounce 3s infinite';
+                    } else {
+                        document.querySelector('.cat-sprite').style.animation = 'catBounce 2s infinite';
+                    }
+                }, 100);
+            }
+
+            initializeCatAnimations() {
+                // Initialize cat sprite
+                const catSprite = document.querySelector('.cat-sprite');
+                catSprite.addEventListener('click', () => {
+                    catSprite.style.animation = 'catBounce 0.1s infinite';
+                    setTimeout(() => {
+                        catSprite.style.animation = 'catBounce 2s infinite';
+                    }, 1000);
+                });
+            }
+        }
+
+        // Initialize the Lolcat FX Rack
+        document.addEventListener('DOMContentLoaded', () => {
+            new LolcatFX();
+        });
+    </script>
+</body>
+</html>

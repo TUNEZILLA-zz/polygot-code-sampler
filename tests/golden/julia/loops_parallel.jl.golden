@@ -2,10 +2,10 @@
 module PCS_Generated_e82c
 
     const PCS_Generated = PCS_Generated_e82c
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Int
         # NOTE: parallelized with thread-local partials
         # NOTE: gensym reset at emit start for deterministic output
@@ -25,4 +25,3 @@ module PCS_Generated_e82c
     end
 
 end # module
-

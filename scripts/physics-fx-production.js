@@ -20,7 +20,7 @@ class PhysicsFXProduction {
             fx_quality_level: 1.0,
             fx_backpressure_events: 0
         };
-        
+
         this.initialize();
     }
 
@@ -76,11 +76,11 @@ class PhysicsFXProduction {
             this.render = Render.create({
                 canvas: this.canvas,
                 engine: this.engine,
-                options: { 
-                    wireframes: false, 
-                    background: '#0b0f14', 
-                    width: this.canvas.clientWidth, 
-                    height: this.canvas.clientHeight 
+                options: {
+                    wireframes: false,
+                    background: '#0b0f14',
+                    width: this.canvas.clientWidth,
+                    height: this.canvas.clientHeight
                 }
             });
             Render.run(this.render);
@@ -108,13 +108,13 @@ class PhysicsFXProduction {
             };
 
             // Fixed color keys per backend
-            this.colors = { 
-                rust:'#f74c00', 
-                ts:'#2f9cf4', 
-                go:'#00add8', 
-                csharp:'#68217a', 
-                sql:'#e09f3e', 
-                julia:'#9558b2' 
+            this.colors = {
+                rust:'#f74c00',
+                ts:'#2f9cf4',
+                go:'#00add8',
+                csharp:'#68217a',
+                sql:'#e09f3e',
+                julia:'#9558b2'
             };
 
             // Particle pool
@@ -207,28 +207,28 @@ class PhysicsFXProduction {
 
         const tick = () => {
             const startTime = performance.now();
-            
+
             if (this.isTabVisible && !this.isReducedMotion) {
                 this.updatePhysics();
                 this.updateQualityScaler();
                 this.updateTelemetry();
             }
-            
+
             const frameTime = performance.now() - startTime;
             this.telemetry.fx_frame_ms = frameTime;
-            
+
             // Keep FX thread under ~6–8 ms/frame
             if (frameTime > 8) {
                 this.telemetry.fx_backpressure_events++;
                 this.reduceQuality();
             }
-            
+
             this.frameCount++;
             this.updateFPS();
-            
+
             requestAnimationFrame(tick);
         };
-        
+
         tick();
     }
 
@@ -246,15 +246,15 @@ class PhysicsFXProduction {
 
         // Global damping from latency
         const damping = Math.min(0.25, (m.p95 || 0) / 300.0);
-        this.engine.world.bodies.forEach(b => { 
-            if (!b.isStatic) b.frictionAir = 0.02 + damping; 
+        this.engine.world.bodies.forEach(b => {
+            if (!b.isStatic) b.frictionAir = 0.02 + damping;
         });
 
         // Turbulent wind from error rate
         const err = Math.min(1, m.errorRate || 0);
-        const wind = Vector.create( 
+        const wind = Vector.create(
             (Math.sin(now*0.002)+Math.random()*0.3) * err * 0.005,
-            (Math.cos(now*0.0017)+Math.random()*0.3) * err * 0.005 
+            (Math.cos(now*0.0017)+Math.random()*0.3) * err * 0.005
         );
 
         // Per-particle attraction towards its backend anchor + wind
@@ -280,31 +280,31 @@ class PhysicsFXProduction {
         const x = W/2 + (Math.random()-0.5)*40;
         const y = H/2 + (Math.random()-0.5)*40;
         const r = 3 + Math.random()*2;
-        
+
         // Choose backend weighted by perBackend
         const keys = Object.keys(this.metrics.perBackend || this.colors);
         const weights = keys.map(k => Math.max(0, this.metrics.perBackend?.[k] || 0.1));
         const sum = weights.reduce((a,b) => a+b, 0) || 1;
         let rnd = Math.random() * sum;
         let choice = keys[0];
-        for (let i=0; i<keys.length; i++){ 
-            rnd -= weights[i]; 
-            if (rnd <= 0){ 
-                choice = keys[i]; 
-                break; 
-            } 
+        for (let i=0; i<keys.length; i++){
+            rnd -= weights[i];
+            if (rnd <= 0){
+                choice = keys[i];
+                break;
+            }
         }
-        
+
         const fill = this.colors[choice] || '#8ab';
         const p = Bodies.circle(x, y, r, {
-            restitution: 0.2, 
-            frictionAir: 0.02, 
+            restitution: 0.2,
+            frictionAir: 0.02,
             render: { fillStyle: fill, strokeStyle: 'transparent' }
         });
         p.__target = choice;
         this.pool.push(p);
         Composite.add(this.engine.world, p);
-        
+
         // Quality-based particle cap
         const maxParticles = Math.floor(this.qualityScaler.maxParticles * this.qualityLevel);
         if (this.pool.length > maxParticles) {
@@ -320,7 +320,7 @@ class PhysicsFXProduction {
         } else if (this.fps > this.qualityScaler.targetFPS) {
             this.increaseQuality();
         }
-        
+
         this.telemetry.fx_quality_level = this.qualityLevel;
     }
 
@@ -344,7 +344,7 @@ class PhysicsFXProduction {
     updateFPS() {
         const now = performance.now();
         const deltaTime = now - this.lastFrameTime;
-        
+
         if (deltaTime >= 1000) {
             this.fps = Math.round((this.frameCount * 1000) / deltaTime);
             this.lastFrameTime = now;
@@ -439,7 +439,7 @@ class MetricsAdapter {
             qps: 0, p95: 30, errorRate: 0, fallbackRatio: 0,
             perBackend: { rust:0.5, ts:0.5, go:0.4, csharp:0.3, sql:0.2, julia:0.2 }
         };
-        
+
         this.startPolling();
     }
 
@@ -454,7 +454,7 @@ class MetricsAdapter {
             console.warn('Metrics fetch failed, using fallback:', error);
             this.useFallbackMetrics();
         }
-        
+
         this.timeoutHandle = setTimeout(() => this.poll(), this.debounceMs);
     }
 
@@ -509,7 +509,7 @@ export function initPhysicsFX(options = {}) {
     // Get mode from URL params or reduced motion
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('fx') || (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'lite' : 'full');
-    
+
     if (mode === 'off') {
         return null;
     }

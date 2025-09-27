@@ -16,7 +16,7 @@ The Polyglot Code Sampler has evolved from a simple compiler demonstration into 
 regression:
   per_backend:
     julia: 0.12    # 12% - Julia can be more variable
-    rust: 0.08     # 8% - Rust should be stable  
+    rust: 0.08     # 8% - Rust should be stable
     go: 0.15       # 15% - Go has GC variance
     ts: 0.10       # 10% - TypeScript baseline
     csharp: 0.10   # 10% - C# baseline
@@ -161,4 +161,3 @@ The Polyglot Code Sampler has become the **gold standard** for performance monit
 ---
 
 *Ready to explore? Start with `make demo-data && make demo-serve` and experience the future of performance monitoring.*
-

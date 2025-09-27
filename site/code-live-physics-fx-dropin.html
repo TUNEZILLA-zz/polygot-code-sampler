@@ -233,11 +233,11 @@
             .main-title {
                 font-size: 32px;
             }
-            
+
             .main-subtitle {
                 font-size: 18px;
             }
-            
+
             .controls-overlay {
                 top: 10px;
                 right: 10px;
@@ -267,18 +267,18 @@
     <!-- Controls Overlay -->
     <div class="controls-overlay">
         <h3>🎛️ Physics FX Controls</h3>
-        
+
         <div class="control-group">
             <button class="control-button" id="togglePhysics">Toggle Physics</button>
             <button class="control-button" id="toggleBoids">Toggle Boids</button>
             <button class="control-button" id="toggleSprings">Toggle Springs</button>
         </div>
-        
+
         <div class="control-group">
             <button class="control-button" id="resetPhysics">Reset Physics</button>
             <button class="control-button" id="randomizeForces">Randomize Forces</button>
         </div>
-        
+
         <div class="control-group">
             <button class="control-button" id="loadSweep">Load Sweep</button>
             <button class="control-button" id="latencySpike">Latency Spike</button>
@@ -373,7 +373,7 @@
                     errorBurst: false,
                     fallbackStorm: false
                 };
-                
+
                 this.initialize();
             }
 
@@ -389,7 +389,7 @@
                 // Get mode from URL params or reduced motion
                 const urlParams = new URLSearchParams(window.location.search);
                 const mode = urlParams.get('fx') || (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'lite' : 'full');
-                
+
                 if (mode === 'off') {
                     return;
                 }
@@ -440,12 +440,12 @@
 
             initializeModeSwitches() {
                 const modeButtons = document.querySelectorAll('.mode-button');
-                
+
                 modeButtons.forEach(button => {
                     button.addEventListener('click', () => {
                         modeButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-                        
+
                         const mode = button.dataset.mode;
                         if (this.physicsFX) {
                             this.physicsFX.physicsFX.setMode(mode);
@@ -494,13 +494,13 @@
                             p95: p95Latency,
                             errorRate: (100 - successRate) / 100,
                             fallbackRatio: Math.random() * 0.1,
-                            perBackend: { 
-                                rust: 0.9, 
-                                ts: 0.8, 
-                                go: 0.7, 
-                                csharp: 0.6, 
-                                sql: 0.5, 
-                                julia: 0.4 
+                            perBackend: {
+                                rust: 0.9,
+                                ts: 0.8,
+                                go: 0.7,
+                                csharp: 0.6,
+                                sql: 0.5,
+                                julia: 0.4
                             }
                         };
                     }
@@ -511,7 +511,7 @@
             runLoadSweep() {
                 console.log('Running Load Sweep: QPS 0→120→0');
                 this.testScenes.loadSweep = true;
-                
+
                 let qps = 0;
                 let direction = 1;
                 const interval = setInterval(() => {
@@ -521,16 +521,16 @@
                     } else if (qps <= 0) {
                         direction = 1;
                     }
-                    
+
                     if (this.metricsAdapter) {
                         this.metricsAdapter.latest.qps = qps;
                     }
-                    
+
                     if (!this.testScenes.loadSweep) {
                         clearInterval(interval);
                     }
                 }, 100);
-                
+
                 setTimeout(() => {
                     this.testScenes.loadSweep = false;
                 }, 10000);
@@ -539,7 +539,7 @@
             runLatencySpike() {
                 console.log('Running Latency Spike: P95 40→220ms');
                 this.testScenes.latencySpike = true;
-                
+
                 let p95 = 40;
                 let direction = 1;
                 const interval = setInterval(() => {
@@ -549,16 +549,16 @@
                     } else if (p95 <= 40) {
                         direction = -1;
                     }
-                    
+
                     if (this.metricsAdapter) {
                         this.metricsAdapter.latest.p95 = p95;
                     }
-                    
+
                     if (!this.testScenes.latencySpike) {
                         clearInterval(interval);
                     }
                 }, 100);
-                
+
                 setTimeout(() => {
                     this.testScenes.latencySpike = false;
                 }, 10000);
@@ -567,7 +567,7 @@
             runErrorBurst() {
                 console.log('Running Error Burst: ErrorRate 0→0.2 for 10s');
                 this.testScenes.errorBurst = true;
-                
+
                 let errorRate = 0;
                 let direction = 1;
                 const interval = setInterval(() => {
@@ -577,16 +577,16 @@
                     } else if (errorRate <= 0) {
                         direction = 1;
                     }
-                    
+
                     if (this.metricsAdapter) {
                         this.metricsAdapter.latest.errorRate = errorRate;
                     }
-                    
+
                     if (!this.testScenes.errorBurst) {
                         clearInterval(interval);
                     }
                 }, 100);
-                
+
                 setTimeout(() => {
                     this.testScenes.errorBurst = false;
                 }, 10000);
@@ -595,7 +595,7 @@
             runFallbackStorm() {
                 console.log('Running Fallback Storm: FallbackRatio > 0.15');
                 this.testScenes.fallbackStorm = true;
-                
+
                 let fallbackRatio = 0;
                 let direction = 1;
                 const interval = setInterval(() => {
@@ -605,16 +605,16 @@
                     } else if (fallbackRatio <= 0) {
                         direction = 1;
                     }
-                    
+
                     if (this.metricsAdapter) {
                         this.metricsAdapter.latest.fallbackRatio = fallbackRatio;
                     }
-                    
+
                     if (!this.testScenes.fallbackStorm) {
                         clearInterval(interval);
                     }
                 }, 100);
-                
+
                 setTimeout(() => {
                     this.testScenes.fallbackStorm = false;
                 }, 10000);

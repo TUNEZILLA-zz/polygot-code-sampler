@@ -1,0 +1,115 @@
+# Caddyfile for Code Live - The Ableton Live of Code
+# Production-ready reverse proxy with TLS and security
+
+# Global options
+{
+    # Enable HTTP/3
+    servers {
+        protocols h1 h2 h3
+    }
+
+    # Security headers
+    security {
+        headers {
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+            Referrer-Policy "no-referrer-when-downgrade"
+            Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.domain; img-src 'self' data:; font-src 'self'"
+        }
+    }
+
+    # Rate limiting
+    rate_limit {
+        zone static {
+            key {remote_host}
+            rate 10r/s
+            burst 20
+        }
+        zone api {
+            key {remote_host}
+            rate 5r/s
+            burst 10
+        }
+        zone render {
+            key {remote_host}
+            rate 2r/s
+            burst 5
+        }
+    }
+}
+
+# Main site configuration
+code-live.localhost {
+    # Enable compression
+    encode gzip
+
+    # Rate limiting
+    rate_limit static
+
+    # Static files
+    handle /site/* {
+        root * /app/site
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # API endpoints
+    handle /api/* {
+        rate_limit api
+        reverse_proxy code-live:8787
+        header X-Request-ID {uuid}
+    }
+
+    # Render endpoints (more restrictive)
+    handle /render* {
+        rate_limit render
+        reverse_proxy code-live:8787 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+        header X-Request-ID {uuid}
+    }
+
+    # Health check
+    handle /health {
+        reverse_proxy code-live:8787
+        access_log off
+    }
+
+    # Metrics (restricted)
+    handle /metrics {
+        reverse_proxy code-live:8787
+        header X-Request-ID {uuid}
+    }
+
+    # WebSocket support
+    handle /ws {
+        reverse_proxy code-live:8787 {
+            header_up Connection {>Connection}
+            header_up Upgrade {>Upgrade}
+        }
+    }
+
+    # Default route
+    handle {
+        root * /app/site
+        try_files {path} /index.html
+        file_server
+    }
+}
+
+# Production domain (replace with your domain)
+# your-domain.com {
+#     # Same configuration as above
+#     # Add your SSL certificate
+#     tls your-email@domain.com
+# }
+
+# Development domain
+localhost:8080 {
+    # Same configuration as code-live.localhost
+    # but without TLS for local development
+}

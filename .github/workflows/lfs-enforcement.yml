@@ -1,0 +1,78 @@
+name: LFS Enforcement
+on:
+  push:
+    branches: [main, develop, 'fx-*']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lfs-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Install Git LFS
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git-lfs
+        git lfs install
+
+    - name: Verify LFS tracking
+      run: |
+        echo "🔍 Checking Git LFS configuration..."
+        git lfs ls-files --errors
+        if [ $? -ne 0 ]; then
+          echo "❌ Git LFS verification failed"
+          echo "Files tracked by LFS but not properly stored:"
+          git lfs ls-files --errors
+          exit 1
+        fi
+        echo "✅ Git LFS verification passed"
+
+    - name: Check for large files not in LFS
+      run: |
+        echo "🔍 Checking for large files not in LFS..."
+        # Find files > 50MB that aren't in LFS
+        find . -type f -size +50M -not -path './.git/*' -not -path './node_modules/*' | while read file; do
+          if ! git lfs ls-files | grep -q "$file"; then
+            echo "❌ Large file not in LFS: $file"
+            echo "Add to .gitattributes: echo '$file filter=lfs diff=lfs merge=lfs -text' >> .gitattributes"
+            exit 1
+          fi
+        done
+        echo "✅ All large files properly tracked in LFS"
+
+    - name: Check LFS file sizes
+      run: |
+        echo "📊 LFS file statistics:"
+        git lfs ls-files | wc -l | xargs echo "Total LFS files:"
+        git lfs ls-files | xargs -I{} sh -c 'echo "$(stat -c%s {}) {}"' | sort -nr | head -10
+        echo "✅ LFS file size check completed"
+
+    - name: Verify .gitattributes
+      run: |
+        echo "🔍 Checking .gitattributes configuration..."
+        if [ ! -f .gitattributes ]; then
+          echo "❌ .gitattributes file missing"
+          exit 1
+        fi
+
+        # Check for required LFS patterns
+        required_patterns=("*.mp4" "*.mov" "*.zip" "*.pickle" "*.onnx" "*.bin" "*.model")
+        for pattern in "${required_patterns[@]}"; do
+          if ! grep -q "$pattern" .gitattributes; then
+            echo "❌ Missing LFS pattern in .gitattributes: $pattern"
+            exit 1
+          fi
+        done
+        echo "✅ .gitattributes configuration verified"
+
+    - name: Test LFS migration (dry-run)
+      run: |
+        echo "🧪 Testing LFS migration (dry-run)..."
+        # This would show what would be migrated without actually doing it
+        git lfs migrate info --everything --include="*.mp4,*.mov,*.zip,*.pickle,*.onnx,*.bin,*.model" || echo "No files to migrate"
+        echo "✅ LFS migration test completed"

@@ -1,28 +1,65 @@
-# Global owners
-* @TUNEZILLA-zz
+# Code Live - CODEOWNERS
+# Define who can approve changes to different parts of the codebase
 
-# Core renderer API and central infrastructure
-pcs/renderer_api.py @TUNEZILLA-zz
-pcs/__init__.py @TUNEZILLA-zz
-pcs/cli.py @TUNEZILLA-zz
+# Global ownership
+*                   @TUNEZILLA-zz
 
-# Backend renderers (require review for changes)
-pcs/renderers/ @TUNEZILLA-zz
+# Performance-critical scripts
+/scripts/           @TUNEZILLA-zz @perf-teammate
+/scripts/bench_*.py @TUNEZILLA-zz @perf-teammate
+/scripts/stress_*.py @TUNEZILLA-zz @perf-teammate
+/scripts/trend_*.py @TUNEZILLA-zz @perf-teammate
 
-# Test infrastructure
-tests/ @TUNEZILLA-zz
-.github/workflows/ @TUNEZILLA-zz
+# Frontend and UI
+/site/              @TUNEZILLA-zz @frontend-teammate
+/site/*.html        @TUNEZILLA-zz @frontend-teammate
+/site/*.css         @TUNEZILLA-zz @frontend-teammate
+/site/*.js          @TUNEZILLA-zz @frontend-teammate
 
-# Performance and benchmarking
-bench/ @TUNEZILLA-zz
-scripts/ @TUNEZILLA-zz
+# Backend servers
+/server*.py         @TUNEZILLA-zz @backend-teammate
+/server_*.py        @TUNEZILLA-zz @backend-teammate
+
+# Monitoring and Ops
+/grafana/           @TUNEZILLA-zz @ops-teammate
+/alert_rules.yml    @TUNEZILLA-zz @ops-teammate
+/prometheus.yml     @TUNEZILLA-zz @ops-teammate
+/nginx.conf         @TUNEZILLA-zz @ops-teammate
+/Caddyfile          @TUNEZILLA-zz @ops-teammate
+
+# Core rendering engine
+/pcs/               @TUNEZILLA-zz @core-teammate
+/pcs/*.py           @TUNEZILLA-zz @core-teammate
+
+# Physics FX system
+/scripts/physics-fx-production.js @TUNEZILLA-zz @physics-teammate
+/scripts/metrics-adapter.js @TUNEZILLA-zz @physics-teammate
+/site/code-live-physics-fx-dropin.html @TUNEZILLA-zz @physics-teammate
+
+# Experiment branches (require extra review)
+/fx-*/              @TUNEZILLA-zz @experiment-reviewer
+/fx-synth-*/        @TUNEZILLA-zz @audio-teammate
+/fx-lolcat-*/       @TUNEZILLA-zz @visual-teammate
+/fx-audio-*/        @TUNEZILLA-zz @audio-teammate
 
 # Documentation
-docs/ @TUNEZILLA-zz
-README.md @TUNEZILLA-zz
-CHANGELOG.md @TUNEZILLA-zz
+*.md                @TUNEZILLA-zz @docs-teammate
+/docs/              @TUNEZILLA-zz @docs-teammate
 
-# Release and packaging
-pyproject.toml @TUNEZILLA-zz
-.github/release-drafter.yml @TUNEZILLA-zz
-.github/workflows/sbom.yml @TUNEZILLA-zz
+# CI/CD and workflows (CRITICAL - requires approval)
+/.github/           @TUNEZILLA-zz @ops-teammate
+/.github/workflows/ @TUNEZILLA-zz @ops-teammate
+/.github/CODEOWNERS @TUNEZILLA-zz @ops-teammate
+/.github/branch-protection.yml @TUNEZILLA-zz @ops-teammate
+
+# Security-sensitive configuration (CRITICAL - requires approval)
+/.gitignore         @TUNEZILLA-zz @ops-teammate
+/.gitattributes     @TUNEZILLA-zz @ops-teammate
+/.pre-commit-config.yaml @TUNEZILLA-zz @ops-teammate
+/pyproject.toml     @TUNEZILLA-zz @ops-teammate
+/requirements*.txt  @TUNEZILLA-zz @ops-teammate
+/Makefile           @TUNEZILLA-zz @ops-teammate
+
+# Docker and deployment
+/Dockerfile         @TUNEZILLA-zz @ops-teammate
+/docker-compose*.yml @TUNEZILLA-zz @ops-teammate

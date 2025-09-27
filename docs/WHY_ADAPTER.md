@@ -42,14 +42,14 @@ graph TD
     C --> E[TypeScript Backend]
     C --> F[Julia Backend]
     C --> G[SQL Backend]
-    
+
     B --> H[kwargs Filter]
     H --> I[Filter to Backend Signature]
     I --> D
     I --> E
     I --> F
     I --> G
-    
+
     D --> J[Rust Code]
     E --> K[TypeScript Code]
     F --> L[Julia Code]

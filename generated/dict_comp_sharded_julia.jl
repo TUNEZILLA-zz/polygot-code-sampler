@@ -2,10 +2,10 @@
 module PCS_Generated_947d
 
     const PCS_Generated = PCS_Generated_947d
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Dict{Int, Int}
         # NOTE: auto-selected loops mode for dict operation
         # NOTE: gensym reset at emit start for deterministic output

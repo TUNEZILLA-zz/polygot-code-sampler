@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Techno-Creative Visual FX</title>
+    <style>
+        :root {
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+            --theme-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            background: var(--theme-background);
+            color: var(--theme-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fibonacci Bloom Background */
+        .fibonacci-bloom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Fractal Background */
+        .fractal-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Wave Interference */
+        .wave-interference {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Glitch Layers */
+        .glitch-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+
+        .glitch-layer.active {
+            opacity: 1;
+            animation: glitchPulse 0.12s ease-in-out;
+        }
+
+        @keyframes glitchPulse {
+            0% {
+                filter: hue-rotate(0deg) contrast(100%) saturate(100%);
+                transform: translateX(0);
+            }
+            25% {
+                filter: hue-rotate(90deg) contrast(120%) saturate(150%);
+                transform: translateX(-2px);
+            }
+            50% {
+                filter: hue-rotate(180deg) contrast(80%) saturate(200%);
+                transform: translateX(2px);
+            }
+            75% {
+                filter: hue-rotate(270deg) contrast(110%) saturate(120%);
+                transform: translateX(-1px);
+            }
+            100% {
+                filter: hue-rotate(360deg) contrast(100%) saturate(100%);
+                transform: translateX(0);
+            }
+        }
+
+        /* Spectrogram-style Panels */
+        .spectrogram-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .spectrogram-bars {
+            display: flex;
+            align-items: end;
+            height: 120px;
+            gap: 2px;
+        }
+
+        .spectrogram-bar {
+            flex: 1;
+            background: linear-gradient(to top, #00ff00, #ffff00, #ff0000);
+            border-radius: 2px;
+            animation: spectrogramPulse 0.5s ease-in-out infinite;
+        }
+
+        .spectrogram-bar:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+
+        .spectrogram-bar:nth-child(even) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes spectrogramPulse {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Lolcat FX for Strings */
+        .lolcat-text {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #0080ff, #0000ff, #8000ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowShift 2s linear infinite;
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .lolcat-stretch {
+            animation: stretchPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes stretchPulse {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(1.2); }
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 100px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .main-subtitle {
+            font-size: 24px;
+            color: var(--theme-text);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .demo-section {
+            background: var(--theme-surface);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--theme-accent);
+        }
+
+        .section-description {
+            color: var(--theme-text);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Controls */
+        .controls-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .control-slider {
+            width: 150px;
+            height: 20px;
+            background: linear-gradient(90deg, #333, #666);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .control-button:hover {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .control-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Mode Switches */
+        .mode-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .mode-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 0 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .mode-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Performance Info */
+        .performance-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .metric-value {
+            font-size: 12px;
+            color: var(--theme-accent);
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+
+            .main-subtitle {
+                font-size: 18px;
+            }
+
+            .controls-overlay {
+                top: 10px;
+                right: 10px;
+                padding: 10px;
+            }
+
+            .control-slider {
+                width: 120px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .fibonacci-bloom,
+            .fractal-background,
+            .wave-interference {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fibonacci Bloom Background -->
+    <canvas class="fibonacci-bloom" id="fibonacciBloom"></canvas>
+
+    <!-- Fractal Background -->
+    <canvas class="fractal-background" id="fractalBackground"></canvas>
+
+    <!-- Wave Interference -->
+    <canvas class="wave-interference" id="waveInterference"></canvas>
+
+    <!-- Glitch Layer -->
+    <div class="glitch-layer" id="glitchLayer"></div>
+
+    <!-- Spectrogram Panel -->
+    <div class="spectrogram-panel">
+        <div class="spectrogram-bars" id="spectrogramBars"></div>
+    </div>
+
+    <!-- Mode Switches -->
+    <div class="mode-switch">
+        <button class="mode-button active" data-mode="performance">Performance</button>
+        <button class="mode-button" data-mode="creative">Creative</button>
+        <button class="mode-button" data-mode="techno">Techno</button>
+    </div>
+
+    <!-- Controls Overlay -->
+    <div class="controls-overlay">
+        <h3>🎛️ Techno-Creative FX Controls</h3>
+
+        <div class="control-group">
+            <label class="control-label">Fibonacci Bloom</label>
+            <input type="range" class="control-slider" id="fibonacciIntensity" min="0" max="100" value="50">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Fractal Zoom</label>
+            <input type="range" class="control-slider" id="fractalZoom" min="0" max="100" value="30">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Wave Density</label>
+            <input type="range" class="control-slider" id="waveDensity" min="0" max="100" value="40">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Lolcat Intensity</label>
+            <input type="range" class="control-slider" id="lolcatIntensity" min="0" max="100" value="20">
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="toggleFibonacci">Toggle Fibonacci</button>
+            <button class="control-button" id="toggleFractal">Toggle Fractal</button>
+            <button class="control-button" id="toggleWaves">Toggle Waves</button>
+            <button class="control-button" id="toggleLolcat">Toggle Lolcat</button>
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="triggerGlitch">Trigger Glitch</button>
+            <button class="control-button" id="randomizeFX">Randomize FX</button>
+        </div>
+    </div>
+
+    <!-- Performance Info -->
+    <div class="performance-info">
+        <div class="performance-metric">
+            <span class="metric-label">Request Rate:</span>
+            <span class="metric-value" id="requestRate">12.4</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Success Rate:</span>
+            <span class="metric-value" id="successRate">85.8%</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">P95 Latency:</span>
+            <span class="metric-value" id="p95Latency">45ms</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Julia Active:</span>
+            <span class="metric-value" id="juliaActive">Yes</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="main-title">Code Live Techno-Creative FX</h1>
+        <p class="main-subtitle">Techno-Creative Playground with Fibonacci Bloom, Fractals, and Lolcat Strings</p>
+
+        <!-- Demo Sections -->
+        <div class="demo-section">
+            <h2 class="section-title">🌻 Fibonacci Bloom Effect</h2>
+            <p class="section-description">
+                Organic bloom effect that grows with system load. Dot density tied to throughput,
+                hue rotation tied to success rate. Creates a living, breathing visual representation of your system.
+            </p>
+            <div class="lolcat-text lolcat-stretch">
+                "Hello" → "Heeellooooo!!! 😸" with random colors and spacings
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🌀 Fractal Background</h2>
+            <p class="section-description">
+                Idle background that subtly morphs with latency or error rate.
+                Switch to Julia set visuals when the Julia backend is active (fun Easter egg).
+                Great as a "screensaver" or live background layer.
+            </p>
+            <div class="lolcat-text">
+                Fractal zoom tied to latency p95, mode switches with Julia backend
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🌊 Wave Interference</h2>
+            <p class="section-description">
+                Use sine waves to simulate "signal strength." Tie amplitude to request rate,
+                frequency to latency buckets. Looks like rippling water that gets chaotic under heavy load.
+            </p>
+            <div class="lolcat-text">
+                Wave amplitude tied to request rate, frequency tied to latency buckets
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🌈 Color Frequencies</h2>
+            <p class="section-description">
+                Map metrics to wavelength-inspired hues. Rust: ~500nm (green-blue, fast + efficient).
+                SQL: ~650nm (red-orange, slower, heavier). Animate hue shifts in real time like a spectrum analyzer.
+            </p>
+            <div class="lolcat-text">
+                Rust: ~500nm (green-blue) | SQL: ~650nm (red-orange) | Julia: ~400nm (violet)
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🎛️ Spectrogram-style Panels</h2>
+            <p class="section-description">
+                Draw latency histograms as vertical bars with color gradients (like DAW spectral views).
+                Real-time performance visualization that feels like audio engineering.
+            </p>
+            <div class="lolcat-text">
+                Latency histograms as vertical bars with color gradients
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Techno-Creative Visual FX System
+        class TechnoCreativeFX {
+            constructor() {
+                this.initializeCanvases();
+                this.initializeControls();
+                this.initializeModeSwitches();
+                this.startPerformanceMonitoring();
+                this.startAnimations();
+            }
+
+            initializeCanvases() {
+                // Fibonacci Bloom Canvas
+                this.fibonacciCanvas = document.getElementById('fibonacciBloom');
+                this.fibonacciCtx = this.fibonacciCanvas.getContext('2d', { alpha: false });
+                this.fitCanvas(this.fibonacciCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.fibonacciCanvas));
+
+                // Fractal Background Canvas
+                this.fractalCanvas = document.getElementById('fractalBackground');
+                this.fractalCtx = this.fractalCanvas.getContext('2d');
+                this.fitCanvas(this.fractalCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.fractalCanvas));
+
+                // Wave Interference Canvas
+                this.waveCanvas = document.getElementById('waveInterference');
+                this.waveCtx = this.waveCanvas.getContext('2d');
+                this.fitCanvas(this.waveCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.waveCanvas));
+
+                this.initializeSpectrogram();
+            }
+
+            fitCanvas(canvas) {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                }
+            }
+
+            initializeSpectrogram() {
+                const spectrogramBars = document.getElementById('spectrogramBars');
+                const barCount = 64;
+
+                for (let i = 0; i < barCount; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'spectrogram-bar';
+                    bar.style.height = Math.random() * 100 + '%';
+                    spectrogramBars.appendChild(bar);
+                }
+            }
+
+            initializeControls() {
+                // Fibonacci controls
+                document.getElementById('fibonacciIntensity').addEventListener('input', (e) => {
+                    this.fibonacciIntensity = e.target.value / 100;
+                });
+
+                document.getElementById('toggleFibonacci').addEventListener('click', () => {
+                    this.fibonacciEnabled = !this.fibonacciEnabled;
+                    document.getElementById('toggleFibonacci').classList.toggle('active');
+                });
+
+                // Fractal controls
+                document.getElementById('fractalZoom').addEventListener('input', (e) => {
+                    this.fractalZoom = e.target.value / 100;
+                });
+
+                document.getElementById('toggleFractal').addEventListener('click', () => {
+                    this.fractalEnabled = !this.fractalEnabled;
+                    document.getElementById('toggleFractal').classList.toggle('active');
+                });
+
+                // Wave controls
+                document.getElementById('waveDensity').addEventListener('input', (e) => {
+                    this.waveDensity = e.target.value / 100;
+                });
+
+                document.getElementById('toggleWaves').addEventListener('click', () => {
+                    this.wavesEnabled = !this.wavesEnabled;
+                    document.getElementById('toggleWaves').classList.toggle('active');
+                });
+
+                // Lolcat controls
+                document.getElementById('lolcatIntensity').addEventListener('input', (e) => {
+                    this.lolcatIntensity = e.target.value / 100;
+                });
+
+                document.getElementById('toggleLolcat').addEventListener('click', () => {
+                    this.lolcatEnabled = !this.lolcatEnabled;
+                    document.getElementById('toggleLolcat').classList.toggle('active');
+                });
+
+                // Glitch trigger
+                document.getElementById('triggerGlitch').addEventListener('click', () => {
+                    this.triggerGlitch();
+                });
+
+                // Randomize FX
+                document.getElementById('randomizeFX').addEventListener('click', () => {
+                    this.randomizeFX();
+                });
+            }
+
+            initializeModeSwitches() {
+                const modeButtons = document.querySelectorAll('.mode-button');
+
+                modeButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        modeButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        const mode = button.dataset.mode;
+                        this.setMode(mode);
+                    });
+                });
+
+                this.setMode('performance');
+            }
+
+            setMode(mode) {
+                this.currentMode = mode;
+
+                switch (mode) {
+                    case 'performance':
+                        this.fibonacciEnabled = false;
+                        this.fractalEnabled = false;
+                        this.wavesEnabled = false;
+                        this.lolcatEnabled = false;
+                        break;
+                    case 'creative':
+                        this.fibonacciEnabled = true;
+                        this.fractalEnabled = true;
+                        this.wavesEnabled = false;
+                        this.lolcatEnabled = true;
+                        break;
+                    case 'techno':
+                        this.fibonacciEnabled = true;
+                        this.fractalEnabled = true;
+                        this.wavesEnabled = true;
+                        this.lolcatEnabled = true;
+                        break;
+                }
+            }
+
+            startPerformanceMonitoring() {
+                setInterval(() => {
+                    // Simulate performance metrics
+                    const requestRate = 5 + Math.random() * 15;
+                    const successRate = 80 + Math.random() * 20;
+                    const p95Latency = 10 + Math.random() * 50;
+                    const juliaActive = Math.random() > 0.5;
+
+                    // Update performance info
+                    document.getElementById('requestRate').textContent = requestRate.toFixed(1);
+                    document.getElementById('successRate').textContent = successRate.toFixed(1) + '%';
+                    document.getElementById('p95Latency').textContent = p95Latency.toFixed(0) + 'ms';
+                    document.getElementById('juliaActive').textContent = juliaActive ? 'Yes' : 'No';
+
+                    // Update visuals based on metrics
+                    this.updateVisuals({
+                        requestRate: requestRate,
+                        successRate: successRate / 100,
+                        p95Latency: p95Latency / 1000,
+                        juliaActive: juliaActive
+                    });
+                }, 1000);
+            }
+
+            updateVisuals(metrics) {
+                this.metrics = metrics;
+
+                // Update Fibonacci bloom based on request rate and success rate
+                if (this.fibonacciEnabled) {
+                    this.updateFibonacciBloom(metrics);
+                }
+
+                // Update fractal zoom based on latency
+                if (this.fractalEnabled) {
+                    this.updateFractalBackground(metrics);
+                }
+
+                // Update wave interference based on request rate
+                if (this.wavesEnabled) {
+                    this.updateWaveInterference(metrics);
+                }
+
+                // Update spectrogram based on latency
+                this.updateSpectrogram(metrics);
+            }
+
+            startAnimations() {
+                this.animate();
+            }
+
+            animate() {
+                if (this.fibonacciEnabled) {
+                    this.renderFibonacciBloom();
+                }
+
+                if (this.fractalEnabled) {
+                    this.renderFractalBackground();
+                }
+
+                if (this.wavesEnabled) {
+                    this.renderWaveInterference();
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            renderFibonacciBloom() {
+                const ctx = this.fibonacciCtx;
+                const canvas = this.fibonacciCanvas;
+
+                ctx.fillStyle = '#0b0b12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const GA = Math.PI * (3 - Math.sqrt(5)); // golden angle
+
+                // Tie dot count to request rate
+                const N = Math.min(2000, Math.floor(80 * this.metrics.requestRate));
+                // Tie hue to success rate
+                const hueBase = 120 * this.metrics.successRate + 10;
+
+                for (let n = 0; n < N; n++) {
+                    const a = n * GA;
+                    const r = 4.5 * Math.sqrt(n);
+                    const x = cx + r * Math.cos(a);
+                    const y = cy + r * Math.sin(a);
+                    const hue = (hueBase + n * 0.5) % 360;
+
+                    ctx.fillStyle = `hsl(${hue} 70% 55%)`;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            renderFractalBackground() {
+                const ctx = this.fractalCtx;
+                const canvas = this.fractalCanvas;
+
+                ctx.fillStyle = '#0b0b12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Simple fractal-like pattern
+                const time = Date.now() * 0.001;
+                const zoom = 1.6 + Math.min(1.2, this.metrics.p95Latency * 40.0);
+
+                for (let x = 0; x < canvas.width; x += 4) {
+                    for (let y = 0; y < canvas.height; y += 4) {
+                        const nx = x / canvas.width;
+                        const ny = y / canvas.height;
+
+                        const value = Math.sin(nx * zoom * 10) * Math.cos(ny * zoom * 10) +
+                                     Math.sin(nx * zoom * 20 + time) * Math.cos(ny * zoom * 20 + time);
+
+                        if (value > 0.5) {
+                            const hue = (nx * 360 + time * 50) % 360;
+                            ctx.fillStyle = `hsl(${hue} 60% 40%)`;
+                            ctx.fillRect(x, y, 4, 4);
+                        }
+                    }
+                }
+            }
+
+            renderWaveInterference() {
+                const ctx = this.waveCtx;
+                const canvas = this.waveCanvas;
+
+                ctx.fillStyle = 'rgba(11, 11, 18, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const time = Date.now() * 0.001;
+                const amplitude = this.metrics.requestRate * 2;
+                const frequency = this.metrics.p95Latency * 10;
+
+                ctx.strokeStyle = `hsl(${time * 50 % 360} 70% 50%)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                for (let x = 0; x < canvas.width; x += 2) {
+                    const y = canvas.height / 2 +
+                             Math.sin(x * frequency * 0.01 + time) * amplitude +
+                             Math.sin(x * frequency * 0.02 + time * 1.5) * amplitude * 0.5;
+
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+
+                ctx.stroke();
+            }
+
+            updateSpectrogram(metrics) {
+                const bars = document.querySelectorAll('.spectrogram-bar');
+                bars.forEach((bar, index) => {
+                    const height = Math.random() * 100;
+                    bar.style.height = height + '%';
+
+                    // Color based on performance
+                    if (height > 80) {
+                        bar.style.background = 'linear-gradient(to top, #ff0000, #ffaa00)';
+                    } else if (height > 50) {
+                        bar.style.background = 'linear-gradient(to top, #ffaa00, #ffff00)';
+                    } else {
+                        bar.style.background = 'linear-gradient(to top, #00ff00, #ffff00)';
+                    }
+                });
+            }
+
+            triggerGlitch() {
+                const glitchLayer = document.getElementById('glitchLayer');
+                glitchLayer.classList.add('active');
+
+                setTimeout(() => {
+                    glitchLayer.classList.remove('active');
+                }, 120);
+            }
+
+            randomizeFX() {
+                this.fibonacciIntensity = Math.random();
+                this.fractalZoom = Math.random();
+                this.waveDensity = Math.random();
+                this.lolcatIntensity = Math.random();
+
+                document.getElementById('fibonacciIntensity').value = this.fibonacciIntensity * 100;
+                document.getElementById('fractalZoom').value = this.fractalZoom * 100;
+                document.getElementById('waveDensity').value = this.waveDensity * 100;
+                document.getElementById('lolcatIntensity').value = this.lolcatIntensity * 100;
+            }
+        }
+
+        // Initialize the Techno-Creative Visual FX System
+        document.addEventListener('DOMContentLoaded', () => {
+            new TechnoCreativeFX();
+        });
+    </script>
+</body>
+</html>
