@@ -107,6 +107,16 @@ help:
 	@echo "  show-controller-snapshot Snapshot Kit for Social/Docs"
 	@echo "  show-controller-save-scene Save Scene Configuration"
 	@echo "  show-controller-load-scene Load Scene Configuration"
+	@echo "  pro-rack-tour-opener Tour Opener Rack (Distortion + Chorus + Echo)"
+	@echo "  pro-rack-glass-cathedral Glass Cathedral Rack (Hologram + Chromatic + Reverb)"
+	@echo "  pro-rack-tape-dream Tape Dream Rack (Echo + Chorus + Chromatic)"
+	@echo "  pro-rack-data-storm Data Storm Rack (Distortion + Stutter + Lightning)"
+	@echo "  pro-rack-crystalline-bloom Crystalline Bloom Rack (Granular + Chromatic + Trails)"
+	@echo "  pro-rack-morph Rack Morph (Tour Opener → Glass Cathedral)"
+	@echo "  pro-rack-status Show Pro Rack Status"
+	@echo "  rack-show-tour-opener Tour Opener Show (3 scenes, 30s)"
+	@echo "  rack-show-create-demo Create Demo Show"
+	@echo "  rack-show-status Show Rack Show Status"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -692,6 +702,58 @@ show-controller-load-scene:
 	@echo "📁 Loading Scene Configuration..."
 	python3 scripts/show_controller_cli.py --load-scene out/neon_bloom_scene.json --text "Code Live"
 	@echo "📁 Scene Configuration loaded!"
+
+# Pro Rack targets
+pro-rack-tour-opener:
+	@echo "🎛️ Running Tour Opener Rack..."
+	python3 scripts/pro_rack_cli.py --load presets/racks/tour_opener.rack.json --text "Code Live" --macros color=0.7,space=0.3
+	@echo "🎛️ Tour Opener Rack complete!"
+
+pro-rack-glass-cathedral:
+	@echo "🎛️ Running Glass Cathedral Rack..."
+	python3 scripts/pro_rack_cli.py --load presets/racks/glass_cathedral.rack.json --text "TuneZilla" --macros color=0.5,space=0.8
+	@echo "🎛️ Glass Cathedral Rack complete!"
+
+pro-rack-tape-dream:
+	@echo "🎛️ Running Tape Dream Rack..."
+	python3 scripts/pro_rack_cli.py --load presets/racks/tape_dream.rack.json --text "Rawtunez" --macros motion=0.6,crunch=0.4
+	@echo "🎛️ Tape Dream Rack complete!"
+
+pro-rack-data-storm:
+	@echo "🎛️ Running Data Storm Rack..."
+	python3 scripts/pro_rack_cli.py --load presets/racks/data_storm.rack.json --text "Code Live" --sidechain qps=80,p95=90,error_rate=0.08
+	@echo "🎛️ Data Storm Rack complete!"
+
+pro-rack-crystalline-bloom:
+	@echo "🎛️ Running Crystalline Bloom Rack..."
+	python3 scripts/pro_rack_cli.py --load presets/racks/crystalline_bloom.rack.json --text "TuneZilla" --macros color=0.9,space=0.7
+	@echo "🎛️ Crystalline Bloom Rack complete!"
+
+pro-rack-morph:
+	@echo "🎛️ Running Rack Morph..."
+	python3 scripts/pro_rack_cli.py --morph presets/racks/tour_opener.rack.json presets/racks/glass_cathedral.rack.json --morph-time 0.5 --text "Code Live"
+	@echo "🎛️ Rack Morph complete!"
+
+pro-rack-status:
+	@echo "🎛️ Showing Pro Rack Status..."
+	python3 scripts/pro_rack_cli.py --status
+	@echo "🎛️ Pro Rack status displayed!"
+
+# Rack Show targets
+rack-show-tour-opener:
+	@echo "🎭 Running Tour Opener Show..."
+	python3 scripts/rack_show_cli.py --play presets/shows/tour_opener.show.json --text "Code Live" --record-html
+	@echo "🎭 Tour Opener Show complete!"
+
+rack-show-create-demo:
+	@echo "🎭 Creating Demo Show..."
+	python3 scripts/rack_show_cli.py --create "Demo Show" --scenes tour_opener.rack.json,glass_cathedral.rack.json,data_storm.rack.json
+	@echo "🎭 Demo Show created!"
+
+rack-show-status:
+	@echo "🎭 Showing Rack Show Status..."
+	python3 scripts/rack_show_cli.py --status
+	@echo "🎭 Rack Show status displayed!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

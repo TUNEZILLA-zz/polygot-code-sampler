@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "seed": 777,
+  "sample": "Code Live",
+  "routing": "serial",
+  "fx": [
+    {
+      "name": "hologram",
+      "wet": 0.60,
+      "params": {
+        "scanlines": 0.8,
+        "glow": 1.2
+      }
+    },
+    {
+      "name": "chromatic",
+      "wet": 0.30,
+      "params": {
+        "offset_px": 3.0,
+        "fringe_px": 1.5
+      }
+    },
+    {
+      "name": "reverb",
+      "wet": 0.80,
+      "params": {
+        "decay": 0.7,
+        "room_size": 0.9
+      }
+    }
+  ],
+  "notes": "Glass Cathedral – hologram shimmer, low chromatic, long reverb tail"
+}

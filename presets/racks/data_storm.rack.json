@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "seed": 777,
+  "sample": "Code Live",
+  "routing": "serial",
+  "fx": [
+    {
+      "name": "distortion",
+      "wet": 0.80,
+      "params": {
+        "drive": 1.0,
+        "pump": 0.7
+      }
+    },
+    {
+      "name": "stutter",
+      "wet": 0.60,
+      "params": {
+        "stutter_rate": 0.4,
+        "glitch_factor": 0.8
+      }
+    },
+    {
+      "name": "lightning",
+      "wet": 0.50,
+      "params": {
+        "intensity": 1.2,
+        "metrics_link": true
+      }
+    }
+  ],
+  "notes": "Data Storm – heavy distortion pump, stutter glitch, metrics-linked lightning"
+}

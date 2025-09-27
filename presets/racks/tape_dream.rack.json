@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "seed": 777,
+  "sample": "Code Live",
+  "routing": "serial",
+  "fx": [
+    {
+      "name": "echo",
+      "wet": 0.70,
+      "params": {
+        "delay": 0.5,
+        "feedback": 0.6,
+        "wow_flutter": 0.3
+      }
+    },
+    {
+      "name": "chorus",
+      "wet": 0.60,
+      "params": {
+        "detune": 0.12,
+        "spread": 1.2
+      }
+    },
+    {
+      "name": "chromatic",
+      "wet": 0.40,
+      "params": {
+        "offset_px": 2.0,
+        "fringe_px": 1.0
+      }
+    }
+  ],
+  "notes": "Tape Dream – echo with wow/flutter, wide chorus, subtle chromatic"
+}

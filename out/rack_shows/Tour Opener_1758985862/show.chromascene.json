@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "name": "Tour Opener",
+  "bpm": 110,
+  "total_duration": 30,
+  "scenes": 3,
+  "text": "Code Live",
+  "mode": "html",
+  "timestamp": 1758985862.664665,
+  "scene_results": [
+    {
+      "scene_index": 0,
+      "preset": "presets/racks/tour_opener.rack.json",
+      "duration": 10,
+      "morph": 2,
+      "notes": "Tour opener \u2013 neon crunch, wide, short echo",
+      "result": "Code Live",
+      "processing_time": 6.818771362304688e-05,
+      "timestamp": 1758985862.666365
+    },
+    {
+      "scene_index": 1,
+      "preset": "presets/racks/glass_cathedral.rack.json",
+      "duration": 12,
+      "morph": 3,
+      "notes": "Glass cathedral \u2013 hologram shimmer, low chromatic, long reverb tail",
+      "result": "<span style=\"color: #ffffff; font-weight: bold\">C</span> <span style=\"color: #00ff00; opacity: 0.8\">C</span>  <span style=\"color: #0000ff; opacity: 0.8\">C</span><span style=\"color: #ffffff; font-weight: bold\">o</span> <span style=\"color: #00ff00; opacity: 0.8\">o</span>  <span style=\"color: #0000ff; opacity: 0.8\">o</span><span style=\"color: #ffffff; font-weight: bold\">d</span> <span style=\"color: #00ff00; opacity: 0.8\">d</span>  <span style=\"color: #0000ff; opacity: 0.8\">d</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span> <span style=\"color: #ffffff; font-weight: bold\">L</span> <span style=\"color: #00ff00; opacity: 0.8\">L</span>  <span style=\"color: #0000ff; opacity: 0.8\">L</span><span style=\"color: #ffffff; font-weight: bold\">i</span> <span style=\"color: #00ff00; opacity: 0.8\">i</span>  <span style=\"color: #0000ff; opacity: 0.8\">i</span><span style=\"color: #ffffff; font-weight: bold\">v</span> <span style=\"color: #00ff00; opacity: 0.8\">v</span>  <span style=\"color: #0000ff; opacity: 0.8\">v</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span> <span style=\"color: #ffffff; font-weight: bold\">C</span> <span style=\"color: #00ff00; opacity: 0.8\">C</span>  <span style=\"color: #0000ff; opacity: 0.8\">C</span><span style=\"color: #ffffff; font-weight: bold\">o</span> <span style=\"color: #00ff00; opacity: 0.8\">o</span>  <span style=\"color: #0000ff; opacity: 0.8\">o</span><span style=\"color: #ffffff; font-weight: bold\">d</span> <span style=\"color: #00ff00; opacity: 0.8\">d</span>  <span style=\"color: #0000ff; opacity: 0.8\">d</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span> <span style=\"color: #ffffff; font-weight: bold\">L</span> <span style=\"color: #00ff00; opacity: 0.8\">L</span>  <span style=\"color: #0000ff; opacity: 0.8\">L</span><span style=\"color: #ffffff; font-weight: bold\">i</span> <span style=\"color: #00ff00; opacity: 0.8\">i</span>  <span style=\"color: #0000ff; opacity: 0.8\">i</span><span style=\"color: #ffffff; font-weight: bold\">v</span> <span style=\"color: #00ff00; opacity: 0.8\">v</span>  <span style=\"color: #0000ff; opacity: 0.8\">v</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span>  <span style=\"color: #ffffff; font-weight: bold\">C</span> <span style=\"color: #00ff00; opacity: 0.8\">C</span>  <span style=\"color: #0000ff; opacity: 0.8\">C</span><span style=\"color: #ffffff; font-weight: bold\">o</span> <span style=\"color: #00ff00; opacity: 0.8\">o</span>  <span style=\"color: #0000ff; opacity: 0.8\">o</span><span style=\"color: #ffffff; font-weight: bold\">d</span> <span style=\"color: #00ff00; opacity: 0.8\">d</span>  <span style=\"color: #0000ff; opacity: 0.8\">d</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span> <span style=\"color: #ffffff; font-weight: bold\">L</span> <span style=\"color: #00ff00; opacity: 0.8\">L</span>  <span style=\"color: #0000ff; opacity: 0.8\">L</span><span style=\"color: #ffffff; font-weight: bold\">i</span> <span style=\"color: #00ff00; opacity: 0.8\">i</span>  <span style=\"color: #0000ff; opacity: 0.8\">i</span><span style=\"color: #ffffff; font-weight: bold\">v</span> <span style=\"color: #00ff00; opacity: 0.8\">v</span>  <span style=\"color: #0000ff; opacity: 0.8\">v</span><span style=\"color: #ffffff; font-weight: bold\">e</span> <span style=\"color: #00ff00; opacity: 0.8\">e</span>  <span style=\"color: #0000ff; opacity: 0.8\">e</span>",
+      "processing_time": 0.00013017654418945312,
+      "timestamp": 1758985863.170678
+    },
+    {
+      "scene_index": 2,
+      "preset": "presets/racks/data_storm.rack.json",
+      "duration": 8,
+      "morph": 1.5,
+      "notes": "Data storm \u2013 heavy distortion pump, stutter glitch, metrics-linked lightning",
+      "result": "Code Live",
+      "processing_time": 9.417533874511719e-05,
+      "timestamp": 1758985863.676708
+    }
+  ]
+}

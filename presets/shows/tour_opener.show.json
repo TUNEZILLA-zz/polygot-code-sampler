@@ -1,0 +1,26 @@
+{
+  "name": "Tour Opener",
+  "bpm": 110,
+  "scenes": [
+    {
+      "preset": "presets/racks/tour_opener.rack.json",
+      "duration": 10,
+      "morph": 2,
+      "notes": "Tour opener – neon crunch, wide, short echo"
+    },
+    {
+      "preset": "presets/racks/glass_cathedral.rack.json",
+      "duration": 12,
+      "morph": 3,
+      "notes": "Glass cathedral – hologram shimmer, low chromatic, long reverb tail"
+    },
+    {
+      "preset": "presets/racks/data_storm.rack.json",
+      "duration": 8,
+      "morph": 1.5,
+      "notes": "Data storm – heavy distortion pump, stutter glitch, metrics-linked lightning"
+    }
+  ],
+  "total_duration": 30,
+  "seed": 777
+}
