@@ -1,5 +1,0 @@
-use std::collections::{HashMap, HashSet};
-
-pub fn prod_filtered_range() -> i32 {
-    (1..6).filter(|&x| x != 3)
-}

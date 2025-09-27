@@ -28,6 +28,10 @@ help:
 	@echo "  tunezilla-opera   TuneZilla Opera performance"
 	@echo "  tunezilla-opera-seed  TuneZilla Opera with deterministic seed"
 	@echo "  tunezilla-poster  TuneZilla Opera poster visualization"
+	@echo "  string-fx         Crazy String FX effects"
+	@echo "  string-fx-glitch  Glitch String FX effects"
+	@echo "  string-fx-presets String FX presets"
+	@echo "  string-fx-gallery String FX gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -200,6 +204,30 @@ tunezilla-opera-seed:
 tunezilla-poster:
 	@echo "🎭 Opening TuneZilla Opera poster..."
 	@open site/tunezilla-opera-poster.html || echo "Open manually: site/tunezilla-opera-poster.html"
+
+# Crazy String FX - Mind-bending string effects
+string-fx:
+	@echo "🎭 Running Crazy String FX..."
+	python3 scripts/crazy_string_fx.py --text "Code Live" --fx rainbow_gradient,neon_fx
+	@echo "🎭 Crazy String FX complete!"
+
+# String FX with specific effects
+string-fx-glitch:
+	@echo "🎭 Running Glitch String FX..."
+	python3 scripts/crazy_string_fx.py --text "TuneZilla" --fx glitch_colors,stutter,scramble --intensity 2.0
+	@echo "🎭 Glitch String FX complete!"
+
+# String FX presets
+string-fx-presets:
+	@echo "🎭 Running String FX Presets..."
+	python3 scripts/string_fx_presets.py --text "Code Live" --preset glitch_mode
+	@echo "🎭 String FX Presets complete!"
+
+# String FX gallery
+string-fx-gallery:
+	@echo "🎭 Creating String FX Gallery..."
+	python3 scripts/string_fx_presets.py --text "Code Live" --gallery --output out/string_fx_gallery.html
+	@echo "🎭 String FX Gallery complete! Check out/string_fx_gallery.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
