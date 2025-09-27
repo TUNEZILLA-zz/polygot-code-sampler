@@ -8,6 +8,7 @@ import json
 import zipfile
 from datetime import datetime
 
+
 class TourPackGenerator:
     def __init__(self):
         self.output_dir = "out/tour_pack"
@@ -21,11 +22,11 @@ class TourPackGenerator:
                     "intensity_start": 0.28,
                     "intensity_end": 0.45,
                     "fps_bias": 60,
-                    "particle_density": 0.6
-                }
+                    "particle_density": 0.6,
+                },
             },
             "medium": {
-                "name": "Medium Venue", 
+                "name": "Medium Venue",
                 "description": "Mid-size venues, balanced settings",
                 "settings": {
                     "dust": 0.18,
@@ -33,8 +34,8 @@ class TourPackGenerator:
                     "intensity_start": 0.3,
                     "intensity_end": 0.6,
                     "fps_bias": 45,
-                    "particle_density": 0.8
-                }
+                    "particle_density": 0.8,
+                },
             },
             "large": {
                 "name": "Large Venue",
@@ -45,29 +46,29 @@ class TourPackGenerator:
                     "intensity_start": 0.3,
                     "intensity_end": 0.7,
                     "fps_bias": 30,
-                    "particle_density": 1.0
-                }
-            }
+                    "particle_density": 1.0,
+                },
+            },
         }
-        
+
     def create_venue_profiles(self):
         """Create venue profile JSON files"""
         print("🏠 Creating venue profiles...")
-        
+
         for venue_type, profile in self.venue_profiles.items():
             profile_file = f"{self.output_dir}/venue_{venue_type}.json"
             os.makedirs(os.path.dirname(profile_file), exist_ok=True)
-            
-            with open(profile_file, 'w') as f:
+
+            with open(profile_file, "w") as f:
                 json.dump(profile, f, indent=2)
-                
+
             print(f"   ✅ {profile['name']}: {profile_file}")
-            
+
     def create_stage_page(self):
         """Create clean stream page (dark UI, big text, no controls)"""
         print("📺 Creating stage page...")
-        
-        stage_html = '''<!DOCTYPE html>
+
+        stage_html = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -181,21 +182,21 @@ class TourPackGenerator:
         </div>
     </div>
 </body>
-</html>'''
-        
+</html>"""
+
         stage_file = f"{self.output_dir}/stage/index.html"
         os.makedirs(os.path.dirname(stage_file), exist_ok=True)
-        
-        with open(stage_file, 'w') as f:
+
+        with open(stage_file, "w") as f:
             f.write(stage_html)
-            
+
         print(f"   ✅ Stage page: {stage_file}")
-        
+
     def create_foh_cheat_sheet(self):
         """Create FOH micro-cheat sheet"""
         print("🎛️ Creating FOH cheat sheet...")
-        
-        cheat_sheet = '''# 🎛️ FOH MICRO-CHEAT SHEET
+
+        cheat_sheet = """# 🎛️ FOH MICRO-CHEAT SHEET
 
 ## Movement Navigation
 - **1/2/3** — Jump to movements I/II/III
@@ -227,19 +228,19 @@ class TourPackGenerator:
 - **Motion-reduced fade ≤ 490 ms**
 - **A11y compliance: ✅**
 - **Mono fallback: ✅**
-'''
-        
+"""
+
         cheat_file = f"{self.output_dir}/FOH_CHEAT_SHEET.md"
-        with open(cheat_file, 'w') as f:
+        with open(cheat_file, "w") as f:
             f.write(cheat_sheet)
-            
+
         print(f"   ✅ FOH cheat sheet: {cheat_file}")
-        
+
     def create_30s_reel_script(self):
         """Create 30s highlight reel script"""
         print("📸 Creating 30s highlight reel script...")
-        
-        reel_script = '''#!/bin/bash
+
+        reel_script = """#!/bin/bash
 # 30s Highlight Reel Script
 # Run this to create a 30s capture for social media
 
@@ -254,37 +255,37 @@ make snapshot-kit
 # Create 30s highlight
 echo "📸 30s highlight reel ready for social media!"
 echo "📁 Check out/touring/snapshots/ for captures"
-'''
-        
+"""
+
         reel_file = f"{self.output_dir}/30s_highlight_reel.sh"
-        with open(reel_file, 'w') as f:
+        with open(reel_file, "w") as f:
             f.write(reel_script)
-            
+
         os.chmod(reel_file, 0o755)  # Make executable
         print(f"   ✅ 30s reel script: {reel_file}")
-        
+
     def create_tour_pack_zip(self):
         """Create tour pack zip file"""
         print("📦 Creating tour pack zip...")
-        
+
         zip_file = f"{self.output_dir}/tour_pack.zip"
-        
-        with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+
+        with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as zf:
             # Add all files in the tour_pack directory
             for root, dirs, files in os.walk(self.output_dir):
                 for file in files:
-                    if file != 'tour_pack.zip':  # Don't include the zip itself
+                    if file != "tour_pack.zip":  # Don't include the zip itself
                         file_path = os.path.join(root, file)
                         arc_path = os.path.relpath(file_path, self.output_dir)
                         zf.write(file_path, arc_path)
-                        
+
         print(f"   ✅ Tour pack zip: {zip_file}")
-        
+
     def create_readme(self):
         """Create tour pack README"""
         print("📖 Creating tour pack README...")
-        
-        readme_content = f'''# 🎼 Code Sampler + FX Symphony - Tour Pack
+
+        readme_content = f"""# 🎼 Code Sampler + FX Symphony - Tour Pack
 
 ## 📦 What's Included
 - **Venue Profiles**: Small, Medium, Large venue settings
@@ -328,22 +329,22 @@ echo "📁 Check out/touring/snapshots/ for captures"
 
 ## 🌙✨ Ready for Showtime!
 Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-'''
-        
+"""
+
         readme_file = f"{self.output_dir}/README.md"
-        with open(readme_file, 'w') as f:
+        with open(readme_file, "w") as f:
             f.write(readme_content)
-            
+
         print(f"   ✅ README: {readme_file}")
-        
+
     def generate_tour_pack(self):
         """Generate complete tour pack"""
         print("🎼 GENERATING TOUR PACK")
         print("=" * 50)
-        
+
         # Create output directory
         os.makedirs(self.output_dir, exist_ok=True)
-        
+
         # Generate all components
         self.create_venue_profiles()
         self.create_stage_page()
@@ -351,7 +352,7 @@ Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         self.create_30s_reel_script()
         self.create_readme()
         self.create_tour_pack_zip()
-        
+
         print("\n🎉 TOUR PACK COMPLETE!")
         print("=" * 50)
         print(f"📁 Tour pack: {self.output_dir}/tour_pack.zip")
@@ -359,9 +360,11 @@ Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         print("📱 Works in venues with flaky Wi-Fi")
         print("🎭 Complete show system in one package")
 
+
 def main():
     generator = TourPackGenerator()
     generator.generate_tour_pack()
+
 
 if __name__ == "__main__":
     main()

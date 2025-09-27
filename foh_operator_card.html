@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOH Operator Card - Code Sampler + FX Symphony</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        
+        .card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff88;
+            padding-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            color: #88ffaa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            background: rgba(0, 255, 136, 0.05);
+            border-left: 4px solid #00ff88;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .hotkeys {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .hotkey {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .key {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00ff88;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .command {
+            font-size: 0.9em;
+            color: #88ffaa;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .flow {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(0, 255, 136, 0.05);
+            border-radius: 5px;
+        }
+        
+        .step-number {
+            background: #00ff88;
+            color: #000;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+        
+        .step-text {
+            flex: 1;
+            color: #88ffaa;
+        }
+        
+        .safety {
+            background: rgba(255, 100, 100, 0.1);
+            border: 2px solid #ff6666;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .safety-title {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .safety-item {
+            color: #ffaaaa;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .artifacts {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .artifacts-title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .artifact {
+            color: #aaffff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin-bottom: 3px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #00ff88;
+            color: #88ffaa;
+            font-size: 0.9em;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .card {
+                border: 2px solid #000;
+                box-shadow: none;
+            }
+            .title, .section-title, .key {
+                color: #000;
+            }
+            .subtitle, .command, .step-text {
+                color: #333;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="title">🎹 FOH OPERATOR CARD</div>
+            <div class="subtitle">Code Sampler + FX Symphony</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🔥 Quick Moves (Big Text)</div>
+            <div class="hotkeys">
+                <div class="hotkey">
+                    <span class="key">[S]</span>
+                    <div class="command">SYMPHONY<br>Movements I/II/III</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">[E]</span>
+                    <div class="command">ENCORE<br>Chaos Mini-Set</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">[Shift+E]</span>
+                    <div class="command">EXTENDED<br>Chaos + Tape + Cathedral</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">[F]</span>
+                    <div class="command">FULL SHOW<br>Symphony + Encore</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎚️ Live Controls</div>
+            <div class="hotkeys">
+                <div class="hotkey">
+                    <span class="key">I/K</span>
+                    <div class="command">Intensity up/down</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">M</span>
+                    <div class="command">Metrics link toggle<br>(~0.6 sweet spot)</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">W</span>
+                    <div class="command">White Bloom<br>(≤1.2s)</div>
+                </div>
+                <div class="hotkey">
+                    <span class="key">B</span>
+                    <div class="command">Blackout<br>(final cadence)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">⚡️ Sanity Before Doors (30s)</div>
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">make sanity-trio</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">make show-readiness-check</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎭 Extended Encore Flow</div>
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Chaos Mini-Set → Rainbow Cathedral Rave</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Tape Dream Bridge → 20s lo-fi filter sweep</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Glass Cathedral Resolve → intensity down to 0.28</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎁 Bonus Moves</div>
+            <div class="flow">
+                <div class="flow-step">
+                    <div class="step-number">•</div>
+                    <div class="step-text">Palette vote → keys 5–8 (Cyberpunk / Gold / Emerald / Neon)</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">•</div>
+                    <div class="step-text">Seeded takes → SEED=808 / 314159</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">•</div>
+                    <div class="step-text">Soft open → start at 0.28, glide to 0.45 over 10s</div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">•</div>
+                    <div class="step-text">Punchy Encore → A/B morph Classic → Stage-Punch (~1.8s)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="safety">
+            <div class="safety-title">🛡️ Safety Rails (Always Active)</div>
+            <div class="safety-item">• Strobe ≤ 8 Hz, duty ≤ 35% / 10s</div>
+            <div class="safety-item">• Motion-reduced fades ≤ 490 ms</div>
+            <div class="safety-item">• Frame p95 guard trims trails/particles automatically</div>
+        </div>
+        
+        <div class="artifacts">
+            <div class="artifacts-title">📦 Artifacts Created</div>
+            <div class="artifact">out/chaos_mini_set_morph.html</div>
+            <div class="artifact">out/chaos_mini_set_cinema.html</div>
+            <div class="artifact">out/chaos_mini_set_nyan.html</div>
+            <div class="artifact">out/extended_encore_resolve.html</div>
+        </div>
+        
+        <div class="footer">
+            <div>🎹 FOH can fire [E] or [Shift+E] for chaos burst!</div>
+            <div>🌈 Perfect for drop-in demos between main movements!</div>
+        </div>
+    </div>
+</body>
+</html>

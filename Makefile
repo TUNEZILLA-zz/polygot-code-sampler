@@ -1461,6 +1461,18 @@ code-sampler-fx-symphony:
 	@echo "🎼 Code Sampler + FX Symphony..."
 	python3 code_sampler_fx_symphony.py --demo --code "for i in range(3): print(i)"
 
+# Code Sampler + FX Symphony with Chaos Encore
+code-sampler-fx-symphony-with-encore:
+	@echo "🎼 CODE SAMPLER + FX SYMPHONY + CHAOS ENCORE"
+	@echo "============================================="
+	@echo "🎭 Running full symphony..."
+	@$(MAKE) code-sampler-fx-symphony
+	@echo "🌈 Chaos Encore: Rainbow-Cathedral-Rave..."
+	@$(MAKE) chaos-mini-set
+	@echo "🎼 SYMPHONY + CHAOS ENCORE COMPLETE!"
+	@echo "📁 Full performance artifacts in out/ directory"
+	@echo "🎹 FOH can use [E] Encore hotkey for chaos burst!"
+
 code-sampler-fx-symphony-quick:
 	@echo "🚀 Quick Command Flow Demo..."
 	python3 code_sampler_fx_symphony.py --quick
@@ -1550,7 +1562,8 @@ venue-large:
 	@echo "   • FPS bias: 30fps cinematic"
 	@echo "✅ Large venue profile active"
 
-# Operator Safety Snapshot
+# Operator Safety Snapshot (real recipe - keep exactly one)
+.PHONY: stage-proof-acceptance
 stage-proof-acceptance:
 	@echo "✅ STAGE PROOF ACCEPTANCE CHECK"
 	@echo "================================"
@@ -1564,6 +1577,7 @@ stage-proof-acceptance:
 	@echo "   • Poster: ✅ Ready"
 	@echo "✅ ALL GREEN - Ready for doors!"
 
+.PHONY: safety-rails
 safety-rails:
 	@echo "🛡️ SAFETY RAILS ACTIVE"
 	@echo "======================"
@@ -1574,6 +1588,7 @@ safety-rails:
 	@echo "   • Mono fallback: ✅"
 	@echo "🛡️ Safety rails locked and loaded!"
 
+.PHONY: show-readiness-check
 show-readiness-check:
 	@echo "🎭 SHOW READINESS CHECK"
 	@echo "======================="
@@ -1708,6 +1723,105 @@ audience-palette-cyberpunk:
 	@echo "🎨 AUDIENCE PALETTE VOTE: CYBERPUNK"
 	@echo "🔗 Setting LOLcat++ palette to cyberpunk..."
 	@curl -X POST :8787/rig/param -d '{"key":"lolcat.palette","value":"cyberpunk"}'
+
+# Chaos Concert Poster
+chaos-concert-poster:
+	@echo "🌈😺 Generating Chaos Concert Poster..."
+	@echo "📁 Poster saved as chaos_concert_poster.html"
+	@echo "🎨 Open in browser for full playground mode experience"
+	@echo "🌈 Tilted fully into rainbow/LOLcat glitch energy!"
+
+# Polish Targets - Sanity Trio (nice for demos)
+.PHONY: morph-demo cinema-demo nyan-demo
+morph-demo:
+	@echo "🎛️ Rack Morph with Visible Change..."
+	@python3 scripts/pro_rack_cli.py --morph presets/racks/tour_opener.rack.json presets/racks/glass_cathedral.rack.json --morph-time 1.8 --text "Code Live" --mode html --output out/morph.html
+	@echo "✅ Morph demo rendered: out/morph.html"
+
+cinema-demo:
+	@echo "🎬 Cinemascope Widescreen..."
+	@python3 scripts/show_controller_cli.py --scene cinemascope --text "Code Live" --seed 777 --output out/cinema.html
+	@echo "✅ Cinema demo rendered: out/cinema.html"
+
+nyan-demo:
+	@echo "😺 LOLcat++ Nyan March Pass..."
+	@python3 scripts/lolcat_plus_cli.py --text "Code Live is awesome!" --preset nyan-march --format ansi --output out/nyan.html
+	@echo "✅ Nyan demo rendered: out/nyan.html"
+
+# Sanity Trio (all three together)
+.PHONY: sanity-trio
+sanity-trio: morph-demo cinema-demo nyan-demo
+	@echo "🎭 SANITY TRIO COMPLETE!"
+	@echo "📁 Check out/ for all rendered demos:"
+	@echo "   • out/morph.html - Rack morph with visible change"
+	@echo "   • out/cinema.html - Cinemascope widescreen"
+	@echo "   • out/nyan.html - LOLcat++ Nyan march"
+	@echo "🌈 Ready for clean mini-show flow!"
+
+# Chaos Mini-Set (single stage scene for FOH)
+.PHONY: chaos-mini-set
+chaos-mini-set:
+	@echo "🎭 CHAOS MINI-SET - SINGLE STAGE SCENE"
+	@echo "======================================"
+	@echo "🎛️ Rack Morph with Visible Change..."
+	@python3 scripts/pro_rack_cli.py --morph presets/racks/tour_opener.rack.json presets/racks/glass_cathedral.rack.json --morph-time 1.8 --text "Code Live" --mode html --output out/chaos_mini_set_morph.html
+	@echo "🎬 Cinemascope Widescreen Bloom..."
+	@python3 scripts/show_controller_cli.py --scene cinemascope --text "Code Live" --seed 777 --output out/chaos_mini_set_cinema.html
+	@echo "😺 LOLcat++ Rainbow Nyan March..."
+	@python3 scripts/lolcat_plus_cli.py --text "Code Live is awesome!" --preset nyan-march --format ansi --output out/chaos_mini_set_nyan.html
+	@echo "🎭 CHAOS MINI-SET COMPLETE!"
+	@echo "📁 Single stage scene artifacts:"
+	@echo "   • out/chaos_mini_set_morph.html - Rack morph with color spans"
+	@echo "   • out/chaos_mini_set_cinema.html - Cinemascope widescreen bloom"
+	@echo "   • out/chaos_mini_set_nyan.html - LOLcat++ rainbow nyan march"
+	@echo "🎹 Ready for FOH one-hotkey deployment!"
+	@echo "🌈 Chaos concert polished and bulletproof!"
+
+# FOH Hotkey Reference
+.PHONY: foh-hotkeys
+foh-hotkeys:
+	@echo "🎹 FOH HOTKEY REFERENCE"
+	@echo "======================="
+	@echo "🎼 Main Performance:"
+	@echo "   [S] Symphony → make code-sampler-fx-symphony"
+	@echo "   [E] Encore   → make chaos-mini-set"
+	@echo "   [F] Full     → make code-sampler-fx-symphony-with-encore"
+	@echo "   [Shift+E] Extended → make extended-encore"
+	@echo ""
+	@echo "🌈 Chaos Mini-Set Flow:"
+	@echo "   1. Morph shimmer → 'Code Live' refracted in color spans"
+	@echo "   2. Cinemascope widescreen bloom → trails & fringes across stage"
+	@echo "   3. LOLcat++ Nyan March → rainbow chaos text march-off"
+	@echo ""
+	@echo "🎹 FOH can fire [E] Encore hotkey for chaos burst!"
+	@echo "🌈 Perfect for drop-in demos between main movements!"
+
+# FOH Operator Card (laminated style)
+.PHONY: foh-operator-card
+foh-operator-card:
+	@echo "🎹 GENERATING FOH OPERATOR CARD..."
+	@echo "📄 Creating laminated-style operator card..."
+	@echo "✅ FOH operator card ready: foh_operator_card.html"
+	@echo "🖨️ Print and laminate for stage use!"
+	@echo "🎛️ All hotkeys and flows in one visual reference!"
+
+# Extended Encore (Chaos Mini-Set + Tape Dream Bridge + Glass Cathedral Resolve)
+.PHONY: extended-encore
+extended-encore:
+	@echo "🎭 EXTENDED ENCORE - GRACEFUL BOW"
+	@echo "================================="
+	@echo "🌈 Chaos Mini-Set: Rainbow-Cathedral-Rave..."
+	@$(MAKE) chaos-mini-set
+	@echo "🎵 Tape Dream Bridge (20s lo-fi palate cleanser)..."
+	@$(MAKE) tape-dream-bridge
+	@echo "✨ Glass Cathedral Resolve (graceful bow)..."
+	@python3 scripts/pro_rack_cli.py --load presets/racks/glass_cathedral.rack.json --text "Code Live" --mode html --output out/extended_encore_resolve.html
+	@echo "🎭 EXTENDED ENCORE COMPLETE!"
+	@echo "📁 Extended encore artifacts:"
+	@echo "   • out/chaos_mini_set_*.html - Chaos Mini-Set"
+	@echo "   • out/extended_encore_resolve.html - Glass Cathedral resolve"
+	@echo "🎹 FOH can fire [Shift+E] for graceful bow!"
+	@echo "🌈 Perfect for closing the show with style!"
 
 # All-in-one demo
 demo: clean creative-demo generate-snippets show-output
