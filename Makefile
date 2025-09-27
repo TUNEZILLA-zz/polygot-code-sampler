@@ -117,6 +117,18 @@ help:
 	@echo "  rack-show-tour-opener Tour Opener Show (3 scenes, 30s)"
 	@echo "  rack-show-create-demo Create Demo Show"
 	@echo "  rack-show-status Show Rack Show Status"
+	@echo "  touring-rig-load Load Touring Rig Show"
+	@echo "  touring-rig-play Play Touring Rig Show"
+	@echo "  touring-rig-intensity Set Live Intensity (0-120%)"
+	@echo "  touring-rig-blackout Toggle Blackout"
+	@echo "  touring-rig-flash-strobe Toggle Flash Strobe"
+	@echo "  touring-rig-all-white-bloom Toggle All-White Bloom"
+	@echo "  touring-rig-metrics-link Set Metrics Link Strength (0-100%)"
+	@echo "  touring-rig-param Set Parameter (path value)"
+	@echo "  touring-rig-undo Undo Last Action"
+	@echo "  touring-rig-redo Redo Last Action"
+	@echo "  touring-rig-status Show Touring Rig Status"
+	@echo "  touring-rig-server Start Touring Rig API Server"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -754,6 +766,67 @@ rack-show-status:
 	@echo "🎭 Showing Rack Show Status..."
 	python3 scripts/rack_show_cli.py --status
 	@echo "🎭 Rack Show status displayed!"
+
+# Touring Rig targets
+touring-rig-load:
+	@echo "🎭 Loading Touring Rig Show..."
+	python3 scripts/touring_rig_cli.py --load presets/shows/tour_opener.show.json --status
+	@echo "🎭 Touring Rig Show loaded!"
+
+touring-rig-play:
+	@echo "🎭 Playing Touring Rig Show..."
+	python3 scripts/touring_rig_cli.py --load presets/shows/tour_opener.show.json --play
+	@echo "🎭 Touring Rig Show playing!"
+
+touring-rig-intensity:
+	@echo "🎛️ Setting Live Intensity..."
+	python3 scripts/touring_rig_cli.py --intensity 85.5
+	@echo "🎛️ Live intensity set!"
+
+touring-rig-blackout:
+	@echo "🌑 Toggling Blackout..."
+	python3 scripts/touring_rig_cli.py --blackout true
+	@echo "🌑 Blackout toggled!"
+
+touring-rig-flash-strobe:
+	@echo "⚡ Toggling Flash Strobe..."
+	python3 scripts/touring_rig_cli.py --flash-strobe true
+	@echo "⚡ Flash strobe toggled!"
+
+touring-rig-all-white-bloom:
+	@echo "💡 Toggling All-White Bloom..."
+	python3 scripts/touring_rig_cli.py --all-white-bloom true
+	@echo "💡 All-white bloom toggled!"
+
+touring-rig-metrics-link:
+	@echo "📊 Setting Metrics Link Strength..."
+	python3 scripts/touring_rig_cli.py --metrics-link 75.0
+	@echo "📊 Metrics link strength set!"
+
+touring-rig-param:
+	@echo "🎛️ Setting Parameter..."
+	python3 scripts/touring_rig_cli.py --param "scenes[2].fx[1].wet" 0.42
+	@echo "🎛️ Parameter set!"
+
+touring-rig-undo:
+	@echo "↶ Undoing Action..."
+	python3 scripts/touring_rig_cli.py --undo
+	@echo "↶ Action undone!"
+
+touring-rig-redo:
+	@echo "↷ Redoing Action..."
+	python3 scripts/touring_rig_cli.py --redo
+	@echo "↷ Action redone!"
+
+touring-rig-status:
+	@echo "📊 Showing Touring Rig Status..."
+	python3 scripts/touring_rig_cli.py --status
+	@echo "📊 Touring Rig status displayed!"
+
+touring-rig-server:
+	@echo "🚀 Starting Touring Rig API Server..."
+	python3 server_touring_rig.py
+	@echo "🚀 Touring Rig API Server started!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
