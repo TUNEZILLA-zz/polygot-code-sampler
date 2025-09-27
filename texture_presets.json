@@ -1,0 +1,66 @@
+{
+  "musical_dense": {
+    "description": "Musical dense texture with harmonic relationships",
+    "texture": "dense",
+    "params": {
+      "dense_nesting_level": 4,
+      "dense_comprehensions": true
+    }
+  },
+  "minimalist_sparse": {
+    "description": "Minimalist sparse texture for clean aesthetics",
+    "texture": "sparse",
+    "params": {
+      "sparse_minimal": true,
+      "sparse_flat": true
+    }
+  },
+  "smooth_vectorized": {
+    "description": "Smooth vectorized texture for mathematical elegance",
+    "texture": "smooth",
+    "params": {
+      "smooth_vectorized": true,
+      "smooth_interpolation": true
+    }
+  },
+  "grainy_organic": {
+    "description": "Grainy organic texture for natural feel",
+    "texture": "grainy",
+    "params": {
+      "grainy_jitter": 0.15,
+      "grainy_stepwise": true
+    }
+  },
+  "polyphonic_harmony": {
+    "description": "Polyphonic harmony texture for musical complexity",
+    "texture": "polyphonic",
+    "params": {
+      "polyphonic_voices": 4,
+      "polyphonic_harmony": true
+    }
+  },
+  "haiku_minimal": {
+    "description": "Haiku minimal texture for poetic simplicity",
+    "texture": "minimal",
+    "params": {
+      "minimal_lines": 2
+    }
+  },
+  "maximal_abstraction": {
+    "description": "Maximal abstraction texture for complex systems",
+    "texture": "maximal",
+    "params": {
+      "maximal_decorators": true,
+      "maximal_abstractions": true,
+      "maximal_parallel": true
+    }
+  },
+  "fractal_recursive": {
+    "description": "Fractal recursive texture for self-similar patterns",
+    "texture": "fractal",
+    "params": {
+      "fractal_depth": 4,
+      "fractal_branches": 3
+    }
+  }
+}

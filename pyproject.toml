@@ -131,6 +131,8 @@ ignore = [
 "pcs/pi_mode.py" = ["W293", "W291", "assignment", "arg-type", "return-value"]
 "scripts/a432.py" = ["W293", "W291"]
 "pcs/a432_api.py" = ["W293", "W291", "assignment", "arg-type", "return-value"]
+"texture_cli.py" = ["W293", "W291"]
+"pcs/texture_mode.py" = ["W293", "W291", "assignment", "arg-type", "return-value"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -144,7 +146,7 @@ no_implicit_optional = true
 warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
-module = ["creative_performance_art", "stress_test_art", "vintage_cli", "pcs.vintage_profiles", "audio_fx_cli", "pcs.audio_fx", "pi_mode_cli", "pcs.pi_mode", "scripts.a432", "pcs.a432_api"]
+module = ["creative_performance_art", "stress_test_art", "vintage_cli", "pcs.vintage_profiles", "audio_fx_cli", "pcs.audio_fx", "pi_mode_cli", "pcs.pi_mode", "scripts.a432", "pcs.a432_api", "texture_cli", "pcs.texture_mode"]
 ignore_errors = true
 warn_unused_ignores = true
 warn_no_return = true
