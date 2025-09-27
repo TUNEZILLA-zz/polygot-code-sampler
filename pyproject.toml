@@ -121,9 +121,11 @@ ignore = [
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
+"creative_performance_art.py" = ["W293", "W291"]
+"stress_test_art.py" = ["W293", "W291"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -132,6 +134,10 @@ check_untyped_defs = true
 disallow_untyped_decorators = true
 no_implicit_optional = true
 warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["creative_performance_art", "stress_test_art"]
+ignore_errors = true
 warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true

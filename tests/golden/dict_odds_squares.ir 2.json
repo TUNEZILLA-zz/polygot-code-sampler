@@ -1,0 +1,25 @@
+{
+  "kind": "dict",
+  "generators": [
+    {
+      "var": "i",
+      "source": {
+        "start": 1,
+        "stop": 6,
+        "step": 1
+      },
+      "filters": [
+        "i % 2 == 1"
+      ]
+    }
+  ],
+  "element": null,
+  "key_expr": "i",
+  "val_expr": "i * i",
+  "reduce": null,
+  "provenance": {
+    "origin": "python",
+    "pattern": "dict"
+  },
+  "__type__": "IRComp"
+}

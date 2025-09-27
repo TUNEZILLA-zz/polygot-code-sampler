@@ -1,0 +1,145 @@
+{
+  "name": "Multi-Test Suite - Comprehensive benchmark test cases",
+  "description": "Expanded test suite beyond sum_even_squares for comprehensive benchmarking",
+  "test_cases": [
+    {
+      "name": "sum_even_squares",
+      "description": "Sum of even squares - basic arithmetic and filtering",
+      "python_code": "sum(i*i for i in range(1, 1000000) if i%2==0)",
+      "expected_result": 166666666666500000,
+      "complexity": "O(n)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "sum_even_squares_loops_seq.jl.golden"
+        },
+        {
+          "name": "broadcast_sequential",
+          "flags": {"mode": "broadcast", "parallel": false},
+          "golden_file": "sum_even_squares_broadcast_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "sum_even_squares_loops_parallel.jl.golden"
+        }
+      ]
+    },
+    {
+      "name": "dict_comp_sharded",
+      "description": "Dictionary comprehension with complex key-value mapping",
+      "python_code": "{x: x*x for x in range(1, 100000) if x%3==0}",
+      "expected_result": "Dictionary with ~33,333 entries",
+      "complexity": "O(n)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "dict_comp_loops_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel_sharded",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "dict_comp_loops_parallel.jl.golden"
+        }
+      ]
+    },
+    {
+      "name": "groupby_topN",
+      "description": "Group by operation with top-N selection - complex data processing",
+      "python_code": "max((sum(group) for group in [list(g) for k, g in itertools.groupby(sorted([i%100 for i in range(100000)]))]), default=0)",
+      "expected_result": "Maximum sum of any group",
+      "complexity": "O(n log n)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "groupby_loops_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel_sharded",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "groupby_loops_parallel.jl.golden"
+        }
+      ]
+    },
+    {
+      "name": "time_buckets",
+      "description": "Time-based bucketing with aggregation - heavy computational workload",
+      "python_code": "sum(len([x for x in range(10000) if (x + i) % 1000 == 0]) for i in range(1000))",
+      "expected_result": 10000000,
+      "complexity": "O(n*m)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "time_buckets_loops_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "time_buckets_loops_parallel.jl.golden"
+        }
+      ]
+    },
+    {
+      "name": "nested_comprehension",
+      "description": "Nested list comprehension with filtering - memory intensive",
+      "python_code": "sum(sum(x*y for y in range(1, 100) if y%2==0) for x in range(1, 1000) if x%3==0)",
+      "expected_result": "Sum of nested products",
+      "complexity": "O(n*m)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "nested_loops_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "nested_loops_parallel.jl.golden"
+        }
+      ]
+    },
+    {
+      "name": "set_operations",
+      "description": "Set comprehension with complex operations",
+      "python_code": "len({x*y for x in range(1, 1000) for y in range(1, 100) if (x+y)%7==0})",
+      "expected_result": "Number of unique products",
+      "complexity": "O(n*m)",
+      "test_cases": [
+        {
+          "name": "loops_sequential",
+          "flags": {"mode": "loops", "parallel": false},
+          "golden_file": "set_ops_loops_seq.jl.golden"
+        },
+        {
+          "name": "loops_parallel",
+          "flags": {"mode": "loops", "parallel": true},
+          "golden_file": "set_ops_loops_parallel.jl.golden"
+        }
+      ]
+    }
+  ],
+  "benchmark_config": {
+    "default_n": 1000000,
+    "time_buckets_n": 10000,
+    "nested_n": 1000,
+    "set_ops_n": 1000,
+    "repetitions": 10,
+    "warmup_runs": 3
+  },
+  "validation": {
+    "test_sizes": [1000, 10000, 100000, 1000000],
+    "edge_cases": ["empty_range", "single_element", "all_filtered", "no_filtering"],
+    "performance_targets": {
+      "sum_even_squares": {"max_ns": 10000000, "parallel_speedup": 2.0},
+      "dict_comp_sharded": {"max_ns": 5000000, "parallel_speedup": 1.5},
+      "groupby_topN": {"max_ns": 20000000, "parallel_speedup": 1.8},
+      "time_buckets": {"max_ns": 50000000, "parallel_speedup": 2.5},
+      "nested_comprehension": {"max_ns": 30000000, "parallel_speedup": 2.0},
+      "set_operations": {"max_ns": 25000000, "parallel_speedup": 1.7}
+    }
+  }
+}
