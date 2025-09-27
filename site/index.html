@@ -210,27 +210,27 @@
   <div class="container">
     <h1>🚀 PCS Benchmarks</h1>
     <p class="subtitle">Polyglot Code Sampler Performance Dashboard - Comparing backends over time (lower is better)</p>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
       <button onclick="toggleAboutPanel()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
         📊 About & Methods
       </button>
     </div>
-    
+
     <!-- Data Health Badge -->
     <div id="data-health" class="data-health">
       <span id="health-status">🔄 Loading...</span>
       <span id="health-details"></span>
     </div>
-    
+
     <div id="loading" class="loading">
       <p>📊 Loading benchmark data...</p>
     </div>
-    
+
     <div id="error" class="error" style="display: none;">
       <p>❌ Error loading benchmark data. Please check the console for details.</p>
     </div>
-    
+
     <div id="content" style="display: none;">
       <div class="summary">
         <h3>📈 Summary</h3>
@@ -238,7 +238,7 @@
           <!-- Summary items will be populated by JavaScript -->
         </div>
       </div>
-      
+
       <div class="controls">
         <div class="control-group">
           <label for="test-select">Test Case:</label>
@@ -266,7 +266,7 @@
           </select>
         </div>
       </div>
-      
+
       <!-- Quick Filter Presets -->
       <div class="presets">
         <h4>🎯 Quick Filters</h4>
@@ -276,7 +276,7 @@
         <button onclick="applyPreset('recent-regressions')" class="preset-btn">Recent Regressions</button>
         <button onclick="applyPreset('clear')" class="preset-btn">Clear Filters</button>
       </div>
-      
+
       <!-- About & Methods Panel -->
     <div class="about-panel" id="about-panel" style="display: none;">
       <h3>📊 About & Methods</h3>
@@ -287,21 +287,21 @@
           <li><strong>Grace Period:</strong> 3 days for new tests to prevent false alarms</li>
           <li><strong>Method:</strong> 7-day rolling median comparison</li>
         </ul>
-        
+
         <h4>📈 Data Quality</h4>
         <ul>
           <li><strong>Outlier Filtering:</strong> >3σ removal using z-score method</li>
           <li><strong>Schema Validation:</strong> Forward-compatible data validation</li>
           <li><strong>Best-of-k:</strong> Run k=5 times, record minimum for reduced noise</li>
         </ul>
-        
+
         <h4>🔍 K-Anomaly Detection</h4>
         <ul>
           <li><strong>Purpose:</strong> Detect infrastructure issues (runner problems, toolchain changes)</li>
           <li><strong>Threshold:</strong> 80% of backends showing simultaneous regressions</li>
           <li><strong>Action:</strong> Check CI runner logs and toolchain versions</li>
         </ul>
-        
+
         <h4>📊 Dashboard Features</h4>
         <ul>
           <li><strong>Ratio Overlays:</strong> Compare backends relative to baseline</li>
@@ -311,7 +311,7 @@
       </div>
       <button onclick="toggleAboutPanel()" class="close-btn">Close</button>
     </div>
-    
+
     <div class="charts">
         <div class="chart-container">
           <h3>Performance by Backend</h3>
@@ -338,7 +338,7 @@
           <canvas id="chartSpeedup"></canvas>
         </div>
       </div>
-      
+
       <div class="last-updated" id="last-updated">
         <!-- Last updated time will be populated by JavaScript -->
       </div>
@@ -366,31 +366,31 @@
       const healthDiv = document.getElementById('data-health');
       const statusSpan = document.getElementById('health-status');
       const detailsSpan = document.getElementById('health-details');
-      
+
       if (!data || data.length === 0) {
         healthDiv.className = 'data-health error';
         statusSpan.textContent = '❌ No Data';
         detailsSpan.textContent = 'No benchmark data available';
         return;
       }
-      
+
       // Check data freshness (last 7 days)
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
+
       const latestTimestamp = Math.max(...data.map(d => new Date(d.timestamp).getTime()));
       const latestDate = new Date(latestTimestamp);
-      
+
       const daysSinceLatest = (now - latestDate) / (1000 * 60 * 60 * 24);
-      
+
       // Check data diversity
       const backends = new Set(data.map(d => d.backend));
       const tests = new Set(data.map(d => d.test));
-      
+
       let healthClass = 'data-health healthy';
       let status = '✅ Healthy';
       let details = `${data.length} records • ${backends.size} backends • ${tests.size} tests`;
-      
+
       if (daysSinceLatest > 7) {
         healthClass = 'data-health warning';
         status = '⚠️ Stale Data';
@@ -404,7 +404,7 @@
         status = '⚠️ Low Volume';
         details += ' • Limited benchmark results';
       }
-      
+
       healthDiv.className = healthClass;
       statusSpan.textContent = status;
       detailsSpan.textContent = details;
@@ -417,7 +417,7 @@
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         const rawData = await response.json();
-        
+
         // Handle both old format (object with results) and new format (array)
         if (rawData && typeof rawData === 'object' && rawData.results) {
           benchmarkData = rawData.results;
@@ -426,20 +426,20 @@
         } else {
           throw new Error('Invalid data format: expected array of benchmark results or object with results key');
         }
-        
+
         // Check for demo data and show label
         const isDemo = (rows) => rows.some(r => (r.commit||'').startsWith('demo-'));
         if (isDemo(benchmarkData)) {
           document.body.insertAdjacentHTML('afterbegin', '<div style="position:fixed;top:8px;right:8px;background:#fde68a;padding:6px 10px;border-radius:8px;font:12px system-ui;z-index:1000;box-shadow:0 2px 4px rgba(0,0,0,0.1)">🎭 Demo data</div>');
         }
-        
+
         if (!benchmarkData || !Array.isArray(benchmarkData)) {
           throw new Error('No valid benchmark data found');
         }
-        
+
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
-                
+
                 updateDataHealth(benchmarkData);
                 initializeDashboard();
       } catch (error) {
@@ -451,18 +451,18 @@
 
     function initializeDashboard() {
       const { summary, results } = benchmarkData;
-      
+
       // Update summary
       updateSummary(summary);
-      
+
       // Populate controls
       populateControls(results);
-      
+
       // Create charts
       createCharts(results);
-      
+
       // Update last updated time
-      document.getElementById('last-updated').textContent = 
+      document.getElementById('last-updated').textContent =
         `Last updated: ${new Date(summary.last_updated).toLocaleString()}`;
     }
 
@@ -495,19 +495,19 @@
 
       // Populate test select
       const testSelect = document.getElementById('test-select');
-      testSelect.innerHTML = tests.map(test => 
+      testSelect.innerHTML = tests.map(test =>
         `<option value="${test}">${test}</option>`
       ).join('');
 
       // Populate backend select
       const backendSelect = document.getElementById('backend-select');
-      backendSelect.innerHTML = backends.map(backend => 
+      backendSelect.innerHTML = backends.map(backend =>
         `<option value="${backend}">${backend}</option>`
       ).join('');
 
       // Populate mode select
       const modeSelect = document.getElementById('mode-select');
-      modeSelect.innerHTML = modes.map(mode => 
+      modeSelect.innerHTML = modes.map(mode =>
         `<option value="${mode}">${mode}</option>`
       ).join('');
 
@@ -520,39 +520,39 @@
     function createCharts(results) {
       // Chart 1: Performance by Backend
       createBackendChart(results);
-      
+
       // Chart 2: Performance by Mode
       createModeChart(results);
-      
+
       // Chart 3: Parallel vs Sequential
       createParallelChart(results);
-      
+
       // Chart 4: Cross-Backend Ratios
       createRatiosChart(results);
-      
+
       // Chart 5: Performance Trends
       createTrendsChart(results);
-      
+
       // Chart 6: Speedup Analysis
       createSpeedupChart(results);
     }
 
     function createBackendChart(results) {
       const ctx = document.getElementById('chartByBackend').getContext('2d');
-      
+
       if (charts.backend) {
         charts.backend.destroy();
       }
 
       const test = document.getElementById('test-select').value;
       const filteredResults = results.filter(r => r.test === test);
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const backends = [...new Set(filteredResults.map(r => r.backend))];
 
       const datasets = backends.map(backend => {
         const data = dates.map(date => {
-          const dayResults = filteredResults.filter(r => 
+          const dayResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date)
           );
           if (dayResults.length === 0) return null;
@@ -590,23 +590,23 @@
 
     function createModeChart(results) {
       const ctx = document.getElementById('chartByMode').getContext('2d');
-      
+
       if (charts.mode) {
         charts.mode.destroy();
       }
 
       const backend = document.getElementById('backend-select').value;
       const test = document.getElementById('test-select').value;
-      const filteredResults = results.filter(r => 
+      const filteredResults = results.filter(r =>
         r.backend === backend && r.test === test
       );
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const modes = [...new Set(filteredResults.map(r => r.mode))];
 
       const datasets = modes.map(mode => {
         const data = dates.map(date => {
-          const dayResults = filteredResults.filter(r => 
+          const dayResults = filteredResults.filter(r =>
             r.mode === mode && r.timestamp.startsWith(date)
           );
           if (dayResults.length === 0) return null;
@@ -644,20 +644,20 @@
 
     function createParallelChart(results) {
       const ctx = document.getElementById('chartParallel').getContext('2d');
-      
+
       if (charts.parallel) {
         charts.parallel.destroy();
       }
 
       const test = document.getElementById('test-select').value;
       const filteredResults = results.filter(r => r.test === test);
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const backends = [...new Set(filteredResults.map(r => r.backend))];
 
       const datasets = backends.map(backend => {
         const parallelData = dates.map(date => {
-          const dayResults = filteredResults.filter(r => 
+          const dayResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date) && r.parallel === true
           );
           if (dayResults.length === 0) return null;
@@ -665,7 +665,7 @@
         });
 
         const sequentialData = dates.map(date => {
-          const dayResults = filteredResults.filter(r => 
+          const dayResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date) && r.parallel === false
           );
           if (dayResults.length === 0) return null;
@@ -714,29 +714,29 @@
 
     function createTrendsChart(results) {
       const ctx = document.getElementById('chartTrends').getContext('2d');
-      
+
       if (charts.trends) {
         charts.trends.destroy();
       }
 
       const test = document.getElementById('test-select').value;
       const filteredResults = results.filter(r => r.test === test);
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const backends = [...new Set(filteredResults.map(r => r.backend))];
 
       // Calculate speedup ratios (best performance per day)
       const datasets = backends.map(backend => {
         const data = dates.map(date => {
-          const dayResults = filteredResults.filter(r => 
+          const dayResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date)
           );
           if (dayResults.length === 0) return null;
-          
+
           const bestTime = Math.min(...dayResults.map(r => r.mean_ns));
           const allDayResults = filteredResults.filter(r => r.timestamp.startsWith(date));
           const slowestTime = Math.max(...allDayResults.map(r => r.mean_ns));
-          
+
           return slowestTime / bestTime; // Speedup ratio
         });
 
@@ -770,14 +770,14 @@
 
     function createRatiosChart(results) {
       const ctx = document.getElementById('chartRatios').getContext('2d');
-      
+
       if (charts.ratios) {
         charts.ratios.destroy();
       }
 
       const test = document.getElementById('test-select').value;
       const filteredResults = results.filter(r => r.test === test);
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const backends = [...new Set(filteredResults.map(r => r.backend))];
 
@@ -785,18 +785,18 @@
       const baseline = 'julia';
       const datasets = backends.map(backend => {
         const data = dates.map(date => {
-          const baselineResults = filteredResults.filter(r => 
+          const baselineResults = filteredResults.filter(r =>
             r.backend === baseline && r.timestamp.startsWith(date) && !r.parallel
           );
-          const backendResults = filteredResults.filter(r => 
+          const backendResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date) && !r.parallel
           );
-          
+
           if (baselineResults.length === 0 || backendResults.length === 0) return null;
-          
+
           const baselineTime = Math.min(...baselineResults.map(r => r.mean_ns));
           const backendTime = Math.min(...backendResults.map(r => r.mean_ns));
-          
+
           return backendTime / baselineTime; // Ratio (1.0 = same speed, >1.0 = slower)
         });
 
@@ -832,31 +832,31 @@
 
     function createSpeedupChart(results) {
       const ctx = document.getElementById('chartSpeedup').getContext('2d');
-      
+
       if (charts.speedup) {
         charts.speedup.destroy();
       }
 
       const test = document.getElementById('test-select').value;
       const filteredResults = results.filter(r => r.test === test);
-      
+
       const dates = [...new Set(filteredResults.map(r => r.timestamp.split('T')[0]))].sort();
       const backends = [...new Set(filteredResults.map(r => r.backend))];
 
       const datasets = backends.map(backend => {
         const data = dates.map(date => {
-          const sequentialResults = filteredResults.filter(r => 
+          const sequentialResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date) && !r.parallel
           );
-          const parallelResults = filteredResults.filter(r => 
+          const parallelResults = filteredResults.filter(r =>
             r.backend === backend && r.timestamp.startsWith(date) && r.parallel
           );
-          
+
           if (sequentialResults.length === 0 || parallelResults.length === 0) return null;
-          
+
           const sequentialTime = Math.min(...sequentialResults.map(r => r.mean_ns));
           const parallelTime = Math.min(...parallelResults.map(r => r.mean_ns));
-          
+
           return sequentialTime / parallelTime; // Speedup ratio
         });
 
@@ -891,7 +891,7 @@
 
     function updateCharts() {
       if (!benchmarkData) return;
-      
+
       createBackendChart(benchmarkData.results);
       createModeChart(benchmarkData.results);
       createParallelChart(benchmarkData.results);
@@ -911,7 +911,7 @@
         'rgba(199, 199, 199, ' + alpha + ')',  // Grey
         'rgba(83, 102, 255, ' + alpha + ')'    // Indigo
       ];
-      
+
       let hash = 0;
       for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -952,7 +952,7 @@
     })();
   });
   </script>
-  
+
   <style>
     .presets {
       margin: 20px 0;
@@ -961,12 +961,12 @@
       border-radius: 8px;
       border: 1px solid #dee2e6;
     }
-    
+
     .presets h4 {
       margin: 0 0 10px 0;
       color: #495057;
     }
-    
+
     .preset-btn {
       background: #007bff;
       color: white;
@@ -977,16 +977,16 @@
       cursor: pointer;
       font-size: 14px;
     }
-    
+
     .preset-btn:hover {
       background: #0056b3;
     }
-    
+
     .preset-btn.active {
       background: #28a745;
     }
   </style>
-  
+
   <script>
     // Quick Filter Presets
     function applyPreset(preset) {
@@ -994,13 +994,13 @@
       const backendSelect = document.getElementById('backend-select');
       const modeSelect = document.getElementById('mode-select');
       const baselineSelect = document.getElementById('baseline-select');
-      
+
       // Clear all filters first
       testSelect.value = '';
       backendSelect.value = '';
       modeSelect.value = '';
       baselineSelect.value = '';
-      
+
       // Apply preset filters
       switch(preset) {
         case 'all-parallel':
@@ -1022,11 +1022,11 @@
           // Already cleared above
           break;
       }
-      
+
       // Update active button
       document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
-      
+
       // Trigger chart update
       if (typeof updateCharts === 'function') {
         updateCharts();

@@ -16,6 +16,7 @@ def load_fixture(fixture_path):
     with open(fixture_path) as f:
         return json.load(f)
 
+
 def generate_julia_code(python_code, flags):
     """Generate Julia code using PCS"""
     cmd = [sys.executable, "-m", "pcs", "--code", python_code, "--target", "julia"]
@@ -27,17 +28,21 @@ def generate_julia_code(python_code, flags):
     if flags.get("unsafe"):
         cmd.append("--unsafe")
 
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent)
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, cwd=Path(__file__).parent.parent
+    )
 
     if result.returncode != 0:
         raise RuntimeError(f"Failed to generate Julia code: {result.stderr}")
 
     return result.stdout
 
+
 def load_golden(golden_path):
     """Load golden file content"""
     with open(golden_path) as f:
         return f.read()
+
 
 def test_fixture_goldens():
     """Test all golden files against fixture"""
@@ -46,7 +51,9 @@ def test_fixture_goldens():
     print("=" * 60)
 
     # Load fixture
-    fixture_path = Path(__file__).parent.parent / "tests" / "fixtures" / "sum_even_squares.json"
+    fixture_path = (
+        Path(__file__).parent.parent / "tests" / "fixtures" / "sum_even_squares.json"
+    )
     fixture = load_fixture(fixture_path)
 
     print(f"📝 Fixture: {fixture['description']}")
@@ -67,7 +74,13 @@ def test_fixture_goldens():
             generated = generate_julia_code(python_code, test_case["flags"])
 
             # Load golden file
-            golden_path = Path(__file__).parent.parent / "tests" / "golden" / "julia" / test_case["golden_file"]
+            golden_path = (
+                Path(__file__).parent.parent
+                / "tests"
+                / "golden"
+                / "julia"
+                / test_case["golden_file"]
+            )
             golden = load_golden(golden_path)
 
             # Compare (normalize whitespace and ignore module names)
@@ -102,13 +115,16 @@ def test_fixture_goldens():
 
     return all_passed
 
+
 def validate_results():
     """Validate that generated code produces expected results"""
 
     print("🔍 Validating Generated Code Results")
     print("=" * 40)
 
-    fixture_path = Path(__file__).parent.parent / "tests" / "fixtures" / "sum_even_squares.json"
+    fixture_path = (
+        Path(__file__).parent.parent / "tests" / "fixtures" / "sum_even_squares.json"
+    )
     load_fixture(fixture_path)
 
     # Test with different sizes
@@ -121,14 +137,14 @@ def validate_results():
         test_code = f"sum(i*i for i in range(1, {size+1}) if i%2==0)"
 
         # Calculate expected result
-        expected = sum(i*i for i in range(1, size+1) if i%2==0)
+        expected = sum(i * i for i in range(1, size + 1) if i % 2 == 0)
         print(f"   Expected: {expected}")
 
         # Test different modes
         modes = [
             {"mode": "loops", "parallel": False},
             {"mode": "broadcast", "parallel": False},
-            {"mode": "loops", "parallel": True}
+            {"mode": "loops", "parallel": True},
         ]
 
         for mode in modes:
@@ -136,31 +152,45 @@ def validate_results():
                 generated = generate_julia_code(test_code, mode)
 
                 # Write to temp file and run with Julia
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.jl', delete=False) as f:
+                with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".jl", delete=False
+                ) as f:
                     f.write(generated)
                     temp_file = f.name
 
                 try:
                     # Run Julia code
-                    result = subprocess.run([
-                        "julia", "--project", "-e",
-                        f"include(\"{temp_file}\"); println(PCS_Generated.main())"
-                    ], capture_output=True, text=True, cwd=Path(__file__).parent.parent)
+                    result = subprocess.run(
+                        [
+                            "julia",
+                            "--project",
+                            "-e",
+                            f'include("{temp_file}"); println(PCS_Generated.main())',
+                        ],
+                        capture_output=True,
+                        text=True,
+                        cwd=Path(__file__).parent.parent,
+                    )
 
                     if result.returncode == 0:
                         actual = int(result.stdout.strip())
                         if actual == expected:
                             print(f"   ✅ {mode} mode: {actual}")
                         else:
-                            print(f"   ❌ {mode} mode: expected {expected}, got {actual}")
+                            print(
+                                f"   ❌ {mode} mode: expected {expected}, got {actual}"
+                            )
                     else:
-                        print(f"   ❌ {mode} mode: Julia execution failed: {result.stderr}")
+                        print(
+                            f"   ❌ {mode} mode: Julia execution failed: {result.stderr}"
+                        )
 
                 finally:
                     os.unlink(temp_file)
 
             except Exception as e:
                 print(f"   ❌ {mode} mode: {e}")
+
 
 def main():
     """Main test runner"""
@@ -179,6 +209,7 @@ def main():
         print("\n💥 Some fixture golden tests failed!")
         print("❌ Regression safety net compromised!")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

@@ -39,7 +39,7 @@ for r in current:
 
 #### **If Real Performance Drop**
 - **Action**: Find culprit commit via bisect
-- **Command**: 
+- **Command**:
   ```bash
   # Test last good commit
   git checkout <last-good-commit>
@@ -73,7 +73,7 @@ gh workflow run publish-dashboard.yml -f ALLOW_REGRESSION=true
 ```yaml
 - name: Check for performance regressions
   run: |
-    if [[ "$ALLOW_REGRESSION" == "true" ]]; then 
+    if [[ "$ALLOW_REGRESSION" == "true" ]]; then
       echo "⚠️  Override enabled - skipping regression check"
       exit 0
     fi

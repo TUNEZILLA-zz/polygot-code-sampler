@@ -14,7 +14,7 @@ regression:
     ts: 0.10       # 10% - TypeScript baseline
     csharp: 0.10   # 10% - C# baseline
     sql: 0.20      # 20% - SQL depends on DB state
-  
+
   grace_period_days: 3
   min_sample_size: 5
   max_regression_ratio: 0.50  # 50% max before requiring approval
@@ -37,7 +37,7 @@ governance:
   require_approval_threshold: 0.20  # 20% regression requires approval
   emergency_override_approvers: ["@performance-team"]
   data_retention_days: 180
-  
+
 # Runner Fingerprinting
 runner_fingerprinting:
   enabled: true

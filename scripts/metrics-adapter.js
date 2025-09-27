@@ -12,7 +12,7 @@ class MetricsAdapter {
             qps: 0, p95: 30, errorRate: 0, fallbackRatio: 0,
             perBackend: { rust:0.5, ts:0.5, go:0.4, csharp:0.3, sql:0.2, julia:0.2 }
         };
-        
+
         this.startPolling();
     }
 
@@ -27,7 +27,7 @@ class MetricsAdapter {
             console.warn('Metrics fetch failed, using fallback:', error);
             this.useFallbackMetrics();
         }
-        
+
         this.timeoutHandle = setTimeout(() => this.poll(), this.debounceMs);
     }
 

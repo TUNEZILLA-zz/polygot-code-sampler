@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - WebGL Effects System</title>
+    <style>
+        :root {
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+            --theme-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            background: var(--theme-background);
+            color: var(--theme-text);
+            overflow: hidden;
+        }
+
+        .webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .webgl-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .control-slider {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(90deg, #333, #666);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .control-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .performance-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .metric-value {
+            font-size: 12px;
+            color: var(--theme-accent);
+            font-weight: bold;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 100;
+            padding: 100px 20px 20px;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-subtitle {
+            font-size: 24px;
+            color: var(--theme-text);
+            margin-bottom: 40px;
+        }
+
+        .effect-description {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .effect-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--theme-accent);
+        }
+
+        .effect-text {
+            color: var(--theme-text);
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .controls-overlay {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 15px;
+            }
+
+            .control-slider {
+                width: 150px;
+            }
+
+            .main-title {
+                font-size: 32px;
+            }
+
+            .main-subtitle {
+                font-size: 18px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .webgl-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- WebGL Container -->
+    <div class="webgl-container">
+        <canvas class="webgl-canvas" id="webglCanvas"></canvas>
+    </div>
+
+    <!-- Controls Overlay -->
+    <div class="controls-overlay">
+        <h3>🎛️ WebGL Effects Controls</h3>
+
+        <div class="control-group">
+            <label class="control-label">Kaleido Intensity</label>
+            <input type="range" class="control-slider" id="kaleidoIntensity" min="0" max="100" value="50">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Grid Phase</label>
+            <input type="range" class="control-slider" id="gridPhase" min="0" max="100" value="30">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Bokeh Particles</label>
+            <input type="range" class="control-slider" id="bokehParticles" min="0" max="100" value="40">
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Oscilloscope Amplitude</label>
+            <input type="range" class="control-slider" id="oscilloscopeAmp" min="0" max="100" value="60">
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="toggleKaleido">Toggle Kaleido</button>
+            <button class="control-button" id="toggleGrid">Toggle Grid</button>
+            <button class="control-button" id="toggleBokeh">Toggle Bokeh</button>
+            <button class="control-button" id="toggleOscilloscope">Toggle Oscilloscope</button>
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="resetEffects">Reset All</button>
+            <button class="control-button" id="randomizeEffects">Randomize</button>
+        </div>
+    </div>
+
+    <!-- Performance Info -->
+    <div class="performance-info">
+        <div class="performance-metric">
+            <span class="metric-label">FPS:</span>
+            <span class="metric-value" id="fps">60</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Draw Calls:</span>
+            <span class="metric-value" id="drawCalls">0</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Particles:</span>
+            <span class="metric-value" id="particleCount">0</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">GPU Memory:</span>
+            <span class="metric-value" id="gpuMemory">0MB</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="main-title">Code Live WebGL Effects</h1>
+        <p class="main-subtitle">GPU-Accelerated Visual Effects for Code Live</p>
+
+        <div class="effect-description">
+            <h2 class="effect-title">🎨 Kaleido Code Tiles</h2>
+            <p class="effect-text">
+                Eye-catching backdrop for idle state. WebGL shader sampling a blurred render of your code panel,
+                divided into mirrored wedges creating a kaleidoscope effect.
+            </p>
+        </div>
+
+        <div class="effect-description">
+            <h2 class="effect-title">🌐 Neon Wireframe Grid</h2>
+            <p class="effect-text">
+                Techno ambience with fragment shader grid and perspective warp.
+                Animate minor phase shift by request rate for dynamic visual feedback.
+            </p>
+        </div>
+
+        <div class="effect-description">
+            <h2 class="effect-title">✨ Bokeh Particles</h2>
+            <p class="effect-text">
+                Cinematic softness with instanced sprites and additive blending.
+                Spawn count scales with success rate for performance-driven visuals.
+            </p>
+        </div>
+
+        <div class="effect-description">
+            <h2 class="effect-title">🌊 Oscilloscope Border</h2>
+            <p class="effect-text">
+                Subtle musical tie-in with waveform along container edge.
+                Opacity modulated by volume for audio-reactive visuals.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // WebGL Effects System
+        class WebGLEffectsSystem {
+            constructor() {
+                this.canvas = document.getElementById('webglCanvas');
+                this.gl = this.canvas.getContext('webgl2') || this.canvas.getContext('webgl');
+                this.programs = {};
+                this.buffers = {};
+                this.textures = {};
+                this.uniforms = {};
+                this.animationId = null;
+                this.lastTime = 0;
+                this.frameCount = 0;
+                this.fps = 60;
+                this.drawCalls = 0;
+                this.particleCount = 0;
+                this.gpuMemory = 0;
+
+                this.effects = {
+                    kaleido: { enabled: true, intensity: 0.5 },
+                    grid: { enabled: true, phase: 0.3 },
+                    bokeh: { enabled: true, particles: 0.4 },
+                    oscilloscope: { enabled: true, amplitude: 0.6 }
+                };
+
+                this.initializeWebGL();
+                this.initializeShaders();
+                this.initializeBuffers();
+                this.initializeControls();
+                this.startAnimation();
+            }
+
+            initializeWebGL() {
+                if (!this.gl) {
+                    console.error('WebGL not supported');
+                    return;
+                }
+
+                // Set canvas size
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+
+                // Enable blending for particles
+                this.gl.enable(this.gl.BLEND);
+                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+            }
+
+            resizeCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width * window.devicePixelRatio;
+                this.canvas.height = rect.height * window.devicePixelRatio;
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            initializeShaders() {
+                // Vertex shader for all effects
+                const vertexShaderSource = `
+                    attribute vec2 a_position;
+                    attribute vec2 a_texCoord;
+                    varying vec2 v_texCoord;
+                    uniform mat4 u_projection;
+
+                    void main() {
+                        gl_Position = u_projection * vec4(a_position, 0.0, 1.0);
+                        v_texCoord = a_texCoord;
+                    }
+                `;
+
+                // Fragment shader for kaleido effect
+                const kaleidoFragmentShaderSource = `
+                    precision mediump float;
+                    varying vec2 v_texCoord;
+                    uniform float u_time;
+                    uniform float u_intensity;
+                    uniform vec2 u_resolution;
+
+                    void main() {
+                        vec2 uv = v_texCoord;
+                        vec2 center = vec2(0.5, 0.5);
+                        vec2 pos = uv - center;
+
+                        // Kaleidoscope effect
+                        float angle = atan(pos.y, pos.x);
+                        float radius = length(pos);
+
+                        // Mirror the angle
+                        angle = mod(angle, 3.14159 / 3.0) * 6.0;
+
+                        // Create the kaleidoscope pattern
+                        vec2 kaleidoUV = center + vec2(cos(angle), sin(angle)) * radius;
+
+                        // Add some color based on position and time
+                        vec3 color = vec3(
+                            0.5 + 0.5 * sin(u_time + kaleidoUV.x * 10.0),
+                            0.5 + 0.5 * sin(u_time + kaleidoUV.y * 10.0 + 2.0),
+                            0.5 + 0.5 * sin(u_time + kaleidoUV.x * kaleidoUV.y * 10.0 + 4.0)
+                        );
+
+                        gl_FragColor = vec4(color * u_intensity, 1.0);
+                    }
+                `;
+
+                // Fragment shader for grid effect
+                const gridFragmentShaderSource = `
+                    precision mediump float;
+                    varying vec2 v_texCoord;
+                    uniform float u_time;
+                    uniform float u_phase;
+                    uniform vec2 u_resolution;
+
+                    void main() {
+                        vec2 uv = v_texCoord * 10.0;
+                        vec2 grid = abs(fract(uv - 0.5) - 0.5) / fwidth(uv);
+                        float line = min(grid.x, grid.y);
+
+                        // Add perspective warp
+                        vec2 center = vec2(0.5, 0.5);
+                        vec2 pos = v_texCoord - center;
+                        float perspective = 1.0 + length(pos) * 0.5;
+
+                        // Animate the grid
+                        float animatedLine = line * perspective;
+                        float gridColor = 1.0 - smoothstep(0.0, 0.1, animatedLine);
+
+                        // Add color based on phase
+                        vec3 color = vec3(
+                            0.2 + 0.8 * gridColor,
+                            0.5 + 0.5 * sin(u_time * u_phase + v_texCoord.x * 20.0),
+                            0.8 + 0.2 * gridColor
+                        );
+
+                        gl_FragColor = vec4(color, gridColor);
+                    }
+                `;
+
+                // Fragment shader for bokeh particles
+                const bokehFragmentShaderSource = `
+                    precision mediump float;
+                    varying vec2 v_texCoord;
+                    uniform float u_time;
+                    uniform float u_particles;
+                    uniform vec2 u_resolution;
+
+                    void main() {
+                        vec2 uv = v_texCoord;
+                        vec3 color = vec3(0.0);
+
+                        // Create multiple bokeh particles
+                        for (int i = 0; i < 20; i++) {
+                            vec2 particlePos = vec2(
+                                sin(float(i) * 1.618 + u_time * 0.5) * 0.5 + 0.5,
+                                cos(float(i) * 2.618 + u_time * 0.3) * 0.5 + 0.5
+                            );
+
+                            float dist = distance(uv, particlePos);
+                            float size = 0.1 + 0.05 * sin(u_time + float(i));
+                            float intensity = 1.0 - smoothstep(0.0, size, dist);
+
+                            // Add some color variation
+                            vec3 particleColor = vec3(
+                                0.5 + 0.5 * sin(u_time + float(i)),
+                                0.5 + 0.5 * sin(u_time + float(i) + 2.0),
+                                0.5 + 0.5 * sin(u_time + float(i) + 4.0)
+                            );
+
+                            color += particleColor * intensity * u_particles;
+                        }
+
+                        gl_FragColor = vec4(color, 0.8);
+                    }
+                `;
+
+                // Fragment shader for oscilloscope
+                const oscilloscopeFragmentShaderSource = `
+                    precision mediump float;
+                    varying vec2 v_texCoord;
+                    uniform float u_time;
+                    uniform float u_amplitude;
+                    uniform vec2 u_resolution;
+
+                    void main() {
+                        vec2 uv = v_texCoord;
+                        vec3 color = vec3(0.0);
+
+                        // Create oscilloscope waveform
+                        float wave = sin(uv.x * 20.0 + u_time * 5.0) * u_amplitude;
+                        float dist = abs(uv.y - (0.5 + wave * 0.3));
+
+                        // Add some glow
+                        float glow = 1.0 - smoothstep(0.0, 0.05, dist);
+                        color = vec3(0.0, 1.0, 0.5) * glow;
+
+                        // Add some noise
+                        float noise = sin(uv.x * 100.0 + u_time * 10.0) * 0.1;
+                        color += vec3(noise);
+
+                        gl_FragColor = vec4(color, glow);
+                    }
+                `;
+
+                // Compile shaders
+                this.programs.kaleido = this.createProgram(vertexShaderSource, kaleidoFragmentShaderSource);
+                this.programs.grid = this.createProgram(vertexShaderSource, gridFragmentShaderSource);
+                this.programs.bokeh = this.createProgram(vertexShaderSource, bokehFragmentShaderSource);
+                this.programs.oscilloscope = this.createProgram(vertexShaderSource, oscilloscopeFragmentShaderSource);
+            }
+
+            createProgram(vertexSource, fragmentSource) {
+                const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexSource);
+                const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentSource);
+
+                const program = this.gl.createProgram();
+                this.gl.attachShader(program, vertexShader);
+                this.gl.attachShader(program, fragmentShader);
+                this.gl.linkProgram(program);
+
+                if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+                    console.error('Program linking failed:', this.gl.getProgramInfoLog(program));
+                    return null;
+                }
+
+                return program;
+            }
+
+            createShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error('Shader compilation failed:', this.gl.getShaderInfoLog(shader));
+                    return null;
+                }
+
+                return shader;
+            }
+
+            initializeBuffers() {
+                // Create a full-screen quad
+                const positions = new Float32Array([
+                    -1, -1,
+                     1, -1,
+                    -1,  1,
+                     1,  1
+                ]);
+
+                const texCoords = new Float32Array([
+                    0, 0,
+                    1, 0,
+                    0, 1,
+                    1, 1
+                ]);
+
+                // Position buffer
+                this.buffers.position = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+
+                // Texture coordinate buffer
+                this.buffers.texCoord = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.texCoord);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, texCoords, this.gl.STATIC_DRAW);
+            }
+
+            initializeControls() {
+                // Kaleido controls
+                document.getElementById('kaleidoIntensity').addEventListener('input', (e) => {
+                    this.effects.kaleido.intensity = e.target.value / 100;
+                });
+
+                document.getElementById('toggleKaleido').addEventListener('click', () => {
+                    this.effects.kaleido.enabled = !this.effects.kaleido.enabled;
+                    document.getElementById('toggleKaleido').classList.toggle('active');
+                });
+
+                // Grid controls
+                document.getElementById('gridPhase').addEventListener('input', (e) => {
+                    this.effects.grid.phase = e.target.value / 100;
+                });
+
+                document.getElementById('toggleGrid').addEventListener('click', () => {
+                    this.effects.grid.enabled = !this.effects.grid.enabled;
+                    document.getElementById('toggleGrid').classList.toggle('active');
+                });
+
+                // Bokeh controls
+                document.getElementById('bokehParticles').addEventListener('input', (e) => {
+                    this.effects.bokeh.particles = e.target.value / 100;
+                });
+
+                document.getElementById('toggleBokeh').addEventListener('click', () => {
+                    this.effects.bokeh.enabled = !this.effects.bokeh.enabled;
+                    document.getElementById('toggleBokeh').classList.toggle('active');
+                });
+
+                // Oscilloscope controls
+                document.getElementById('oscilloscopeAmp').addEventListener('input', (e) => {
+                    this.effects.oscilloscope.amplitude = e.target.value / 100;
+                });
+
+                document.getElementById('toggleOscilloscope').addEventListener('click', () => {
+                    this.effects.oscilloscope.enabled = !this.effects.oscilloscope.enabled;
+                    document.getElementById('toggleOscilloscope').classList.toggle('active');
+                });
+
+                // Reset and randomize
+                document.getElementById('resetEffects').addEventListener('click', () => {
+                    this.resetEffects();
+                });
+
+                document.getElementById('randomizeEffects').addEventListener('click', () => {
+                    this.randomizeEffects();
+                });
+            }
+
+            resetEffects() {
+                this.effects.kaleido.intensity = 0.5;
+                this.effects.grid.phase = 0.3;
+                this.effects.bokeh.particles = 0.4;
+                this.effects.oscilloscope.amplitude = 0.6;
+
+                document.getElementById('kaleidoIntensity').value = 50;
+                document.getElementById('gridPhase').value = 30;
+                document.getElementById('bokehParticles').value = 40;
+                document.getElementById('oscilloscopeAmp').value = 60;
+            }
+
+            randomizeEffects() {
+                this.effects.kaleido.intensity = Math.random();
+                this.effects.grid.phase = Math.random();
+                this.effects.bokeh.particles = Math.random();
+                this.effects.oscilloscope.amplitude = Math.random();
+
+                document.getElementById('kaleidoIntensity').value = this.effects.kaleido.intensity * 100;
+                document.getElementById('gridPhase').value = this.effects.grid.phase * 100;
+                document.getElementById('bokehParticles').value = this.effects.bokeh.particles * 100;
+                document.getElementById('oscilloscopeAmp').value = this.effects.oscilloscope.amplitude * 100;
+            }
+
+            startAnimation() {
+                const animate = (currentTime) => {
+                    this.animationId = requestAnimationFrame(animate);
+
+                    // Calculate FPS
+                    if (currentTime - this.lastTime >= 1000) {
+                        this.fps = this.frameCount;
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+                    this.frameCount++;
+
+                    this.render(currentTime);
+                    this.updatePerformanceInfo();
+                };
+
+                animate(0);
+            }
+
+            render(time) {
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                this.drawCalls = 0;
+
+                // Render kaleido effect
+                if (this.effects.kaleido.enabled) {
+                    this.renderEffect('kaleido', time);
+                }
+
+                // Render grid effect
+                if (this.effects.grid.enabled) {
+                    this.renderEffect('grid', time);
+                }
+
+                // Render bokeh particles
+                if (this.effects.bokeh.enabled) {
+                    this.renderEffect('bokeh', time);
+                }
+
+                // Render oscilloscope
+                if (this.effects.oscilloscope.enabled) {
+                    this.renderEffect('oscilloscope', time);
+                }
+            }
+
+            renderEffect(effectName, time) {
+                const program = this.programs[effectName];
+                if (!program) return;
+
+                this.gl.useProgram(program);
+                this.drawCalls++;
+
+                // Set up attributes
+                const positionLocation = this.gl.getAttribLocation(program, 'a_position');
+                const texCoordLocation = this.gl.getAttribLocation(program, 'a_texCoord');
+
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+                this.gl.enableVertexAttribArray(positionLocation);
+                this.gl.vertexAttribPointer(positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.texCoord);
+                this.gl.enableVertexAttribArray(texCoordLocation);
+                this.gl.vertexAttribPointer(texCoordLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+                // Set up uniforms
+                const timeLocation = this.gl.getUniformLocation(program, 'u_time');
+                const resolutionLocation = this.gl.getUniformLocation(program, 'u_resolution');
+
+                this.gl.uniform1f(timeLocation, time * 0.001);
+                this.gl.uniform2f(resolutionLocation, this.canvas.width, this.canvas.height);
+
+                // Set effect-specific uniforms
+                if (effectName === 'kaleido') {
+                    const intensityLocation = this.gl.getUniformLocation(program, 'u_intensity');
+                    this.gl.uniform1f(intensityLocation, this.effects.kaleido.intensity);
+                } else if (effectName === 'grid') {
+                    const phaseLocation = this.gl.getUniformLocation(program, 'u_phase');
+                    this.gl.uniform1f(phaseLocation, this.effects.grid.phase);
+                } else if (effectName === 'bokeh') {
+                    const particlesLocation = this.gl.getUniformLocation(program, 'u_particles');
+                    this.gl.uniform1f(particlesLocation, this.effects.bokeh.particles);
+                    this.particleCount = Math.floor(this.effects.bokeh.particles * 100);
+                } else if (effectName === 'oscilloscope') {
+                    const amplitudeLocation = this.gl.getUniformLocation(program, 'u_amplitude');
+                    this.gl.uniform1f(amplitudeLocation, this.effects.oscilloscope.amplitude);
+                }
+
+                // Draw
+                this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+            }
+
+            updatePerformanceInfo() {
+                document.getElementById('fps').textContent = this.fps;
+                document.getElementById('drawCalls').textContent = this.drawCalls;
+                document.getElementById('particleCount').textContent = this.particleCount;
+                document.getElementById('gpuMemory').textContent = Math.floor(this.gpuMemory) + 'MB';
+            }
+        }
+
+        // Initialize the WebGL Effects System
+        document.addEventListener('DOMContentLoaded', () => {
+            new WebGLEffectsSystem();
+        });
+    </script>
+</body>
+</html>

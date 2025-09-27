@@ -47,7 +47,7 @@ def render_ts(ir: IRComp, func_name: str = "program", parallel: bool = False) ->
     lines.append(f"export function {func_name}(): {return_type} {{")
 
     # Build the source range
-    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
+    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, "start"):
         gen = ir.generators[0]
         start, stop, step = gen.source.start, gen.source.stop, gen.source.step
 
@@ -74,7 +74,9 @@ def render_ts(ir: IRComp, func_name: str = "program", parallel: bool = False) ->
             if k == "sum":
                 chain += f".reduce((acc, {gen.var}) => acc + ({expr}), 0)"
             elif k == "max":
-                chain += f".reduce((acc, {gen.var}) => Math.max(acc, {expr}), -Infinity)"
+                chain += (
+                    f".reduce((acc, {gen.var}) => Math.max(acc, {expr}), -Infinity)"
+                )
             elif k == "min":
                 chain += f".reduce((acc, {gen.var}) => Math.min(acc, {expr}), Infinity)"
             elif k == "any":
@@ -106,6 +108,7 @@ def render_ts(ir: IRComp, func_name: str = "program", parallel: bool = False) ->
     lines.append("}")
 
     return "\n".join(lines)
+
 
 def _render_ts_parallel(ir: IRComp, func_name: str, return_type: str) -> str:
     """TypeScript parallel renderer using Web Workers"""
@@ -148,7 +151,9 @@ self.onmessage = function(e) {{
     lines.append("        let completed = 0;")
     lines.append("")
     lines.append("        for (let i = 0; i < numWorkers; i++) {")
-    lines.append("            const worker = new Worker(URL.createObjectURL(new Blob([workerCode], {type: 'application/javascript'})));")
+    lines.append(
+        "            const worker = new Worker(URL.createObjectURL(new Blob([workerCode], {type: 'application/javascript'})));"
+    )
     lines.append("            const start = i * chunkSize;")
     lines.append("            const end = Math.min((i + 1) * chunkSize, 1000000);")
     lines.append("")
@@ -156,7 +161,9 @@ self.onmessage = function(e) {{
     lines.append("                start,")
     lines.append("                end,")
     lines.append("                step: 1,")
-    lines.append(f"                filters: {ir.generators[0].filters if ir.generators else []},")
+    lines.append(
+        f"                filters: {ir.generators[0].filters if ir.generators else []},"
+    )
     lines.append(f"                element: '{ir.element if ir.element else 'x'}',")
     lines.append(f"                reduce: '{ir.reduce.kind if ir.reduce else 'null'}'")
     lines.append("            });")

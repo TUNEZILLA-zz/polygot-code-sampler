@@ -2,7 +2,7 @@
 Centralized strategy selection for Julia code generation
 """
 
-from typing import Optional, Tuple
+from typing import Optional
 
 from ...core import IRComp
 from .associativity import (
@@ -19,8 +19,8 @@ def choose_strategy(
     op_kind: Optional[str],
     elem_type: str = "Int",
     parallel_requested: bool,
-    explain: bool = True
-) -> Tuple[str, str, str]:
+    explain: bool = True,
+) -> tuple[str, str, str]:
     """
     Centralized strategy selection for Julia code generation
 
@@ -42,23 +42,33 @@ def choose_strategy(
 
         if small and no_filters and (node.kind in {"list", "set"} or node.reduce):
             mode = "broadcast"
-            mode_explanation = f"# NOTE: auto-selected broadcast mode for small N={elem_count_hint}"
+            mode_explanation = (
+                f"# NOTE: auto-selected broadcast mode for small N={elem_count_hint}"
+            )
         else:
             mode = "loops"
-            mode_explanation = f"# NOTE: auto-selected loops mode for {node.kind} operation"
+            mode_explanation = (
+                f"# NOTE: auto-selected loops mode for {node.kind} operation"
+            )
 
     # 2) Parallelization gate
     assoc_ok = is_associative(op_kind, elem_type) if op_kind else False
     # Dict/group operations are always parallelizable if requested (no associativity needed)
     dict_ok = node.kind in {"dict", "group_by"}
-    can_parallel = bool(parallel_requested and (assoc_ok or dict_ok) and _has_no_cross_iteration_deps(node))
+    can_parallel = bool(
+        parallel_requested
+        and (assoc_ok or dict_ok)
+        and _has_no_cross_iteration_deps(node)
+    )
 
     # 3) Parallel flavor selection
     if node.kind in {"dict", "group_by"}:
         parallel_flavor = "sharded" if can_parallel else "sequential"
         mode = "loops"  # force loops for dict/group operations
         if can_parallel:
-            parallel_explanation = "# NOTE: parallelized with shard-merge pattern (thread-local writes)"
+            parallel_explanation = (
+                "# NOTE: parallelized with shard-merge pattern (thread-local writes)"
+            )
         else:
             parallel_explanation = ""
     else:
@@ -81,6 +91,7 @@ def choose_strategy(
 
     return mode, parallel_flavor, explanation
 
+
 def _has_no_cross_iteration_deps(node: IRComp) -> bool:
     """Check if the node has no cross-iteration dependencies"""
     # For now, assume simple cases are safe
@@ -91,15 +102,18 @@ def _has_no_cross_iteration_deps(node: IRComp) -> bool:
     gen = node.generators[0]
 
     # Check for complex expressions that might have dependencies
-    if node.element and any(char in node.element for char in ['if', 'else', 'and', 'or']):
+    if node.element and any(
+        char in node.element for char in ["if", "else", "and", "or"]
+    ):
         return False
 
     # Check for complex filters
     for filter_expr in gen.filters:
-        if any(char in filter_expr for char in ['if', 'else', 'and', 'or']):
+        if any(char in filter_expr for char in ["if", "else", "and", "or"]):
             return False
 
     return True
+
 
 def get_elem_count_hint(node: IRComp) -> Optional[int]:
     """Estimate element count for strategy selection with cost model"""
@@ -109,14 +123,15 @@ def get_elem_count_hint(node: IRComp) -> Optional[int]:
     gen = node.generators[0]
 
     # Try to get size hint from node attributes first
-    if hasattr(node, 'range_len'):
+    if hasattr(node, "range_len"):
         return node.range_len
 
     # Simple range estimation
-    if hasattr(gen.source, 'start') and hasattr(gen.source, 'stop'):
+    if hasattr(gen.source, "start") and hasattr(gen.source, "stop"):
         return gen.source.stop - gen.source.start
 
     return None
+
 
 def size_hint(node: IRComp) -> Optional[int]:
     """Cost model hook for size estimation"""
@@ -127,7 +142,7 @@ def size_hint(node: IRComp) -> Optional[int]:
     # Estimate from generators
     if node.generators:
         gen = node.generators[0]
-        if hasattr(gen.source, 'start') and hasattr(gen.source, 'stop'):
+        if hasattr(gen.source, "start") and hasattr(gen.source, "stop"):
             base_size = gen.source.stop - gen.source.start
 
             # Apply filter selectivity estimate
@@ -138,11 +153,13 @@ def size_hint(node: IRComp) -> Optional[int]:
 
     return None  # unknown
 
+
 def get_op_kind(node: IRComp) -> Optional[str]:
     """Get the operation kind for strategy selection"""
     if node.reduce:
         return node.reduce.kind
     return None
+
 
 def get_elem_type(node: IRComp) -> str:
     """Get the element type for strategy selection"""

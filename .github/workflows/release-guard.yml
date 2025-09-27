@@ -1,0 +1,96 @@
+name: Release Guard
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for changelog generation
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pre-commit build twine
+        npm ci
+
+    - name: Run full test suite
+      run: |
+        echo "🧪 Running full test suite..."
+        pre-commit run --all-files
+        pytest -q --tb=short
+        mypy pcs/ --ignore-missing-imports
+        eslint "**/*.{js,ts,jsx,tsx}" --ext .js,.ts,.jsx,.tsx
+        prettier --check "**/*.{js,ts,jsx,tsx,json,md}"
+
+    - name: Build package
+      run: |
+        echo "📦 Building package..."
+        python -m build
+        python -m twine check dist/*
+
+    - name: Generate changelog
+      run: |
+        echo "📝 Generating changelog..."
+        # Generate changelog from git history
+        git log --pretty=format:"- %s (%h)" --since="$(git describe --tags --abbrev=0 HEAD~1)" > CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "## Full Changelog" >> CHANGELOG.md
+        echo "See [GitHub Releases](https://github.com/TUNEZILLA-zz/polygot-code-sampler/releases) for detailed changelog." >> CHANGELOG.md
+
+    - name: Upload release artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-artifacts
+        path: |
+          dist/
+          CHANGELOG.md
+        retention-days: 30
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
+          CHANGELOG.md
+        body: |
+          ## 🎛️ Code Live Release ${{ github.ref_name }}
+
+          ### Changes
+          See CHANGELOG.md for detailed changes.
+
+          ### Installation
+          ```bash
+          pip install polyglot-code-sampler==${{ github.ref_name }}
+          ```
+
+          ### Verification
+          All tests passed:
+          - ✅ Pre-commit hooks
+          - ✅ Python tests
+          - ✅ Type checking
+          - ✅ JavaScript linting
+          - ✅ Package build
+        draft: false
+        prerelease: false

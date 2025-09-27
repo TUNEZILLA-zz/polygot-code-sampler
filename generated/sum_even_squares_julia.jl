@@ -2,10 +2,10 @@
 module PCS_Generated_47df
 
     const PCS_Generated = PCS_Generated_47df
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Int
         # NOTE: auto-selected loops mode for generator operation
         # NOTE: gensym reset at emit start for deterministic output

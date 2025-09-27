@@ -1,0 +1,250 @@
+# Grafana Alert Rules for Code Live - "Sidechain Compression" Self-Tuning
+# These rules implement automatic performance optimization like a DAW's sidechain compression
+
+groups:
+  - name: code_live_performance
+    rules:
+      # Rust Performance Alerts
+      - alert: RustHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="rust"}[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          target: rust
+          action: "Sidechain: Rust p95 > 50ms - consider reducing parallel load"
+        annotations:
+          summary: "Rust backend experiencing high latency"
+          description: "Rust p95 latency is {{ $value }}s, above 50ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#rust-performance"
+
+      - alert: RustCircuitBreakerOpen
+        expr: code_live_circuit_breaker_trips_total{target="rust"} > 0
+        for: 0m
+        labels:
+          severity: critical
+          target: rust
+          action: "Sidechain: Rust circuit breaker OPEN - auto-fallback to sequential"
+        annotations:
+          summary: "Rust circuit breaker is OPEN"
+          description: "Rust backend has failed {{ $value }} times, circuit breaker opened"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#circuit-breakers"
+
+      # Julia Performance Alerts (More Sensitive)
+      - alert: JuliaHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="julia"}[5m])) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+          target: julia
+          action: "Sidechain: Julia p95 > 100ms - auto-fallback to sequential mode"
+        annotations:
+          summary: "Julia backend experiencing high latency"
+          description: "Julia p95 latency is {{ $value }}s, above 100ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#julia-performance"
+
+      - alert: JuliaCircuitBreakerOpen
+        expr: code_live_circuit_breaker_trips_total{target="julia"} > 0
+        for: 0m
+        labels:
+          severity: critical
+          target: julia
+          action: "Sidechain: Julia circuit breaker OPEN - force sequential mode"
+        annotations:
+          summary: "Julia circuit breaker is OPEN"
+          description: "Julia backend has failed {{ $value }} times, circuit breaker opened"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#circuit-breakers"
+
+      # TypeScript Performance Alerts
+      - alert: TypeScriptHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="ts"}[5m])) > 0.08
+        for: 2m
+        labels:
+          severity: warning
+          target: ts
+          action: "Sidechain: TypeScript p95 > 80ms - consider reducing parallel load"
+        annotations:
+          summary: "TypeScript backend experiencing high latency"
+          description: "TypeScript p95 latency is {{ $value }}s, above 80ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#typescript-performance"
+
+      # Go Performance Alerts
+      - alert: GoHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="go"}[5m])) > 0.06
+        for: 2m
+        labels:
+          severity: warning
+          target: go
+          action: "Sidechain: Go p95 > 60ms - consider reducing parallel load"
+        annotations:
+          summary: "Go backend experiencing high latency"
+          description: "Go p95 latency is {{ $value }}s, above 60ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#go-performance"
+
+      # C# Performance Alerts
+      - alert: CSharpHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="csharp"}[5m])) > 0.07
+        for: 2m
+        labels:
+          severity: warning
+          target: csharp
+          action: "Sidechain: C# p95 > 70ms - consider reducing parallel load"
+        annotations:
+          summary: "C# backend experiencing high latency"
+          description: "C# p95 latency is {{ $value }}s, above 70ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#csharp-performance"
+
+      # SQL Performance Alerts
+      - alert: SQLHighLatency
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket{target="sql"}[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          target: sql
+          action: "Sidechain: SQL p95 > 100ms - consider query optimization"
+        annotations:
+          summary: "SQL backend experiencing high latency"
+          description: "SQL p95 latency is {{ $value }}s, above 100ms threshold"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#sql-performance"
+
+  - name: code_live_system_health
+    rules:
+      # System-wide Performance Alerts
+      - alert: HighErrorRate
+        expr: rate(code_live_requests_total{status="server_error"}[5m]) / rate(code_live_requests_total[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: critical
+          action: "Sidechain: System error rate > 5% - auto-throttle all backends"
+        annotations:
+          summary: "High error rate across all backends"
+          description: "Error rate is {{ $value | humanizePercentage }} across all backends"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#error-rates"
+
+      - alert: HighFallbackRate
+        expr: rate(code_live_fallbacks_total[5m]) / rate(code_live_requests_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          action: "Sidechain: Fallback rate > 10% - consider backend optimization"
+        annotations:
+          summary: "High fallback rate"
+          description: "Fallback rate is {{ $value | humanizePercentage }} across all backends"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#fallbacks"
+
+      - alert: CircuitBreakerOpen
+        expr: code_live_circuit_breaker_trips_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          action: "Sidechain: Circuit breaker OPEN - auto-fallback to safe mode"
+        annotations:
+          summary: "Circuit breaker is OPEN"
+          description: "Circuit breaker has tripped {{ $value }} times"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#circuit-breakers"
+
+      - alert: HighQueueDepth
+        expr: code_live_queue_depth > 100
+        for: 1m
+        labels:
+          severity: warning
+          action: "Sidechain: Queue depth > 100 - auto-throttle incoming requests"
+        annotations:
+          summary: "High queue depth"
+          description: "Queue depth is {{ $value }} requests"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#queue-depth"
+
+      - alert: LowCacheHitRate
+        expr: rate(code_live_cache_hits_total[5m]) / (rate(code_live_cache_hits_total[5m]) + rate(code_live_cache_misses_total[5m])) < 0.3
+        for: 5m
+        labels:
+          severity: warning
+          action: "Sidechain: Cache hit rate < 30% - consider cache optimization"
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#caching"
+
+  - name: code_live_adaptive_optimization
+    rules:
+      # Adaptive Rate Limiting Alerts
+      - alert: AdaptiveRateLimitHigh
+        expr: code_live_adaptive_rate_limits > 50
+        for: 2m
+        labels:
+          severity: info
+          action: "Sidechain: Adaptive rate limit > 50 - system auto-tuning for high load"
+        annotations:
+          summary: "High adaptive rate limit"
+          description: "Adaptive rate limit is {{ $value }} requests/second"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#adaptive-rate-limiting"
+
+      - alert: AdaptiveRateLimitLow
+        expr: code_live_adaptive_rate_limits < 5
+        for: 2m
+        labels:
+          severity: warning
+          action: "Sidechain: Adaptive rate limit < 5 - system auto-tuning for low load"
+        annotations:
+          summary: "Low adaptive rate limit"
+          description: "Adaptive rate limit is {{ $value }} requests/second"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#adaptive-rate-limiting"
+
+      # Performance Regression Alerts
+      - alert: PerformanceRegression
+        expr: histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket[5m])) > histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket[1h])) * 1.5
+        for: 5m
+        labels:
+          severity: warning
+          action: "Sidechain: Performance regression detected - auto-optimize backends"
+        annotations:
+          summary: "Performance regression detected"
+          description: "Current p95 latency is {{ $value }}s, 50% higher than 1h average"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#performance-regression"
+
+      # Glitch Activation Alerts
+      - alert: GlitchActivation
+        expr: rate(code_live_glitches_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+          action: "Sidechain: Glitch effects activated - creative mode engaged"
+        annotations:
+          summary: "Glitch effects activated"
+          description: "Glitch effects have been activated {{ $value }} times in the last 5 minutes"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#glitch-effects"
+
+  - name: code_live_creative_workflow
+    rules:
+      # Creative Workflow Alerts
+      - alert: HighCreativeActivity
+        expr: rate(code_live_requests_total{endpoint="/render"}[5m]) > 20
+        for: 2m
+        labels:
+          severity: info
+          action: "Sidechain: High creative activity - optimize for real-time performance"
+        annotations:
+          summary: "High creative activity"
+          description: "Render requests are {{ $value }} per second - creative workflow active"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#creative-workflow"
+
+      - alert: BatchProcessingActive
+        expr: rate(code_live_requests_total{endpoint="/render/batch"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: info
+          action: "Sidechain: Batch processing active - optimize for throughput"
+        annotations:
+          summary: "Batch processing active"
+          description: "Batch requests are {{ $value }} per second - batch workflow active"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#batch-processing"
+
+      - alert: MIDIActivity
+        expr: rate(code_live_requests_total{endpoint="/midi"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: info
+          action: "Sidechain: MIDI activity detected - optimize for real-time response"
+        annotations:
+          summary: "MIDI activity detected"
+          description: "MIDI requests are {{ $value }} per second - hardware integration active"
+          runbook_url: "https://github.com/your-org/code-live/docs/runbook.md#midi-integration"

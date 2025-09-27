@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Mathematical Visual Effects</title>
+    <style>
+        :root {
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+            --theme-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            background: var(--theme-background);
+            color: var(--theme-text);
+            overflow-x: hidden;
+        }
+
+        .math-visuals-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .main-subtitle {
+            font-size: 24px;
+            color: var(--theme-text);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .visual-section {
+            background: var(--theme-surface);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 1000px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--theme-accent);
+        }
+
+        .section-description {
+            color: var(--theme-text);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0b0b12;
+        }
+
+        .canvas-container canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .control-slider {
+            width: 150px;
+            height: 20px;
+            background: linear-gradient(90deg, #333, #666);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .control-button:hover {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .control-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .performance-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .metric-value {
+            font-size: 12px;
+            color: var(--theme-accent);
+            font-weight: bold;
+        }
+
+        .visual-quality-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .quality-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 0 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .quality-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+
+            .main-subtitle {
+                font-size: 18px;
+            }
+
+            .controls-overlay {
+                top: 10px;
+                right: 10px;
+                padding: 10px;
+            }
+
+            .control-slider {
+                width: 120px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .canvas-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Visual Quality Switch -->
+    <div class="visual-quality-switch">
+        <button class="quality-button active" data-quality="off">Off</button>
+        <button class="quality-button" data-quality="balanced">Balanced</button>
+        <button class="quality-button" data-quality="high">High</button>
+    </div>
+
+    <!-- Performance Info -->
+    <div class="performance-info">
+        <div class="performance-metric">
+            <span class="metric-label">Request Rate:</span>
+            <span class="metric-value" id="requestRate">12.4</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Success Rate:</span>
+            <span class="metric-value" id="successRate">85.8%</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">P95 Latency:</span>
+            <span class="metric-value" id="p95Latency">45ms</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Julia Active:</span>
+            <span class="metric-value" id="juliaActive">Yes</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="math-visuals-container">
+        <div class="main-content">
+            <h1 class="main-title">Code Live Mathematical Visuals</h1>
+            <p class="main-subtitle">Fibonacci, Color Frequencies, and Fractals for Tasteful Mathy Visuals</p>
+
+            <!-- Phyllotaxis Section -->
+            <div class="visual-section">
+                <h2 class="section-title">🌻 Phyllotaxis (Fibonacci Flower)</h2>
+                <p class="section-description">
+                    Dense, elegant, cheap to render. Tie dot count to request rate; hue to success rate.
+                    Golden angle creates natural spiral patterns found in sunflowers and pinecones.
+                </p>
+                <div class="canvas-container">
+                    <canvas id="phylo"></canvas>
+                    <div class="controls-overlay">
+                        <div class="control-group">
+                            <label class="control-label">Dot Count</label>
+                            <input type="range" class="control-slider" id="phyloDots" min="100" max="2000" value="1000">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Scale</label>
+                            <input type="range" class="control-slider" id="phyloScale" min="1" max="10" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Saturation</label>
+                            <input type="range" class="control-slider" id="phyloSat" min="0" max="100" value="70">
+                        </div>
+                        <button class="control-button" id="togglePhylo">Toggle Phyllotaxis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fibonacci Spiral Section -->
+            <div class="visual-section">
+                <h2 class="section-title">🌀 Fibonacci Spiral (Overlay Guide)</h2>
+                <p class="section-description">
+                    Subtle, low-poly overlay that screams "order." Toggle on during idle.
+                    The golden ratio creates perfect spiral proportions found in nature.
+                </p>
+                <div class="canvas-container">
+                    <canvas id="fibSpiral"></canvas>
+                    <div class="controls-overlay">
+                        <div class="control-group">
+                            <label class="control-label">Turns</label>
+                            <input type="range" class="control-slider" id="spiralTurns" min="3" max="12" value="8">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Unit Size</label>
+                            <input type="range" class="control-slider" id="spiralUnit" min="3" max="15" value="6">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Hue</label>
+                            <input type="range" class="control-slider" id="spiralHue" min="0" max="360" value="180">
+                        </div>
+                        <button class="control-button" id="toggleSpiral">Toggle Spiral</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mandelbrot/Julia Set Section -->
+            <div class="visual-section">
+                <h2 class="section-title">🌀 Mandelbrot / Julia Set</h2>
+                <p class="section-description">
+                    GPU-smooth, mesmerizing idle background. Tie zoom to latency p95;
+                    flip to Julia set when the Julia backend is active.
+                </p>
+                <div class="canvas-container">
+                    <canvas id="fract"></canvas>
+                    <div class="controls-overlay">
+                        <div class="control-group">
+                            <label class="control-label">Zoom</label>
+                            <input type="range" class="control-slider" id="fractZoom" min="0.5" max="3" value="1.8">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Center X</label>
+                            <input type="range" class="control-slider" id="fractCenterX" min="-2" max="2" value="-0.75" step="0.01">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Center Y</label>
+                            <input type="range" class="control-slider" id="fractCenterY" min="-2" max="2" value="0" step="0.01">
+                        </div>
+                        <button class="control-button" id="toggleFractal">Toggle Fractal</button>
+                        <button class="control-button" id="switchMode">Switch Mode</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Frequencies Section -->
+            <div class="visual-section">
+                <h2 class="section-title">🌈 Color Frequencies Palette</h2>
+                <p class="section-description">
+                    A pleasant, evenly spaced palette generator that feels spectral.
+                    Use it to color backends, dots, or bars with golden-angle walk.
+                </p>
+                <div class="canvas-container">
+                    <canvas id="colorFreq"></canvas>
+                    <div class="controls-overlay">
+                        <div class="control-group">
+                            <label class="control-label">Saturation</label>
+                            <input type="range" class="control-slider" id="colorSat" min="0" max="100" value="65">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Lightness</label>
+                            <input type="range" class="control-slider" id="colorLight" min="0" max="100" value="55">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Color Count</label>
+                            <input type="range" class="control-slider" id="colorCount" min="5" max="50" value="20">
+                        </div>
+                        <button class="control-button" id="toggleColors">Toggle Colors</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mathematical Visual Effects System
+        class MathVisualsSystem {
+            constructor() {
+                this.initializeCanvases();
+                this.initializeControls();
+                this.initializeQualitySwitch();
+                this.startPerformanceMonitoring();
+                this.startAnimations();
+            }
+
+            initializeCanvases() {
+                // Phyllotaxis Canvas
+                this.phyloCanvas = document.getElementById('phylo');
+                this.phyloCtx = this.phyloCanvas.getContext('2d', { alpha: false });
+                this.fitCanvas(this.phyloCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.phyloCanvas));
+
+                // Fibonacci Spiral Canvas
+                this.spiralCanvas = document.getElementById('fibSpiral');
+                this.spiralCtx = this.spiralCanvas.getContext('2d');
+                this.fitCanvas(this.spiralCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.spiralCanvas));
+
+                // Fractal Canvas
+                this.fractCanvas = document.getElementById('fract');
+                this.fractGl = this.fractCanvas.getContext('webgl');
+                this.fitCanvas(this.fractCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.fractCanvas));
+
+                // Color Frequencies Canvas
+                this.colorCanvas = document.getElementById('colorFreq');
+                this.colorCtx = this.colorCanvas.getContext('2d');
+                this.fitCanvas(this.colorCanvas);
+                window.addEventListener('resize', () => this.fitCanvas(this.colorCanvas));
+
+                this.initializeFractalShader();
+            }
+
+            fitCanvas(canvas) {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * window.devicePixelRatio;
+                canvas.height = rect.height * window.devicePixelRatio;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                }
+            }
+
+            initializeFractalShader() {
+                if (!this.fractGl) return;
+
+                const vertexShaderSource = `
+                    attribute vec2 p;
+                    void main() {
+                        gl_Position = vec4(p, 0.0, 1.0);
+                    }
+                `;
+
+                const fragmentShaderSource = `
+                    precision highp float;
+                    uniform vec2 res;
+                    uniform float t;
+                    uniform vec2 center;
+                    uniform float zoom;
+                    uniform int mode;
+                    uniform vec2 jc;
+
+                    vec3 pal(float x) {
+                        return vec3(0.5 + 0.5 * cos(6.28318 * (x + vec3(0.0, 0.33, 0.67))));
+                    }
+
+                    void main() {
+                        vec2 uv = (gl_FragCoord.xy - 0.5 * res) / res.y;
+                        vec2 c = center + uv * zoom;
+                        vec2 z = (mode == 0) ? vec2(0.0) : c;
+                        vec2 K = (mode == 0) ? c : jc;
+
+                        float i, m = 0.0;
+                        const int MAX = 128;
+
+                        for (int it = 0; it < MAX; it++) {
+                            z = vec2(z.x * z.x - z.y * z.y, 2.0 * z.x * z.y) + K;
+                            if (dot(z, z) > 4.0) {
+                                i = float(it);
+                                break;
+                            }
+                            m = float(it);
+                        }
+
+                        float n = i / float(MAX);
+                        vec3 col = pow(pal(n), vec3(0.9));
+                        gl_FragColor = vec4(col, 1.0);
+                    }
+                `;
+
+                this.createShader = (type, source) => {
+                    const shader = this.fractGl.createShader(type);
+                    this.fractGl.shaderSource(shader, source);
+                    this.fractGl.compileShader(shader);
+                    return shader;
+                };
+
+                this.fractProgram = this.fractGl.createProgram();
+                this.fractGl.attachShader(this.fractProgram, this.createShader(this.fractGl.VERTEX_SHADER, vertexShaderSource));
+                this.fractGl.attachShader(this.fractProgram, this.createShader(this.fractGl.FRAGMENT_SHADER, fragmentShaderSource));
+                this.fractGl.linkProgram(this.fractProgram);
+                this.fractGl.useProgram(this.fractProgram);
+
+                const buffer = this.fractGl.createBuffer();
+                this.fractGl.bindBuffer(this.fractGl.ARRAY_BUFFER, buffer);
+                this.fractGl.bufferData(this.fractGl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), this.fractGl.STATIC_DRAW);
+
+                const positionLocation = this.fractGl.getAttribLocation(this.fractProgram, 'p');
+                this.fractGl.enableVertexAttribArray(positionLocation);
+                this.fractGl.vertexAttribPointer(positionLocation, 2, this.fractGl.FLOAT, false, 0, 0);
+
+                this.fractUniforms = {
+                    res: this.fractGl.getUniformLocation(this.fractProgram, 'res'),
+                    t: this.fractGl.getUniformLocation(this.fractProgram, 't'),
+                    center: this.fractGl.getUniformLocation(this.fractProgram, 'center'),
+                    zoom: this.fractGl.getUniformLocation(this.fractProgram, 'zoom'),
+                    mode: this.fractGl.getUniformLocation(this.fractProgram, 'mode'),
+                    jc: this.fractGl.getUniformLocation(this.fractProgram, 'jc')
+                };
+
+                this.fractCenter = [-0.75, 0.0];
+                this.fractZoom = 1.8;
+                this.fractMode = 0;
+                this.fractJc = [-0.70176, -0.3842];
+                this.fractStartTime = performance.now();
+            }
+
+            initializeControls() {
+                // Phyllotaxis controls
+                document.getElementById('phyloDots').addEventListener('input', (e) => {
+                    this.phyloDots = parseInt(e.target.value);
+                });
+
+                document.getElementById('phyloScale').addEventListener('input', (e) => {
+                    this.phyloScale = parseFloat(e.target.value);
+                });
+
+                document.getElementById('phyloSat').addEventListener('input', (e) => {
+                    this.phyloSat = parseInt(e.target.value);
+                });
+
+                document.getElementById('togglePhylo').addEventListener('click', () => {
+                    this.phyloEnabled = !this.phyloEnabled;
+                    document.getElementById('togglePhylo').classList.toggle('active');
+                });
+
+                // Spiral controls
+                document.getElementById('spiralTurns').addEventListener('input', (e) => {
+                    this.spiralTurns = parseInt(e.target.value);
+                });
+
+                document.getElementById('spiralUnit').addEventListener('input', (e) => {
+                    this.spiralUnit = parseInt(e.target.value);
+                });
+
+                document.getElementById('spiralHue').addEventListener('input', (e) => {
+                    this.spiralHue = parseInt(e.target.value);
+                });
+
+                document.getElementById('toggleSpiral').addEventListener('click', () => {
+                    this.spiralEnabled = !this.spiralEnabled;
+                    document.getElementById('toggleSpiral').classList.toggle('active');
+                });
+
+                // Fractal controls
+                document.getElementById('fractZoom').addEventListener('input', (e) => {
+                    this.fractZoom = parseFloat(e.target.value);
+                });
+
+                document.getElementById('fractCenterX').addEventListener('input', (e) => {
+                    this.fractCenter[0] = parseFloat(e.target.value);
+                });
+
+                document.getElementById('fractCenterY').addEventListener('input', (e) => {
+                    this.fractCenter[1] = parseFloat(e.target.value);
+                });
+
+                document.getElementById('toggleFractal').addEventListener('click', () => {
+                    this.fractalEnabled = !this.fractalEnabled;
+                    document.getElementById('toggleFractal').classList.toggle('active');
+                });
+
+                document.getElementById('switchMode').addEventListener('click', () => {
+                    this.fractMode = 1 - this.fractMode;
+                    document.getElementById('switchMode').textContent = this.fractMode ? 'Julia' : 'Mandelbrot';
+                });
+
+                // Color controls
+                document.getElementById('colorSat').addEventListener('input', (e) => {
+                    this.colorSat = parseInt(e.target.value);
+                });
+
+                document.getElementById('colorLight').addEventListener('input', (e) => {
+                    this.colorLight = parseInt(e.target.value);
+                });
+
+                document.getElementById('colorCount').addEventListener('input', (e) => {
+                    this.colorCount = parseInt(e.target.value);
+                });
+
+                document.getElementById('toggleColors').addEventListener('click', () => {
+                    this.colorsEnabled = !this.colorsEnabled;
+                    document.getElementById('toggleColors').classList.toggle('active');
+                });
+            }
+
+            initializeQualitySwitch() {
+                const qualityButtons = document.querySelectorAll('.quality-button');
+
+                qualityButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        qualityButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        const quality = button.dataset.quality;
+                        this.applyQualitySettings(quality);
+                    });
+                });
+
+                this.applyQualitySettings('off');
+            }
+
+            applyQualitySettings(quality) {
+                if (quality === 'off') {
+                    this.phyloEnabled = false;
+                    this.spiralEnabled = false;
+                    this.fractalEnabled = false;
+                    this.colorsEnabled = false;
+                } else if (quality === 'balanced') {
+                    this.phyloEnabled = true;
+                    this.spiralEnabled = true;
+                    this.fractalEnabled = false;
+                    this.colorsEnabled = true;
+                } else if (quality === 'high') {
+                    this.phyloEnabled = true;
+                    this.spiralEnabled = true;
+                    this.fractalEnabled = true;
+                    this.colorsEnabled = true;
+                }
+            }
+
+            startPerformanceMonitoring() {
+                setInterval(() => {
+                    // Simulate performance metrics
+                    const requestRate = 5 + Math.random() * 15;
+                    const successRate = 80 + Math.random() * 20;
+                    const p95Latency = 10 + Math.random() * 50;
+                    const juliaActive = Math.random() > 0.5;
+
+                    // Update performance info
+                    document.getElementById('requestRate').textContent = requestRate.toFixed(1);
+                    document.getElementById('successRate').textContent = successRate.toFixed(1) + '%';
+                    document.getElementById('p95Latency').textContent = p95Latency.toFixed(0) + 'ms';
+                    document.getElementById('juliaActive').textContent = juliaActive ? 'Yes' : 'No';
+
+                    // Update visuals based on metrics
+                    this.updateFromMetrics({
+                        reqRate: requestRate,
+                        success: successRate / 100,
+                        p95: p95Latency / 1000,
+                        juliaActive: juliaActive
+                    });
+                }, 1000);
+            }
+
+            updateFromMetrics({reqRate = 12, success = 0.86, p95 = 0.012, juliaActive = false}) {
+                // Update phyllotaxis based on request rate and success rate
+                this.phyloDots = Math.min(2000, Math.floor(80 * reqRate));
+                this.phyloHueBase = 120 * success + 10; // greener when healthier
+
+                // Update fractal zoom based on latency
+                this.fractZoom = 1.6 + Math.min(1.2, p95 * 40.0);
+                this.fractMode = juliaActive ? 1 : 0;
+            }
+
+            startAnimations() {
+                this.animate();
+            }
+
+            animate() {
+                if (this.phyloEnabled) {
+                    this.renderPhyllotaxis();
+                }
+
+                if (this.spiralEnabled) {
+                    this.renderFibonacciSpiral();
+                }
+
+                if (this.fractalEnabled) {
+                    this.renderFractal();
+                }
+
+                if (this.colorsEnabled) {
+                    this.renderColorFrequencies();
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+
+            renderPhyllotaxis() {
+                const ctx = this.phyloCtx;
+                const canvas = this.phyloCanvas;
+
+                ctx.fillStyle = '#0b0b12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const GA = Math.PI * (3 - Math.sqrt(5)); // golden angle
+
+                for (let n = 0; n < this.phyloDots; n++) {
+                    const a = n * GA;
+                    const r = this.phyloScale * Math.sqrt(n);
+                    const x = cx + r * Math.cos(a);
+                    const y = cy + r * Math.sin(a);
+                    const hue = (this.phyloHueBase + n * 0.5) % 360;
+
+                    ctx.fillStyle = `hsl(${hue} ${this.phyloSat}% 55%)`;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            renderFibonacciSpiral() {
+                const ctx = this.spiralCtx;
+                const canvas = this.spiralCanvas;
+
+                ctx.fillStyle = '#0b0b12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const cx = canvas.width * 0.15;
+                const cy = canvas.height * 0.75;
+
+                this.drawFibSpiral(ctx, cx, cy, this.spiralUnit, this.spiralTurns, this.spiralHue);
+            }
+
+            drawFibSpiral(ctx, cx, cy, unit = 10, turns = 8, hue = 180) {
+                ctx.strokeStyle = `hsl(${hue} 60% 65% / 0.25)`;
+                ctx.lineWidth = 1.5;
+
+                let a = 1, b = 1;
+                for (let i = 0; i < turns; i++) {
+                    const s = a;
+                    a = b;
+                    b += s;
+                }
+
+                ctx.beginPath();
+                let x = cx, y = cy, r = unit;
+                let angle = 0;
+
+                for (let i = 0; i < turns; i++) {
+                    ctx.arc(x, y, r, angle, angle + Math.PI / 2);
+                    angle += Math.PI / 2;
+                    x += r * Math.cos(angle);
+                    y += r * Math.sin(angle);
+                    r *= 1.6180339887;
+                }
+
+                ctx.stroke();
+            }
+
+            renderFractal() {
+                if (!this.fractGl) return;
+
+                const t = (performance.now() - this.fractStartTime) / 1000;
+
+                this.fractGl.viewport(0, 0, this.fractCanvas.width, this.fractCanvas.height);
+                this.fractGl.uniform2f(this.fractUniforms.res, this.fractCanvas.width, this.fractCanvas.height);
+                this.fractGl.uniform1f(this.fractUniforms.t, t);
+                this.fractGl.uniform2f(this.fractUniforms.center, this.fractCenter[0], this.fractCenter[1]);
+                this.fractGl.uniform1f(this.fractUniforms.zoom, this.fractZoom);
+                this.fractGl.uniform1i(this.fractUniforms.mode, this.fractMode);
+                this.fractGl.uniform2f(this.fractUniforms.jc, this.fractJc[0], this.fractJc[1]);
+                this.fractGl.drawArrays(this.fractGl.TRIANGLE_STRIP, 0, 4);
+            }
+
+            renderColorFrequencies() {
+                const ctx = this.colorCtx;
+                const canvas = this.colorCanvas;
+
+                ctx.fillStyle = '#0b0b12';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const barWidth = canvas.width / this.colorCount;
+
+                for (let i = 0; i < this.colorCount; i++) {
+                    const color = this.nextColor(i, this.colorSat, this.colorLight);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(i * barWidth, 0, barWidth, canvas.height);
+                }
+            }
+
+            nextColor(i, s = 65, l = 55) {
+                const hue = (i * 137.50776405) % 360;
+                return `hsl(${hue} ${s}% ${l}%)`;
+            }
+
+            metricToHue(x, min = 0, max = 1) {
+                const n = Math.max(0, Math.min(1, (x - min) / (max - min)));
+                return 270 - 270 * n;
+            }
+        }
+
+        // Initialize the Mathematical Visual Effects System
+        document.addEventListener('DOMContentLoaded', () => {
+            new MathVisualsSystem();
+        });
+    </script>
+</body>
+</html>

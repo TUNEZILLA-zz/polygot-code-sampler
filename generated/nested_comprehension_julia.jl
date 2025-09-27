@@ -2,10 +2,10 @@
 module PCS_Generated_cab5
 
     const PCS_Generated = PCS_Generated_cab5
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Int
         # NOTE: auto-selected loops mode for generator operation
         # NOTE: gensym reset at emit start for deterministic output

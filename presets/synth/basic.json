@@ -1,0 +1,78 @@
+{
+  "name": "Basic Synth Modulation",
+  "description": "Simple LFO modulation for physics FX parameters",
+  "version": "1.0.0",
+  "author": "Code Live",
+  "created": "2024-01-01T00:00:00Z",
+  "mappings": {
+    "particleCount": {
+      "lfo": {
+        "frequency": 0.5,
+        "amplitude": 0.3,
+        "waveform": "sine",
+        "tempoSync": true,
+        "tempo": 120,
+        "enabled": true
+      },
+      "range": {
+        "min": 50,
+        "max": 200
+      },
+      "offset": 0,
+      "scale": 1
+    },
+    "damping": {
+      "lfo": {
+        "frequency": 0.2,
+        "amplitude": 0.5,
+        "waveform": "triangle",
+        "tempoSync": false,
+        "enabled": true
+      },
+      "range": {
+        "min": 0.05,
+        "max": 0.3
+      },
+      "offset": 0,
+      "scale": 1
+    },
+    "turbulence": {
+      "lfo": {
+        "frequency": 1.0,
+        "amplitude": 0.4,
+        "waveform": "square",
+        "tempoSync": true,
+        "tempo": 120,
+        "enabled": true
+      },
+      "range": {
+        "min": 0.5,
+        "max": 3.0
+      },
+      "offset": 0,
+      "scale": 1
+    }
+  },
+  "midiMappings": {
+    "1": {
+      "parameter": "particleCount",
+      "range": {
+        "min": 0,
+        "max": 500
+      },
+      "offset": 0,
+      "scale": 1
+    },
+    "74": {
+      "parameter": "damping",
+      "range": {
+        "min": 0,
+        "max": 1
+      },
+      "offset": 0,
+      "scale": 1
+    }
+  },
+  "tempo": 120,
+  "enabled": true
+}

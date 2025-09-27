@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Code Motion - Animate Your Codegen Strategies</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e0e0; min-height: 100vh; overflow-x: auto;
+        }
+        .motion-container { display: flex; flex-direction: column; min-height: 100vh; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .header p { color: #a0a0a0; font-size: 1.1rem; }
+        .input-section { background: linear-gradient(145deg, #2a2a3e, #1e1e2e); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #4a4a5e; }
+        .input-title { font-size: 1.2rem; margin-bottom: 15px; color: #4ecdc4; }
+        .python-input { width: 100%; background: #0a0a0a; border: 1px solid #4a4a5e; border-radius: 8px; padding: 15px; font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace; font-size: 1rem; color: #e0e0e0; resize: vertical; min-height: 80px; }
+        .motion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .timeline-section { background: linear-gradient(145deg, #2a2a3e, #1e1e2e); border-radius: 20px; padding: 25px; border: 1px solid #4a4a5e; }
+        .section-title { font-size: 1.4rem; margin-bottom: 20px; color: #4ecdc4; text-align: center; }
+        .timeline-controls { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+        .play-button { background: linear-gradient(145deg, #4ecdc4, #45b7d1); border: none; border-radius: 8px; padding: 10px 20px; color: #1a1a2e; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .play-button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4); }
+        .play-button.playing { background: linear-gradient(145deg, #ff6b6b, #ff8e8e); }
+        .timeline-slider { flex: 1; height: 6px; background: #3a3a4e; border-radius: 3px; outline: none; cursor: pointer; }
+        .timeline-slider::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; background: linear-gradient(145deg, #4ecdc4, #45b7d1); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4); }
+        .timeline-track { background: #1a1a2e; border: 1px solid #4a4a5e; border-radius: 8px; padding: 15px; margin-bottom: 20px; min-height: 200px; position: relative; }
+        .keyframe { position: absolute; width: 20px; height: 20px; background: linear-gradient(145deg, #4ecdc4, #45b7d1); border-radius: 50%; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4); }
+        .keyframe:hover { transform: scale(1.2); box-shadow: 0 4px 12px rgba(78, 205, 196, 0.6); }
+        .keyframe.selected { background: linear-gradient(145deg, #ff6b6b, #ff8e8e); box-shadow: 0 4px 12px rgba(255, 107, 107, 0.6); }
+        .automation-lanes { background: linear-gradient(145deg, #1e1e2e, #2a2a3e); border-radius: 15px; padding: 20px; border: 1px solid #3a3a4e; }
+        .lane { margin-bottom: 15px; }
+        .lane-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .lane-name { font-size: 0.9rem; color: #4ecdc4; font-weight: 600; }
+        .lane-controls { display: flex; gap: 8px; }
+        .lane-button { background: #1a1a2e; border: 1px solid #4a4a5e; border-radius: 4px; padding: 4px 8px; color: #a0a0a0; cursor: pointer; transition: all 0.3s ease; font-size: 0.7rem; }
+        .lane-button:hover { border-color: #4ecdc4; color: #4ecdc4; }
+        .lane-button.active { background: linear-gradient(145deg, #4ecdc4, #45b7d1); border-color: #4ecdc4; color: #1a1a2e; }
+        .lane-track { height: 40px; background: #0a0a0a; border: 1px solid #3a3a4e; border-radius: 4px; position: relative; cursor: crosshair; }
+        .automation-curve { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+        .curve-point { position: absolute; width: 8px; height: 8px; background: #4ecdc4; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); }
+        .curve-line { position: absolute; height: 2px; background: #4ecdc4; transform-origin: left center; }
+        .quantize-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .quantize-button { background: #1a1a2e; border: 1px solid #4a4a5e; border-radius: 6px; padding: 8px 16px; color: #e0e0e0; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .quantize-button:hover { border-color: #4ecdc4; color: #4ecdc4; }
+        .quantize-button.active { background: linear-gradient(145deg, #4ecdc4, #45b7d1); border-color: #4ecdc4; color: #1a1a2e; }
+        .speed-ramp-controls { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; }
+        .ramp-select { background: #1a1a2e; border: 1px solid #4a4a5e; border-radius: 6px; padding: 8px 12px; color: #e0e0e0; font-family: inherit; font-size: 0.9rem; }
+        .output-section { background: linear-gradient(145deg, #1e1e2e, #2a2a3e); border-radius: 15px; padding: 20px; border: 1px solid #4a4a5e; }
+        .output-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
+        .code-preview { background: #0a0a0a; border: 1px solid #4a4a5e; border-radius: 8px; padding: 15px; font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace; font-size: 0.8rem; color: #e0e0e0; white-space: pre-wrap; max-height: 200px; overflow-y: auto; position: relative; }
+        .code-header { background: linear-gradient(145deg, #4ecdc4, #45b7d1); color: #1a1a2e; padding: 6px 10px; border-radius: 4px 4px 0 0; font-weight: 600; font-size: 0.8rem; margin: -15px -15px 10px -15px; text-align: center; }
+        .loading { color: #4ecdc4; font-style: italic; text-align: center; padding: 20px; }
+        .status-indicator { position: fixed; top: 20px; right: 20px; background: linear-gradient(145deg, #4ecdc4, #45b7d1); color: #1a1a2e; padding: 10px 20px; border-radius: 25px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3); z-index: 1000; opacity: 0; transform: translateY(-20px); transition: all 0.3s ease; }
+        .status-indicator.show { opacity: 1; transform: translateY(0); }
+        @media (max-width: 768px) { .motion-grid { grid-template-columns: 1fr; } .timeline-controls { flex-direction: column; align-items: stretch; } }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="statusIndicator">🎬 Motion Ready</div>
+    <div class="motion-container">
+        <div class="header">
+            <h1>🎬 Code Motion</h1>
+            <p>Animate your codegen strategies over time with keyframes and automation curves</p>
+        </div>
+        <div class="input-section">
+            <div class="input-title">🐍 Python Input</div>
+            <textarea class="python-input" id="pythonInput" placeholder="Enter your Python comprehension here...">[x * x for x in range(0, 100) if x % 2 == 0]</textarea>
+        </div>
+        <div class="motion-grid">
+            <div class="timeline-section">
+                <h2 class="section-title">⏱️ Timeline</h2>
+                <div class="timeline-controls">
+                    <button class="play-button" id="playButton" onclick="togglePlayback()">▶️ Play</button>
+                    <input type="range" class="timeline-slider" id="timelineSlider" min="0" max="100" value="0">
+                    <span id="timelineTime">0s</span>
+                </div>
+                <div class="quantize-controls">
+                    <button class="quantize-button" onclick="quantizeToGrid()">📐 Grid</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('hifi')">🎵 Hi-Fi</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('punchy')">⚡ Punchy</button>
+                    <button class="quantize-button" onclick="quantizeToPreset('lofi')">🎧 Lo-Fi</button>
+                </div>
+                <div class="speed-ramp-controls">
+                    <label>Ramp Type:</label>
+                    <select class="ramp-select" id="rampType">
+                        <option value="linear">Linear</option>
+                        <option value="exponential">Exponential</option>
+                        <option value="logarithmic">Logarithmic</option>
+                        <option value="sine">Sine</option>
+                    </select>
+                    <label>Duration:</label>
+                    <input type="range" id="rampDuration" min="1" max="10" value="3">
+                    <span id="rampDurationValue">3s</span>
+                </div>
+                <div class="timeline-track" id="timelineTrack">
+                    <div class="keyframe" style="left: 10%; top: 50%;" data-time="10" onclick="selectKeyframe(this)"></div>
+                    <div class="keyframe" style="left: 50%; top: 30%;" data-time="50" onclick="selectKeyframe(this)"></div>
+                    <div class="keyframe" style="left: 80%; top: 70%;" data-time="80" onclick="selectKeyframe(this)"></div>
+                </div>
+            </div>
+            <div class="automation-lanes">
+                <h2 class="section-title">🎛️ Automation Lanes</h2>
+                <div class="lane">
+                    <div class="lane-header">
+                        <div class="lane-name">🦀 Rust Performance</div>
+                        <div class="lane-controls">
+                            <button class="lane-button" onclick="toggleLane('rust')">Record</button>
+                            <button class="lane-button" onclick="clearLane('rust')">Clear</button>
+                        </div>
+                    </div>
+                    <div class="lane-track" id="rustLane" onclick="addCurvePoint(event, 'rust')">
+                        <div class="automation-curve" id="rustCurve"></div>
+                    </div>
+                </div>
+                <div class="lane">
+                    <div class="lane-header">
+                        <div class="lane-name">🔬 Julia Parallelism</div>
+                        <div class="lane-controls">
+                            <button class="lane-button" onclick="toggleLane('julia')">Record</button>
+                            <button class="lane-button" onclick="clearLane('julia')">Clear</button>
+                        </div>
+                    </div>
+                    <div class="lane-track" id="juliaLane" onclick="addCurvePoint(event, 'julia')">
+                        <div class="automation-curve" id="juliaCurve"></div>
+                    </div>
+                </div>
+                <div class="lane">
+                    <div class="lane-header">
+                        <div class="lane-name">🗄️ SQL Optimization</div>
+                        <div class="lane-controls">
+                            <button class="lane-button" onclick="toggleLane('sql')">Record</button>
+                            <button class="lane-button" onclick="clearLane('sql')">Clear</button>
+                        </div>
+                    </div>
+                    <div class="lane-track" id="sqlLane" onclick="addCurvePoint(event, 'sql')">
+                        <div class="automation-curve" id="sqlCurve"></div>
+                    </div>
+                </div>
+                <div class="lane">
+                    <div class="lane-header">
+                        <div class="lane-name">📱 TypeScript Safety</div>
+                        <div class="lane-controls">
+                            <button class="lane-button" onclick="toggleLane('ts')">Record</button>
+                            <button class="lane-button" onclick="clearLane('ts')">Clear</button>
+                        </div>
+                    </div>
+                    <div class="lane-track" id="tsLane" onclick="addCurvePoint(event, 'ts')">
+                        <div class="automation-curve" id="tsCurve"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="output-section">
+            <h2 class="section-title">🎧 Live Output</h2>
+            <div class="output-grid" id="outputGrid"></div>
+        </div>
+    </div>
+    <script>
+        const motionState = {
+            pythonInput: '[x * x for x in range(0, 100) if x % 2 == 0]',
+            currentTime: 0,
+            isPlaying: false,
+            playbackInterval: null,
+            keyframes: [
+                { time: 10, tracks: { rust: 20, julia: 30, sql: 10, ts: 40 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: false } },
+                { time: 50, tracks: { rust: 60, julia: 50, sql: 30, ts: 70 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                { time: 80, tracks: { rust: 80, julia: 70, sql: 50, ts: 90 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } }
+            ],
+            automationLanes: {
+                rust: { points: [], recording: false },
+                julia: { points: [], recording: false },
+                sql: { points: [], recording: false },
+                ts: { points: [], recording: false }
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeMotion();
+            generateCode();
+        });
+        function initializeMotion() {
+            document.getElementById('pythonInput').addEventListener('input', (e) => {
+                motionState.pythonInput = e.target.value;
+                generateCode();
+            });
+            document.getElementById('timelineSlider').addEventListener('input', (e) => {
+                motionState.currentTime = parseInt(e.target.value);
+                document.getElementById('timelineTime').textContent = `${motionState.currentTime}s`;
+                updateFromTimeline();
+                generateCode();
+            });
+            document.getElementById('rampDuration').addEventListener('input', (e) => {
+                document.getElementById('rampDurationValue').textContent = `${e.target.value}s`;
+            });
+        }
+        function togglePlayback() {
+            const playButton = document.getElementById('playButton');
+            if (motionState.isPlaying) {
+                clearInterval(motionState.playbackInterval);
+                motionState.isPlaying = false;
+                playButton.textContent = '▶️ Play';
+                playButton.classList.remove('playing');
+            } else {
+                motionState.isPlaying = true;
+                playButton.textContent = '⏸️ Pause';
+                playButton.classList.add('playing');
+                motionState.playbackInterval = setInterval(() => {
+                    motionState.currentTime += 1;
+                    if (motionState.currentTime > 100) motionState.currentTime = 0;
+                    document.getElementById('timelineSlider').value = motionState.currentTime;
+                    document.getElementById('timelineTime').textContent = `${motionState.currentTime}s`;
+                    updateFromTimeline();
+                    generateCode();
+                }, 100);
+            }
+        }
+        function selectKeyframe(keyframe) {
+            document.querySelectorAll('.keyframe').forEach(kf => kf.classList.remove('selected'));
+            keyframe.classList.add('selected');
+            const time = parseInt(keyframe.dataset.time);
+            const keyframeData = motionState.keyframes.find(kf => kf.time === time);
+            if (keyframeData) {
+                motionState.tracks = { ...keyframeData.tracks };
+                motionState.effects = { ...keyframeData.effects };
+                generateCode();
+            }
+        }
+        function quantizeToGrid() {
+            Object.keys(motionState.tracks).forEach(track => {
+                const value = motionState.tracks[track];
+                const quantized = Math.round(value / 25) * 25;
+                motionState.tracks[track] = quantized;
+            });
+            generateCode();
+        }
+        function quantizeToPreset(preset) {
+            const presets = {
+                hifi: { tracks: { rust: 30, julia: 20, sql: 10, ts: 25 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: false } },
+                punchy: { tracks: { rust: 90, julia: 80, sql: 30, ts: 70 }, effects: { predicate_pushdown: true, constant_folding: true, parallel_safety: true, type_inference: true } },
+                lofi: { tracks: { rust: 15, julia: 10, sql: 5, ts: 20 }, effects: { predicate_pushdown: false, constant_folding: false, parallel_safety: false, type_inference: false } }
+            };
+            const config = presets[preset];
+            if (config) {
+                motionState.tracks = { ...config.tracks };
+                motionState.effects = { ...config.effects };
+                generateCode();
+            }
+        }
+        function updateFromTimeline() {
+            const currentTime = motionState.currentTime;
+            const keyframes = motionState.keyframes;
+            let beforeKeyframe = null;
+            let afterKeyframe = null;
+            for (let i = 0; i < keyframes.length; i++) {
+                if (keyframes[i].time <= currentTime) beforeKeyframe = keyframes[i];
+                if (keyframes[i].time >= currentTime && !afterKeyframe) {
+                    afterKeyframe = keyframes[i];
+                    break;
+                }
+            }
+            if (beforeKeyframe && afterKeyframe) {
+                const rampType = document.getElementById('rampType').value;
+                const t = (currentTime - beforeKeyframe.time) / (afterKeyframe.time - beforeKeyframe.time);
+                const easedT = applyEasing(t, rampType);
+                Object.keys(motionState.tracks).forEach(track => {
+                    const beforeValue = beforeKeyframe.tracks[track];
+                    const afterValue = afterKeyframe.tracks[track];
+                    const interpolatedValue = beforeValue + (afterValue - beforeValue) * easedT;
+                    motionState.tracks[track] = Math.round(interpolatedValue);
+                });
+                Object.keys(motionState.effects).forEach(effect => {
+                    const beforeValue = beforeKeyframe.effects[effect];
+                    const afterValue = afterKeyframe.effects[effect];
+                    motionState.effects[effect] = beforeValue || afterValue;
+                });
+            } else if (beforeKeyframe) {
+                motionState.tracks = { ...beforeKeyframe.tracks };
+                motionState.effects = { ...beforeKeyframe.effects };
+            }
+        }
+        function applyEasing(t, type) {
+            switch (type) {
+                case 'linear': return t;
+                case 'exponential': return t * t;
+                case 'logarithmic': return Math.sqrt(t);
+                case 'sine': return 0.5 * (1 - Math.cos(Math.PI * t));
+                default: return t;
+            }
+        }
+        function toggleLane(lane) {
+            motionState.automationLanes[lane].recording = !motionState.automationLanes[lane].recording;
+            const button = document.querySelector(`[onclick="toggleLane('${lane}')"]`);
+            button.classList.toggle('active', motionState.automationLanes[lane].recording);
+        }
+        function clearLane(lane) {
+            motionState.automationLanes[lane].points = [];
+            updateLaneCurve(lane);
+        }
+        function addCurvePoint(event, lane) {
+            if (!motionState.automationLanes[lane].recording) return;
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            motionState.automationLanes[lane].points.push({ x, y });
+            updateLaneCurve(lane);
+        }
+        function updateLaneCurve(lane) {
+            const curve = document.getElementById(`${lane}Curve`);
+            const points = motionState.automationLanes[lane].points;
+            if (points.length === 0) {
+                curve.innerHTML = '';
+                return;
+            }
+            let curveHTML = '';
+            for (let i = 0; i < points.length; i++) {
+                const point = points[i];
+                curveHTML += `<div class="curve-point" style="left: ${point.x}%; top: ${point.y}%;"></div>`;
+                if (i > 0) {
+                    const prevPoint = points[i - 1];
+                    const length = Math.sqrt(Math.pow(point.x - prevPoint.x, 2) + Math.pow(point.y - prevPoint.y, 2));
+                    const angle = Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * 180 / Math.PI;
+                    curveHTML += `<div class="curve-line" style="left: ${prevPoint.x}%; top: ${prevPoint.y}%; width: ${length}%; transform: rotate(${angle}deg);"></div>`;
+                }
+            }
+            curve.innerHTML = curveHTML;
+        }
+        function showStatus(message) {
+            const indicator = document.getElementById('statusIndicator');
+            indicator.textContent = message;
+            indicator.classList.add('show');
+            setTimeout(() => indicator.classList.remove('show'), 2000);
+        }
+        async function generateCode() {
+            const outputGrid = document.getElementById('outputGrid');
+            outputGrid.innerHTML = '';
+            const activeTracks = Object.entries(motionState.tracks || {})
+                .filter(([_, level]) => level > 20)
+                .sort((a, b) => b[1] - a[1]);
+            if (activeTracks.length === 0) {
+                outputGrid.innerHTML = '<div class="code-preview"><div class="loading">🎬 Animate your codegen strategies!</div></div>';
+                return;
+            }
+            for (const [track, level] of activeTracks) {
+                const codePreview = document.createElement('div');
+                codePreview.className = 'code-preview';
+                codePreview.innerHTML = `
+                    <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                    <div class="loading">🔄 Generating ${track} code...</div>
+                `;
+                outputGrid.appendChild(codePreview);
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+                    const code = generateDemoCode(track, level);
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <pre>${code}</pre>
+                    `;
+                } catch (error) {
+                    codePreview.innerHTML = `
+                        <div class="code-header">${getTrackIcon(track)} ${getTrackName(track)} (${level}%)</div>
+                        <div class="error">❌ Error generating ${track} code: ${error.message}</div>
+                    `;
+                }
+            }
+            showStatus('✅ Code animated!');
+        }
+        function generateDemoCode(track, level) {
+            const parallel = level > 60;
+            const unsafe = level > 85;
+            const demos = {
+                rust: `use rayon::prelude::*;
+pub fn process_data() -> Vec<i32> {
+    (0..100)
+        ${parallel ? '.into_par_iter()' : '.iter()'}
+        .filter(|&x| x % 2 == 0)
+        .map(|x| x * x)
+        .collect()
+}`,
+                julia: `function process_data()
+    x = 0:99
+    mask = x .% 2 .== 0
+    ${parallel ? 'Threads.@threads' : ''} return (x .* x)[mask]
+end`,
+                sql: `WITH series AS (
+    SELECT generate_series(0, 99) AS x
+)
+SELECT x * x AS result
+FROM series
+WHERE x % 2 = 0;`,
+                ts: `export ${parallel ? 'async ' : ''}function processData(): ${parallel ? 'Promise<number[]>' : 'number[]'} {
+    const data = Array.from({length: 100}, (_, i) => i);
+    ${parallel ? `return new Promise((resolve) => {
+        const worker = new Worker('processor.js');
+        worker.postMessage(data);
+        worker.onmessage = (e) => resolve(e.data);
+    });` : `return data
+        .filter(x => x % 2 === 0)
+        .map(x => x * x);`}
+}`
+            };
+            return demos[track] || `// Demo code for ${track}`;
+        }
+        function getTrackIcon(track) {
+            const icons = { rust: '🦀', julia: '🔬', sql: '🗄️', ts: '📱' };
+            return icons[track] || '🎵';
+        }
+        function getTrackName(track) {
+            const names = { rust: 'Rust', julia: 'Julia', sql: 'SQL', ts: 'TypeScript' };
+            return names[track] || track;
+        }
+    </script>
+</body>
+</html>

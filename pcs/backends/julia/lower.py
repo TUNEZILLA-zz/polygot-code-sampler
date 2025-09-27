@@ -8,7 +8,13 @@ from .strategy import choose_strategy, get_elem_type, get_op_kind, size_hint
 from .types import get_collection_type, get_reduction_type
 
 
-def lower_program(ir: IRComp, mode: str = "auto", parallel: bool = False, explain: bool = True, unsafe: bool = False) -> str:
+def lower_program(
+    ir: IRComp,
+    mode: str = "auto",
+    parallel: bool = False,
+    explain: bool = True,
+    unsafe: bool = False,
+) -> str:
     """Lower IR to Julia code"""
     # Reset gensym counter for deterministic output
     reset_gensym()
@@ -32,17 +38,19 @@ def lower_program(ir: IRComp, mode: str = "auto", parallel: bool = False, explai
 
     # Add runtime include for parallel operations
     if parallel:
-        jl.w("include(\"pcs_runtime.jl\")")
+        jl.w('include("pcs_runtime.jl")')
         jl.w("using .PCS_Runtime")
         jl.w("")
     elif any(gen.filters for gen in ir.generators) or ir.reduce:
         # Add runtime for non-parallel operations that might benefit from helpers
-        jl.w("include(\"pcs_runtime.jl\")")
+        jl.w('include("pcs_runtime.jl")')
         jl.w("using .PCS_Runtime")
         jl.w("")
 
     # Generate main function
-    _lower_entrypoint(jl, ir, mode=mode, parallel=parallel, explain=explain, unsafe=unsafe)
+    _lower_entrypoint(
+        jl, ir, mode=mode, parallel=parallel, explain=explain, unsafe=unsafe
+    )
 
     jl.indent -= 1
     jl.w("")
@@ -50,7 +58,10 @@ def lower_program(ir: IRComp, mode: str = "auto", parallel: bool = False, explai
 
     return jl.render()
 
-def _lower_entrypoint(jl: JL, ir: IRComp, mode: str, parallel: bool, explain: bool, unsafe: bool):
+
+def _lower_entrypoint(
+    jl: JL, ir: IRComp, mode: str, parallel: bool, explain: bool, unsafe: bool
+):
     """Lower the main entry point"""
     # Determine return type
     if ir.reduce:
@@ -73,7 +84,7 @@ def _lower_entrypoint(jl: JL, ir: IRComp, mode: str, parallel: bool, explain: bo
         op_kind=op_kind,
         elem_type=elem_type,
         parallel_requested=parallel,
-        explain=explain
+        explain=explain,
     )
 
     # Add explanation if provided
@@ -84,11 +95,14 @@ def _lower_entrypoint(jl: JL, ir: IRComp, mode: str, parallel: bool, explain: bo
     if explain:
         _add_diagnostics(jl, ir, selected_mode, parallel_flavor, unsafe)
 
-    result_sym = _lower_comprehension(jl, ir, mode=selected_mode, parallel_flavor=parallel_flavor, unsafe=unsafe)
+    result_sym = _lower_comprehension(
+        jl, ir, mode=selected_mode, parallel_flavor=parallel_flavor, unsafe=unsafe
+    )
     jl.w(f"return {result_sym}")
 
     jl.indent -= 1
     jl.w("end")
+
 
 def _add_diagnostics(jl: JL, ir: IRComp, mode: str, parallel_flavor: str, unsafe: bool):
     """Add fail-fast diagnostics with one-liner explanations"""
@@ -108,7 +122,10 @@ def _add_diagnostics(jl: JL, ir: IRComp, mode: str, parallel_flavor: str, unsafe
     if unsafe:
         jl.w("# NOTE: unsafe optimizations enabled (@inbounds/@simd)")
 
-def _lower_comprehension(jl: JL, ir: IRComp, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_comprehension(
+    jl: JL, ir: IRComp, mode: str, parallel_flavor: str, unsafe: bool
+) -> str:
     """Lower a comprehension to Julia code"""
     if len(ir.generators) == 1:
         gen = ir.generators[0]
@@ -117,7 +134,10 @@ def _lower_comprehension(jl: JL, ir: IRComp, mode: str, parallel_flavor: str, un
         # Handle nested comprehensions
         return _lower_nested_comprehension(jl, ir, mode, parallel_flavor, unsafe)
 
-def _lower_single_generator(jl: JL, ir: IRComp, gen: IRGenerator, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_single_generator(
+    jl: JL, ir: IRComp, gen: IRGenerator, mode: str, parallel_flavor: str, unsafe: bool
+) -> str:
     """Lower a single generator comprehension"""
     # Generate the source range
     source_sym = _lower_source(jl, gen.source)
@@ -128,28 +148,55 @@ def _lower_single_generator(jl: JL, ir: IRComp, gen: IRGenerator, mode: str, par
     else:
         # Handle different operations in loop mode
         if ir.reduce:
-            return _lower_reduction(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
+            return _lower_reduction(
+                jl, ir, gen, source_sym, mode, parallel_flavor, unsafe
+            )
         else:
-            return _lower_collection(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
+            return _lower_collection(
+                jl, ir, gen, source_sym, mode, parallel_flavor, unsafe
+            )
+
 
 def _should_use_broadcast(ir: IRComp, gen: IRGenerator) -> bool:
     """Determine if broadcast mode is appropriate for this IR"""
     # Use broadcast for simple element-wise operations
-    if ir.element and not any(char in ir.element for char in ['if', 'else', 'and', 'or']):
+    if ir.element and not any(
+        char in ir.element for char in ["if", "else", "and", "or"]
+    ):
         return True
     # Use broadcast for simple reductions without complex filters
     if ir.reduce and not gen.filters:
         return True
     return False
 
-def _lower_broadcast(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_broadcast(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower using broadcast/vectorized operations"""
     if ir.reduce:
-        return _lower_broadcast_reduction(jl, ir, gen, source_sym, parallel_flavor, unsafe)
+        return _lower_broadcast_reduction(
+            jl, ir, gen, source_sym, parallel_flavor, unsafe
+        )
     else:
-        return _lower_broadcast_collection(jl, ir, gen, source_sym, parallel_flavor, unsafe)
+        return _lower_broadcast_collection(
+            jl, ir, gen, source_sym, parallel_flavor, unsafe
+        )
 
-def _lower_broadcast_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_broadcast_reduction(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower reduction using broadcast operations"""
 
     if gen.filters:
@@ -176,7 +223,15 @@ def _lower_broadcast_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym:
         jl.w(f"{result_sym} = sum({mapped_expr})")
         return result_sym
 
-def _lower_broadcast_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_broadcast_collection(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower collection using broadcast operations"""
     if gen.filters:
         # Use logical indexing: xs[condition]
@@ -200,6 +255,7 @@ def _lower_broadcast_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym
         jl.w(f"{result_sym} = {mapped_expr}")
         return result_sym
 
+
 def _lower_source(jl: JL, source) -> str:
     """Lower source to Julia range"""
     if isinstance(source, IRRange):
@@ -212,7 +268,16 @@ def _lower_source(jl: JL, source) -> str:
         # Handle other source types
         return str(source)
 
-def _lower_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_reduction(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    mode: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower reduction operations"""
     reduce_op = ir.reduce
 
@@ -220,6 +285,7 @@ def _lower_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode
         return _lower_parallel_reduction(jl, ir, gen, source_sym, reduce_op, unsafe)
     else:
         return _lower_sequential_reduction(jl, ir, gen, source_sym, reduce_op, unsafe)
+
 
 # Associativity whitelist for safe parallelization
 ASSOCIATIVE_OPS = {
@@ -234,9 +300,11 @@ ASSOCIATIVE_OPS = {
     "^": ("Int",),  # bitwise XOR
 }
 
+
 def _is_associative_reduction(kind: str) -> bool:
     """Check if reduction operation is associative and safe to parallelize"""
     return kind in ASSOCIATIVE_OPS
+
 
 def _get_associativity_note(kind: str) -> str:
     """Get explanatory note for non-associative operations"""
@@ -245,7 +313,10 @@ def _get_associativity_note(kind: str) -> str:
     else:
         return f"# NOTE: sequential fallback — operation '{kind}' not in associativity whitelist"
 
-def _lower_parallel_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, reduce_op, unsafe: bool) -> str:
+
+def _lower_parallel_reduction(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, reduce_op, unsafe: bool
+) -> str:
     """Lower parallel reduction using thread-local partials"""
     parts_sym = gensym("parts")
     acc_sym = gensym("acc")
@@ -292,7 +363,10 @@ def _lower_parallel_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: 
 
     return acc_sym
 
-def _lower_sequential_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, reduce_op, unsafe: bool) -> str:
+
+def _lower_sequential_reduction(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, reduce_op, unsafe: bool
+) -> str:
     """Lower sequential reduction"""
     acc_sym = gensym("acc")
 
@@ -324,6 +398,7 @@ def _lower_sequential_reduction(jl: JL, ir: IRComp, gen: IRGenerator, source_sym
 
     return acc_sym
 
+
 def _get_reduction_identity(kind: str) -> str:
     """Get identity element for reduction operation"""
     if kind == "sum":
@@ -341,23 +416,48 @@ def _get_reduction_identity(kind: str) -> str:
     else:
         return "0"
 
-def _lower_collection(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_collection(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    mode: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower collection operations (list, set, dict, group_by)"""
     if ir.kind == "dict":
-        return _lower_dict_comprehension(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
+        return _lower_dict_comprehension(
+            jl, ir, gen, source_sym, mode, parallel_flavor, unsafe
+        )
     elif ir.kind == "group_by":
         return _lower_group_by(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
     else:
-        return _lower_list_comprehension(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
+        return _lower_list_comprehension(
+            jl, ir, gen, source_sym, mode, parallel_flavor, unsafe
+        )
 
-def _lower_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_dict_comprehension(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    mode: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower dictionary comprehension"""
     if parallel_flavor == "sharded":
         return _lower_parallel_dict_comprehension(jl, ir, gen, source_sym, unsafe)
     else:
         return _lower_sequential_dict_comprehension(jl, ir, gen, source_sym, unsafe)
 
-def _lower_parallel_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
+
+def _lower_parallel_dict_comprehension(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool
+) -> str:
     """Lower parallel dictionary comprehension using runtime helpers"""
     result_sym = gensym("result")
 
@@ -369,11 +469,16 @@ def _lower_parallel_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, sou
     key_func = f"i -> {key_expr.replace(gen.var, 'i')}"
     val_func = f"i -> {val_expr.replace(gen.var, 'i')}"
 
-    jl.w(f"{result_sym} = dict_comp_parallel({source_sym}, {key_func}, {val_func}; KT=Int, VT=Int, combine=(o,n)->n)")
+    jl.w(
+        f"{result_sym} = dict_comp_parallel({source_sym}, {key_func}, {val_func}; KT=Int, VT=Int, combine=(o,n)->n)"
+    )
 
     return result_sym
 
-def _lower_sequential_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
+
+def _lower_sequential_dict_comprehension(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool
+) -> str:
     """Lower sequential dictionary comprehension"""
     result_sym = gensym("dict")
     jl.w(f"{result_sym} = Dict{{Int, Int}}()")
@@ -395,14 +500,26 @@ def _lower_sequential_dict_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, s
 
     return result_sym
 
-def _lower_group_by(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel_flavor: str, unsafe: bool) -> str:
+
+def _lower_group_by(
+    jl: JL,
+    ir: IRComp,
+    gen: IRGenerator,
+    source_sym: str,
+    mode: str,
+    parallel_flavor: str,
+    unsafe: bool,
+) -> str:
     """Lower group-by operations"""
     if parallel_flavor == "sharded":
         return _lower_parallel_group_by(jl, ir, gen, source_sym, unsafe)
     else:
         return _lower_sequential_group_by(jl, ir, gen, source_sym, unsafe)
 
-def _lower_parallel_group_by(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
+
+def _lower_parallel_group_by(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool
+) -> str:
     """Lower parallel group-by using shard pattern"""
     result_sym = gensym("result")
     shards_sym = gensym("shards")
@@ -440,7 +557,10 @@ def _lower_parallel_group_by(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: s
 
     return result_sym
 
-def _lower_sequential_group_by(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool) -> str:
+
+def _lower_sequential_group_by(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, unsafe: bool
+) -> str:
     """Lower sequential group-by"""
     result_sym = gensym("result")
     jl.w(f"{result_sym} = Dict{{Int, Vector{{Int}}}}()")
@@ -464,7 +584,10 @@ def _lower_sequential_group_by(jl: JL, ir: IRComp, gen: IRGenerator, source_sym:
 
     return result_sym
 
-def _lower_list_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel: bool) -> str:
+
+def _lower_list_comprehension(
+    jl: JL, ir: IRComp, gen: IRGenerator, source_sym: str, mode: str, parallel: bool
+) -> str:
     """Lower list/set comprehension"""
     result_sym = gensym("result")
     jl.w(f"{result_sym} = Int[]")
@@ -494,12 +617,14 @@ def _lower_list_comprehension(jl: JL, ir: IRComp, gen: IRGenerator, source_sym: 
 
     return result_sym
 
+
 def _lower_nested_comprehension(jl: JL, ir: IRComp, mode: str, parallel: bool) -> str:
     """Lower nested comprehensions (simplified for now)"""
     result_sym = gensym("result")
     jl.w(f"{result_sym} = Int[]")
     jl.w("# Complex nested comprehension - simplified implementation")
     return result_sym
+
 
 def _lower_expression(expr: str, var: str) -> str:
     """Lower Python expression to Julia expression"""
@@ -514,6 +639,7 @@ def _lower_expression(expr: str, var: str) -> str:
     expr = expr.replace("not", "!")
 
     return expr
+
 
 def _apply_reduction(jl: JL, acc_sym: str, mapped: str, reduce_kind: str):
     """Apply reduction operation"""
@@ -533,6 +659,7 @@ def _apply_reduction(jl: JL, acc_sym: str, mapped: str, reduce_kind: str):
         jl.w(f"if !({mapped})")
         jl.w(f"    {acc_sym} = false")
         jl.w("end")
+
 
 def _apply_parallel_reduction(jl: JL, parts_sym: str, mapped: str, reduce_kind: str):
     """Apply reduction operation to thread-local partial"""

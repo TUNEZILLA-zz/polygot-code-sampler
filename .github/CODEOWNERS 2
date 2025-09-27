@@ -1,0 +1,55 @@
+# Code Live - CODEOWNERS
+# Define who can approve changes to different parts of the codebase
+
+# Global ownership
+*                   @TUNEZILLA-zz
+
+# Performance-critical scripts
+/scripts/           @TUNEZILLA-zz @perf-teammate
+/scripts/bench_*.py @TUNEZILLA-zz @perf-teammate
+/scripts/stress_*.py @TUNEZILLA-zz @perf-teammate
+/scripts/trend_*.py @TUNEZILLA-zz @perf-teammate
+
+# Frontend and UI
+/site/              @TUNEZILLA-zz @frontend-teammate
+/site/*.html        @TUNEZILLA-zz @frontend-teammate
+/site/*.css         @TUNEZILLA-zz @frontend-teammate
+/site/*.js          @TUNEZILLA-zz @frontend-teammate
+
+# Backend servers
+/server*.py         @TUNEZILLA-zz @backend-teammate
+/server_*.py        @TUNEZILLA-zz @backend-teammate
+
+# Monitoring and Ops
+/grafana/           @TUNEZILLA-zz @ops-teammate
+/alert_rules.yml    @TUNEZILLA-zz @ops-teammate
+/prometheus.yml     @TUNEZILLA-zz @ops-teammate
+/nginx.conf         @TUNEZILLA-zz @ops-teammate
+/Caddyfile          @TUNEZILLA-zz @ops-teammate
+
+# Core rendering engine
+/pcs/               @TUNEZILLA-zz @core-teammate
+/pcs/*.py           @TUNEZILLA-zz @core-teammate
+
+# Physics FX system
+/scripts/physics-fx-production.js @TUNEZILLA-zz @physics-teammate
+/scripts/metrics-adapter.js @TUNEZILLA-zz @physics-teammate
+/site/code-live-physics-fx-dropin.html @TUNEZILLA-zz @physics-teammate
+
+# Experiment branches (require extra review)
+/fx-*/              @TUNEZILLA-zz @experiment-reviewer
+/fx-synth-*/        @TUNEZILLA-zz @audio-teammate
+/fx-lolcat-*/       @TUNEZILLA-zz @visual-teammate
+/fx-audio-*/        @TUNEZILLA-zz @audio-teammate
+
+# Documentation
+*.md                @TUNEZILLA-zz @docs-teammate
+/docs/              @TUNEZILLA-zz @docs-teammate
+
+# CI/CD and workflows
+/.github/           @TUNEZILLA-zz @ops-teammate
+/.github/workflows/ @TUNEZILLA-zz @ops-teammate
+
+# Docker and deployment
+/Dockerfile         @TUNEZILLA-zz @ops-teammate
+/docker-compose*.yml @TUNEZILLA-zz @ops-teammate

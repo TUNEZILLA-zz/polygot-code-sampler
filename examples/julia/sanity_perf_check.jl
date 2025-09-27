@@ -36,4 +36,3 @@ println("Parallel:")
 
 println("\nThread count: ", Threads.nthreads())
 println("Use JULIA_NUM_THREADS to control thread count")
-

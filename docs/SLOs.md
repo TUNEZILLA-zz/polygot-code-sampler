@@ -16,7 +16,7 @@
 
 ### **Dashboard Availability**
 - **Target**: > 99.9% uptime (GitHub Pages)
-- **Measurement**: External monitoring of https://tunezilla-zz.github.io/polygot-code-sampler/
+- **Measurement**: External monitoring of https://tunezilla-zz.github.io/polyglot-code-sampler/
 - **Recovery**: Re-run publish-dashboard workflow
 - **Backup**: Weekly mirror to `pages-backup` branch
 
@@ -40,7 +40,7 @@
   with:
     toolchain: 1.75.0
 
-# Go  
+# Go
 - uses: actions/setup-go@v5
   with:
     go-version: '1.22'
@@ -86,7 +86,7 @@
 ### **Per-Backend Thresholds**
 ```
 +12%:julia    # Higher variance, JIT compilation
-+8%:rust      # Stable, predictable performance  
++8%:rust      # Stable, predictable performance
 +15%:go       # GC variance, runtime differences
 +10%:ts       # Default threshold
 +10%:csharp   # Default threshold

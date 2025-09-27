@@ -20,56 +20,64 @@ Examples:
   pcs --code "[x*x for x in range(5)]" --target ts --parallel
   pcs --code "{x: x*x for x in range(3)}" --target csharp
   pcs --code "sum(i for i in range(100))" --target sql --execute-sql
-        """
+        """,
     )
 
     parser.add_argument(
-        "--code",
-        required=True,
-        help="Python comprehension to transform"
+        "--code", required=True, help="Python comprehension to transform"
     )
 
     parser.add_argument(
         "--target",
         choices=["rust", "ts", "go", "csharp", "sql", "julia"],
         default="rust",
-        help="Target language (default: rust)"
+        help="Target language (default: rust)",
     )
 
     parser.add_argument(
         "--parallel",
         action="store_true",
-        help="Enable parallel processing (Rayon/Rust, Web Workers/TS, Goroutines/Go, PLINQ/C#, Threads/Julia)"
+        help="Enable parallel processing (Rayon/Rust, Web Workers/TS, Goroutines/Go, PLINQ/C#, Threads/Julia)",
     )
-    parser.add_argument("--mode", choices=["auto", "loops", "broadcast"], default="auto",
-                       help="Julia mode: auto (heuristic), loops (explicit), or broadcast (vectorized)")
-    parser.add_argument("--threads", type=int, help="Number of threads (pass-through to JULIA_NUM_THREADS)")
-    parser.add_argument("--unsafe", action="store_true", help="Enable @inbounds/@simd optimizations")
-    parser.add_argument("--no-explain", action="store_true", help="Disable explanatory comments in generated code")
+    parser.add_argument(
+        "--mode",
+        choices=["auto", "loops", "broadcast"],
+        default="auto",
+        help="Julia mode: auto (heuristic), loops (explicit), or broadcast (vectorized)",
+    )
+    parser.add_argument(
+        "--threads",
+        type=int,
+        help="Number of threads (pass-through to JULIA_NUM_THREADS)",
+    )
+    parser.add_argument(
+        "--unsafe", action="store_true", help="Enable @inbounds/@simd optimizations"
+    )
+    parser.add_argument(
+        "--no-explain",
+        action="store_true",
+        help="Disable explanatory comments in generated code",
+    )
 
     parser.add_argument(
         "--sql-dialect",
         choices=["sqlite", "postgresql"],
         default="sqlite",
-        help="SQL dialect (default: sqlite)"
+        help="SQL dialect (default: sqlite)",
     )
 
     parser.add_argument(
         "--execute-sql",
         action="store_true",
-        help="Execute generated SQL and display results"
+        help="Execute generated SQL and display results",
     )
 
     parser.add_argument(
-        "--int-type",
-        default="i32",
-        help="Integer type for Rust (default: i32)"
+        "--int-type", default="i32", help="Integer type for Rust (default: i32)"
     )
 
     parser.add_argument(
-        "--strict-types",
-        action="store_true",
-        help="Enable strict type checking"
+        "--strict-types", action="store_true", help="Enable strict type checking"
     )
 
     args = parser.parse_args()
@@ -90,7 +98,7 @@ Examples:
             dialect=getattr(args, "sql_dialect", None),
             int_type=getattr(args, "int_type", None),
         )
-        
+
         if args.target == "sql" and args.execute_sql:
             execute_sql_and_display(output)
             return
@@ -101,16 +109,18 @@ Examples:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
+
 def execute_sql_and_display(sql: str):
     """Execute SQL and display results"""
     import subprocess
+
     try:
         result = subprocess.run(
             ["sqlite3", ":memory:"],
             input=sql,
             text=True,
             capture_output=True,
-            timeout=10
+            timeout=10,
         )
 
         if result.returncode == 0:
@@ -125,6 +135,7 @@ def execute_sql_and_display(sql: str):
         print("sqlite3 not found. Install SQLite to use --execute-sql")
     except Exception as e:
         print(f"Error executing SQL: {e}")
+
 
 if __name__ == "__main__":
     main()

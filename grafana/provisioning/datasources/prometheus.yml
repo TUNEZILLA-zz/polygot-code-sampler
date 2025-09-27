@@ -1,0 +1,14 @@
+# prometheus.yml - Grafana datasource provisioning for Code Live
+apiVersion: 1
+
+datasources:
+  - name: 'Code Live Prometheus'
+    type: 'prometheus'
+    access: 'proxy'
+    url: 'http://prometheus:9090'
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: 'POST'
+      queryTimeout: '60s'
+      timeInterval: '5s'

@@ -1,0 +1,13 @@
+# dashboards.yml - Grafana dashboard provisioning for Code Live
+apiVersion: 1
+
+providers:
+  - name: 'code-live-dashboards'
+    orgId: 1
+    folder: 'Code Live'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

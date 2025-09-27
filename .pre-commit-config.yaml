@@ -1,20 +1,39 @@
+# Code Live - Pre-commit Configuration
+# Essential pre-commit hooks for push-proof workflow
+
 repos:
+  # Basic hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=95000"]   # warn before GitHub's 100MB hard limit
+      - id: check-case-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+
+  # GitHub Workflows
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.28.4
+    hooks:
+      - id: check-github-workflows
+
+  # Python formatting
   - repo: https://github.com/psf/black
-    rev: 25.9.0
+    rev: 24.1.1
     hooks:
       - id: black
         language_version: python3
-        args: [--line-length=88]
-  
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.1
+
+  # Python linting
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.1.8
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-  
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
-    hooks:
-      - id: mypy
-        args: [--ignore-missing-imports]

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Lolcat FX Rack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .lolcat-fx-rack {
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .main-workspace {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fx-rack {
+            width: 400px;
+            background: linear-gradient(180deg, #ff6b6b, #ff8e8e, #ffa8a8);
+            border-left: 3px solid #ff4757;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .fx-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #ff4757;
+        }
+
+        .fx-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .fx-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .fx-label {
+            font-size: 14px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .fx-slider {
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .fx-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .fx-toggle {
+            width: 50px;
+            height: 25px;
+            background: #ff4757;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .fx-toggle.active {
+            background: #2ed573;
+        }
+
+        .fx-toggle::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .fx-toggle.active::after {
+            transform: translateX(25px);
+        }
+
+        .text-output {
+            background: #1a1a2e;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+
+        .rainbow-text {
+            background: linear-gradient(90deg,
+                #ff0000, #ff8000, #ffff00, #80ff00,
+                #00ff00, #00ff80, #00ffff, #0080ff,
+                #0000ff, #8000ff, #ff00ff, #ff0080
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowShift 2s linear infinite;
+        }
+
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .glitch-text {
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .neon-text {
+            text-shadow:
+                0 0 5px #ff6b6b,
+                0 0 10px #ff6b6b,
+                0 0 15px #ff6b6b,
+                0 0 20px #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .stutter-text {
+            letter-spacing: 0.5em;
+        }
+
+        .waveform-text {
+            display: inline-block;
+            transform: translateY(0);
+            animation: waveform 2s ease-in-out infinite;
+        }
+
+        @keyframes waveform {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .preset-button {
+            background: linear-gradient(45deg, #ff6b6b, #ffa8a8);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .preset-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .preset-button.active {
+            background: linear-gradient(45deg, #2ed573, #7bed9f);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ff4757;
+            border-radius: 10px;
+            background: #1a1a2e;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #ffa8a8;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+        }
+
+        .fx-preset {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ff4757;
+        }
+
+        .preset-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .preset-description {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .preset-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .control-label {
+            font-size: 10px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .control-slider {
+            width: 60px;
+            height: 15px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="lolcat-fx-rack">
+        <div class="main-workspace">
+            <h1>🎛️ Code Live - Lolcat FX Rack</h1>
+            <p>The Visual Glitch FX Layer for Code/Text Output</p>
+
+            <input type="text" class="input-field" id="textInput" placeholder="Enter text to transform..." value="hello">
+
+            <div class="text-output" id="textOutput">
+                <div class="rainbow-text">Heeellooooo!!! 🌈💥✨</div>
+                <div class="neon-text">Welcome to Lolcat FX Rack!</div>
+                <div class="glitch-text">Visual Glitch FX Layer</div>
+            </div>
+        </div>
+
+        <div class="fx-rack">
+            <h2>🎛️ Lolcat FX Rack</h2>
+
+            <!-- Core FX Section -->
+            <div class="fx-section">
+                <div class="fx-title">🔊 Core FX</div>
+                <div class="fx-control">
+                    <span class="fx-label">Stretch</span>
+                    <input type="range" class="fx-slider" id="stretch" min="0" max="100" value="30">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Echo</span>
+                    <input type="range" class="fx-slider" id="echo" min="0" max="100" value="20">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Pitch Shift</span>
+                    <input type="range" class="fx-slider" id="pitchShift" min="0" max="100" value="40">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Reverb</span>
+                    <input type="range" class="fx-slider" id="reverb" min="0" max="100" value="25">
+                </div>
+            </div>
+
+            <!-- Color FX Section -->
+            <div class="fx-section">
+                <div class="fx-title">🌈 Color FX</div>
+                <div class="fx-control">
+                    <span class="fx-label">Rainbow Gradient</span>
+                    <input type="range" class="fx-slider" id="rainbow" min="0" max="100" value="60">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Glitch Colors</span>
+                    <input type="range" class="fx-slider" id="glitchColors" min="0" max="100" value="30">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Neon FX</span>
+                    <input type="range" class="fx-slider" id="neon" min="0" max="100" value="40">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Invert FX</span>
+                    <input type="range" class="fx-slider" id="invert" min="0" max="100" value="20">
+                </div>
+            </div>
+
+            <!-- Spacing FX Section -->
+            <div class="fx-section">
+                <div class="fx-title">🎨 Spacing FX</div>
+                <div class="fx-control">
+                    <span class="fx-label">Stutter</span>
+                    <input type="range" class="fx-slider" id="stutter" min="0" max="100" value="25">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Waveform</span>
+                    <input type="range" class="fx-slider" id="waveform" min="0" max="100" value="35">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Cluster</span>
+                    <input type="range" class="fx-slider" id="cluster" min="0" max="100" value="20">
+                </div>
+            </div>
+
+            <!-- Chaos FX Section -->
+            <div class="fx-section">
+                <div class="fx-title">🌀 Chaos FX</div>
+                <div class="fx-control">
+                    <span class="fx-label">Random Insert</span>
+                    <input type="range" class="fx-slider" id="randomInsert" min="0" max="100" value="30">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">Scramble</span>
+                    <input type="range" class="fx-slider" id="scramble" min="0" max="100" value="15">
+                </div>
+                <div class="fx-control">
+                    <span class="fx-label">ASCII Melt</span>
+                    <input type="range" class="fx-slider" id="asciiMelt" min="0" max="100" value="25">
+                </div>
+            </div>
+
+            <!-- Presets Section -->
+            <div class="fx-section">
+                <div class="fx-title">🎮 Presets</div>
+                <div class="preset-controls">
+                    <button class="preset-button" id="partyMode">🎉 Party Mode</button>
+                    <button class="preset-button" id="glitchCat">👾 Glitch Cat</button>
+                    <button class="preset-button" id="waveRider">🌊 Wave Rider</button>
+                    <button class="preset-button" id="classicLolcat">😹 Classic Lolcat</button>
+                </div>
+            </div>
+
+            <!-- FX Presets -->
+            <div class="fx-preset">
+                <div class="preset-name">🎉 Party Mode</div>
+                <div class="preset-description">Rainbow + Echo + Stretch</div>
+                <div class="preset-controls">
+                    <div class="control-group">
+                        <div class="control-label">Stretch</div>
+                        <input type="range" class="control-slider" id="partyStretch" min="0" max="100" value="70">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Echo</div>
+                        <input type="range" class="control-slider" id="partyEcho" min="0" max="100" value="60">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Rainbow</div>
+                        <input type="range" class="control-slider" id="partyRainbow" min="0" max="100" value="80">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fx-preset">
+                <div class="preset-name">👾 Glitch Cat</div>
+                <div class="preset-description">Random Colors + Unicode Melt</div>
+                <div class="preset-controls">
+                    <div class="control-group">
+                        <div class="control-label">Glitch</div>
+                        <input type="range" class="control-slider" id="glitchGlitch" min="0" max="100" value="90">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Melt</div>
+                        <input type="range" class="control-slider" id="glitchMelt" min="0" max="100" value="70">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Chaos</div>
+                        <input type="range" class="control-slider" id="glitchChaos" min="0" max="100" value="85">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fx-preset">
+                <div class="preset-name">🌊 Wave Rider</div>
+                <div class="preset-description">Sine Wave Spacing + Fade</div>
+                <div class="preset-controls">
+                    <div class="control-group">
+                        <div class="control-label">Wave</div>
+                        <input type="range" class="control-slider" id="waveWave" min="0" max="100" value="80">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Fade</div>
+                        <input type="range" class="control-slider" id="waveFade" min="0" max="100" value="60">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Spacing</div>
+                        <input type="range" class="control-slider" id="waveSpacing" min="0" max="100" value="50">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fx-preset">
+                <div class="preset-name">😹 Classic Lolcat</div>
+                <div class="preset-description">Random Caps + Rainbow</div>
+                <div class="preset-controls">
+                    <div class="control-group">
+                        <div class="control-label">Caps</div>
+                        <input type="range" class="control-slider" id="classicCaps" min="0" max="100" value="70">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Rainbow</div>
+                        <input type="range" class="control-slider" id="classicRainbow" min="0" max="100" value="60">
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Stretch</div>
+                        <input type="range" class="control-slider" id="classicStretch" min="0" max="100" value="40">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lolcat FX Rack JavaScript
+        class LolcatFX {
+            constructor() {
+                this.initializeControls();
+                this.startFXLoop();
+            }
+
+            initializeControls() {
+                // Core FX
+                document.getElementById('stretch').addEventListener('input', (e) => {
+                    this.updateStretch(e.target.value);
+                });
+
+                document.getElementById('echo').addEventListener('input', (e) => {
+                    this.updateEcho(e.target.value);
+                });
+
+                document.getElementById('pitchShift').addEventListener('input', (e) => {
+                    this.updatePitchShift(e.target.value);
+                });
+
+                document.getElementById('reverb').addEventListener('input', (e) => {
+                    this.updateReverb(e.target.value);
+                });
+
+                // Color FX
+                document.getElementById('rainbow').addEventListener('input', (e) => {
+                    this.updateRainbow(e.target.value);
+                });
+
+                document.getElementById('glitchColors').addEventListener('input', (e) => {
+                    this.updateGlitchColors(e.target.value);
+                });
+
+                document.getElementById('neon').addEventListener('input', (e) => {
+                    this.updateNeon(e.target.value);
+                });
+
+                document.getElementById('invert').addEventListener('input', (e) => {
+                    this.updateInvert(e.target.value);
+                });
+
+                // Spacing FX
+                document.getElementById('stutter').addEventListener('input', (e) => {
+                    this.updateStutter(e.target.value);
+                });
+
+                document.getElementById('waveform').addEventListener('input', (e) => {
+                    this.updateWaveform(e.target.value);
+                });
+
+                document.getElementById('cluster').addEventListener('input', (e) => {
+                    this.updateCluster(e.target.value);
+                });
+
+                // Chaos FX
+                document.getElementById('randomInsert').addEventListener('input', (e) => {
+                    this.updateRandomInsert(e.target.value);
+                });
+
+                document.getElementById('scramble').addEventListener('input', (e) => {
+                    this.updateScramble(e.target.value);
+                });
+
+                document.getElementById('asciiMelt').addEventListener('input', (e) => {
+                    this.updateASCIIMelt(e.target.value);
+                });
+
+                // Presets
+                document.getElementById('partyMode').addEventListener('click', () => {
+                    this.applyPreset('party');
+                });
+
+                document.getElementById('glitchCat').addEventListener('click', () => {
+                    this.applyPreset('glitch');
+                });
+
+                document.getElementById('waveRider').addEventListener('click', () => {
+                    this.applyPreset('wave');
+                });
+
+                document.getElementById('classicLolcat').addEventListener('click', () => {
+                    this.applyPreset('classic');
+                });
+
+                // Text input
+                document.getElementById('textInput').addEventListener('input', (e) => {
+                    this.updateTextOutput();
+                });
+            }
+
+            updateStretch(value) {
+                this.stretch = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateEcho(value) {
+                this.echo = value / 100;
+                this.updateTextOutput();
+            }
+
+            updatePitchShift(value) {
+                this.pitchShift = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateReverb(value) {
+                this.reverb = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateRainbow(value) {
+                this.rainbow = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateGlitchColors(value) {
+                this.glitchColors = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateNeon(value) {
+                this.neon = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateInvert(value) {
+                this.invert = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateStutter(value) {
+                this.stutter = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateWaveform(value) {
+                this.waveform = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateCluster(value) {
+                this.cluster = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateRandomInsert(value) {
+                this.randomInsert = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateScramble(value) {
+                this.scramble = value / 100;
+                this.updateTextOutput();
+            }
+
+            updateASCIIMelt(value) {
+                this.asciiMelt = value / 100;
+                this.updateTextOutput();
+            }
+
+            applyPreset(preset) {
+                // Remove active class from all buttons
+                document.querySelectorAll('.preset-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add active class to clicked button
+                event.target.classList.add('active');
+
+                if (preset === 'party') {
+                    this.stretch = 0.7;
+                    this.echo = 0.6;
+                    this.rainbow = 0.8;
+                    this.updateSliders();
+                } else if (preset === 'glitch') {
+                    this.glitchColors = 0.9;
+                    this.asciiMelt = 0.7;
+                    this.randomInsert = 0.8;
+                    this.updateSliders();
+                } else if (preset === 'wave') {
+                    this.waveform = 0.8;
+                    this.reverb = 0.6;
+                    this.stutter = 0.5;
+                    this.updateSliders();
+                } else if (preset === 'classic') {
+                    this.pitchShift = 0.7;
+                    this.rainbow = 0.6;
+                    this.stretch = 0.4;
+                    this.updateSliders();
+                }
+
+                this.updateTextOutput();
+            }
+
+            updateSliders() {
+                document.getElementById('stretch').value = this.stretch * 100;
+                document.getElementById('echo').value = this.echo * 100;
+                document.getElementById('pitchShift').value = this.pitchShift * 100;
+                document.getElementById('reverb').value = this.reverb * 100;
+                document.getElementById('rainbow').value = this.rainbow * 100;
+                document.getElementById('glitchColors').value = this.glitchColors * 100;
+                document.getElementById('neon').value = this.neon * 100;
+                document.getElementById('invert').value = this.invert * 100;
+                document.getElementById('stutter').value = this.stutter * 100;
+                document.getElementById('waveform').value = this.waveform * 100;
+                document.getElementById('cluster').value = this.cluster * 100;
+                document.getElementById('randomInsert').value = this.randomInsert * 100;
+                document.getElementById('scramble').value = this.scramble * 100;
+                document.getElementById('asciiMelt').value = this.asciiMelt * 100;
+            }
+
+            updateTextOutput() {
+                const input = document.getElementById('textInput').value;
+                const output = document.getElementById('textOutput');
+
+                if (!input) {
+                    output.innerHTML = '<div class="rainbow-text">Enter text to transform...</div>';
+                    return;
+                }
+
+                let transformed = input;
+
+                // Apply stretch
+                if (this.stretch > 0) {
+                    transformed = this.applyStretch(transformed, this.stretch);
+                }
+
+                // Apply echo
+                if (this.echo > 0) {
+                    transformed = this.applyEcho(transformed, this.echo);
+                }
+
+                // Apply pitch shift
+                if (this.pitchShift > 0) {
+                    transformed = this.applyPitchShift(transformed, this.pitchShift);
+                }
+
+                // Apply reverb
+                if (this.reverb > 0) {
+                    transformed = this.applyReverb(transformed, this.reverb);
+                }
+
+                // Apply scramble
+                if (this.scramble > 0) {
+                    transformed = this.applyScramble(transformed, this.scramble);
+                }
+
+                // Apply random insert
+                if (this.randomInsert > 0) {
+                    transformed = this.applyRandomInsert(transformed, this.randomInsert);
+                }
+
+                // Apply ASCII melt
+                if (this.asciiMelt > 0) {
+                    transformed = this.applyASCIIMelt(transformed, this.asciiMelt);
+                }
+
+                // Create output with effects
+                let outputHTML = '';
+
+                if (this.rainbow > 0) {
+                    outputHTML += `<div class="rainbow-text">${transformed}</div>`;
+                }
+
+                if (this.neon > 0) {
+                    outputHTML += `<div class="neon-text">${transformed}</div>`;
+                }
+
+                if (this.glitchColors > 0) {
+                    outputHTML += `<div class="glitch-text">${transformed}</div>`;
+                }
+
+                if (this.stutter > 0) {
+                    outputHTML += `<div class="stutter-text">${transformed}</div>`;
+                }
+
+                if (this.waveform > 0) {
+                    outputHTML += `<div class="waveform-text">${transformed}</div>`;
+                }
+
+                if (outputHTML === '') {
+                    outputHTML = `<div>${transformed}</div>`;
+                }
+
+                output.innerHTML = outputHTML;
+            }
+
+            applyStretch(text, intensity) {
+                return text.split('').map(char => {
+                    if (char === ' ') return char;
+                    const stretchCount = Math.floor(intensity * 5) + 1;
+                    return char.repeat(stretchCount);
+                }).join('');
+            }
+
+            applyEcho(text, intensity) {
+                const echoCount = Math.floor(intensity * 3) + 1;
+                let result = text;
+                for (let i = 0; i < echoCount; i++) {
+                    result += ' !';
+                }
+                return result;
+            }
+
+            applyPitchShift(text, intensity) {
+                return text.split('').map((char, index) => {
+                    if (Math.random() < intensity) {
+                        return index % 2 === 0 ? char.toUpperCase() : char.toLowerCase();
+                    }
+                    return char;
+                }).join('');
+            }
+
+            applyReverb(text, intensity) {
+                const fadeCount = Math.floor(intensity * 3) + 1;
+                let result = text;
+                for (let i = 0; i < fadeCount; i++) {
+                    result += ' o';
+                }
+                return result;
+            }
+
+            applyScramble(text, intensity) {
+                if (Math.random() < intensity) {
+                    return text.split('').sort(() => Math.random() - 0.5).join('');
+                }
+                return text;
+            }
+
+            applyRandomInsert(text, intensity) {
+                const emojis = ['⚡️', '🔥', '💥', '✨', '🌈', '🎉', '👾', '🐍', '💚', '💙', '💜', '💖', '💛'];
+                return text.split('').map(char => {
+                    if (Math.random() < intensity && char !== ' ') {
+                        return char + emojis[Math.floor(Math.random() * emojis.length)];
+                    }
+                    return char;
+                }).join('');
+            }
+
+            applyASCIIMelt(text, intensity) {
+                if (Math.random() < intensity) {
+                    const glitchChars = ['̵', '̏', '͝', '͔', '̸', '͑', '̤', '͎', '̴', '̄', '̙', '̨'];
+                    return text.split('').map(char => {
+                        if (Math.random() < 0.3) {
+                            return char + glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                        }
+                        return char;
+                    }).join('');
+                }
+                return text;
+            }
+
+            startFXLoop() {
+                setInterval(() => {
+                    this.updateTextOutput();
+                }, 100);
+            }
+        }
+
+        // Initialize the Lolcat FX Rack
+        document.addEventListener('DOMContentLoaded', () => {
+            new LolcatFX();
+        });
+    </script>
+</body>
+</html>

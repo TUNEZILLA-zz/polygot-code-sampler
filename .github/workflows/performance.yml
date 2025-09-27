@@ -19,7 +19,7 @@ jobs:
   performance-benchmark:
     runs-on: ubuntu-latest
     continue-on-error: true  # Never fail the workflow
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -61,18 +61,18 @@ jobs:
       run: |
         echo "🚀 Running performance benchmarks..."
         python benchmark.py --quick --output benchmark_results.json
-        
+
         # Extract key metrics for trend tracking
         echo "📊 Extracting performance metrics..."
         python -c "
         import json
         with open('benchmark_results.json') as f:
             data = json.load(f)
-        
+
         parsing = data.get('parsing', {})
         rust_gen = data.get('rust_generation', {})
         ts_gen = data.get('typescript_generation', {})
-        
+
         print(f'parse_time_ms={parsing.get(\"avg_parse_time_ms\", 0):.3f}')
         print(f'infer_time_ms={parsing.get(\"avg_infer_time_ms\", 0):.3f}')
         print(f'rust_gen_time_ms={rust_gen.get(\"avg_generation_time_ms\", 0):.3f}')
@@ -102,46 +102,46 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          
+
           // Read benchmark results
           const results = JSON.parse(fs.readFileSync('benchmark_results.json', 'utf8'));
-          
+
           const parsing = results.parsing || {};
           const rustGen = results.rust_generation || {};
           const tsGen = results.typescript_generation || {};
-          
+
           const comment = `## 📊 Performance Benchmark Results
-          
+
           **Commit:** \`${context.sha.substring(0, 7)}\`
           **Timestamp:** ${new Date().toISOString()}
-          
+
           ### Key Metrics
           - **Python Parsing:** ${parsing.avg_parse_time_ms?.toFixed(3) || 'N/A'} ms
           - **Type Inference:** ${parsing.avg_infer_time_ms?.toFixed(3) || 'N/A'} ms
           - **Rust Generation:** ${rustGen.avg_generation_time_ms?.toFixed(3) || 'N/A'} ms (seq), ${rustGen.avg_parallel_generation_time_ms?.toFixed(3) || 'N/A'} ms (par)
           - **TypeScript Generation:** ${tsGen.avg_generation_time_ms?.toFixed(3) || 'N/A'} ms
-          
+
           ### Performance Insights
-          ${tsGen.avg_generation_time_ms && rustGen.avg_generation_time_ms ? 
-            `- TypeScript is ${(rustGen.avg_generation_time_ms / tsGen.avg_generation_time_ms).toFixed(1)}x faster than Rust generation` : 
+          ${tsGen.avg_generation_time_ms && rustGen.avg_generation_time_ms ?
+            `- TypeScript is ${(rustGen.avg_generation_time_ms / tsGen.avg_generation_time_ms).toFixed(1)}x faster than Rust generation` :
             '- Performance comparison not available'
           }
           ${rustGen.avg_parallel_generation_time_ms && rustGen.avg_generation_time_ms ?
             `- Parallel Rust is ${(rustGen.avg_generation_time_ms / rustGen.avg_parallel_generation_time_ms).toFixed(1)}x faster than sequential` :
             '- Parallel performance not available'
           }
-          
+
           <details>
           <summary>📋 Full Performance Report</summary>
-          
+
           \`\`\`
           ${fs.readFileSync('performance_report.md', 'utf8').substring(0, 2000)}...
           \`\`\`
           </details>
-          
+
           ---
           *Performance benchmarks are non-blocking and for informational purposes only.*`;
-          
+
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
@@ -153,17 +153,17 @@ jobs:
       if: github.event_name == 'schedule'
       run: |
         echo "📈 Analyzing performance trends..."
-        
+
         # Create a simple trend analysis
         python -c "
         import json
         import os
         from datetime import datetime
-        
+
         # Read current results
         with open('benchmark_results.json') as f:
             current = json.load(f)
-        
+
         # Create trend summary
         trend_data = {
             'timestamp': current.get('timestamp', ''),
@@ -176,11 +176,11 @@ jobs:
                 'ts_gen_time_ms': current.get('typescript_generation', {}).get('avg_generation_time_ms', 0)
             }
         }
-        
+
         # Save trend data
         with open('performance_trend.json', 'w') as f:
             json.dump(trend_data, f, indent=2)
-        
+
         print('✅ Performance trend data saved')
         "
 

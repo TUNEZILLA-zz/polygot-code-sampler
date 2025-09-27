@@ -7,12 +7,12 @@ from .cli import main
 from .core import IRComp, IRGenerator, IRRange, IRReduce, PyToIR, TypeInfo
 from .renderer_api import (
     render,
-    render_rust,
-    render_ts,
-    render_go,
     render_csharp,
+    render_go,
     render_julia,
+    render_rust,
     render_sql,
+    render_ts,
 )
 
 __all__ = [

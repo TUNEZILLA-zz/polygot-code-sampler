@@ -1,0 +1,133 @@
+# Code Live - Auto Labeler Configuration
+# Automatically label PRs based on changed files
+
+# Core library changes
+pcs:
+  - pcs/**/*
+  - pcs/renderers/**/*
+  - pcs/backends/**/*
+  - pcs/ir.py
+  - pcs/core.py
+  - pcs/cli.py
+
+# Server and API changes
+server:
+  - server*.py
+  - server/**/*
+  - server_*.py
+  - server_enhanced.py
+  - server_mastered.py
+  - server_optimized.py
+  - server_prod.py
+
+# Frontend and UI changes
+frontend:
+  - site/**/*
+  - mixer-core.ts
+  - *.html
+  - *.css
+  - *.js
+
+# Documentation changes
+docs:
+  - docs/**/*
+  - *.md
+  - README.md
+  - CONTRIBUTING.md
+  - TROUBLESHOOTING.md
+
+# Infrastructure changes
+infra:
+  - .github/**/*
+  - .github/workflows/**/*
+  - .github/CODEOWNERS
+  - .github/branch-protection.yml
+  - Dockerfile
+  - docker-compose*.yml
+  - nginx.conf
+  - Caddyfile
+  - prometheus.yml
+  - alert_rules.yml
+
+# Configuration changes
+config:
+  - .gitignore
+  - .gitattributes
+  - .pre-commit-config.yaml
+  - pyproject.toml
+  - requirements*.txt
+  - constraints.txt
+  - Makefile
+
+# Testing changes
+tests:
+  - tests/**/*
+  - test_*.py
+  - *_test.py
+
+# Performance and benchmarking
+perf:
+  - bench/**/*
+  - scripts/bench_*.py
+  - scripts/stress_*.py
+  - scripts/trend_*.py
+  - performance_*.py
+
+# Physics FX system
+physics-fx:
+  - scripts/physics-fx*.js
+  - scripts/metrics-adapter.js
+  - site/code-live-physics-fx*.html
+  - scripts/fx-physics.js
+
+# Visual effects
+visual-fx:
+  - scripts/math_visuals.js
+  - scripts/techno_creative_fx.js
+  - site/code-live-visual-effects.html
+  - site/code-live-math-visuals.html
+
+# Audio features
+audio:
+  - scripts/synth/**/*
+  - site/code-audio-simulator.html
+  - server_audio_simulator.py
+
+# AI/ML features
+ai-ml:
+  - scripts/ai_data_collector.py
+  - server_ai_plugins.py
+  - site/code-ai-plugins.html
+  - AI_PLUGINS_TRAINING_GUIDE.md
+
+# Lolcat features
+lolcat:
+  - scripts/lolcat_fx.py
+  - server_lolcat*.py
+  - site/code-lolcat-fx.html
+  - LOLCAT_FX_RACK_GUIDE.md
+
+# Experiment branches
+experiment:
+  - fx-*/**/*
+  - fx-synth-*/**/*
+  - fx-lolcat-*/**/*
+  - fx-audio-*/**/*
+  - fx-visuals-*/**/*
+  - fx-ai-*/**/*
+
+# Security changes
+security:
+  - .github/CODEOWNERS
+  - .github/branch-protection.yml
+  - .gitignore
+  - .gitattributes
+  - constraints.txt
+  - requirements*.txt
+
+# Release changes
+release:
+  - CHANGELOG.md
+  - pyproject.toml
+  - setup.py
+  - dist/**/*

@@ -5,7 +5,12 @@ Rust renderer for Polyglot Code Sampler
 from ..core import IRComp
 
 
-def render_rust(ir: IRComp, func_name: str = "program", parallel: bool = False, int_type: str = "i32") -> str:
+def render_rust(
+    ir: IRComp,
+    func_name: str = "program",
+    parallel: bool = False,
+    int_type: str = "i32",
+) -> str:
     """
     Rust backend with Rayon parallel support:
       list -> Vec<i32>
@@ -50,7 +55,7 @@ def render_rust(ir: IRComp, func_name: str = "program", parallel: bool = False, 
     lines.append(f"pub fn {func_name}() -> {return_type} {{")
 
     # Build the source range
-    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, 'start'):
+    if len(ir.generators) == 1 and hasattr(ir.generators[0].source, "start"):
         gen = ir.generators[0]
         start, stop, step = gen.source.start, gen.source.stop, gen.source.step
 

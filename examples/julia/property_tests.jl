@@ -88,7 +88,7 @@ end
             @test seq_sum_even_sq(n) == par_sum_even_sq(n)
         end
     end
-    
+
     @testset "Parallel equals sequential - dict comprehension" begin
         for n in [100, 1000, 10000]
             seq_result = seq_dict_comp(n)
@@ -96,22 +96,22 @@ end
             @test seq_result == par_result
         end
     end
-    
+
     @testset "Parallel equals sequential - max reduction" begin
         for n in [100, 1000, 10000]
             @test seq_max_even(n) == par_max_even(n)
         end
     end
-    
+
     @testset "Edge cases" begin
         # Empty range
         @test seq_sum_even_sq(0) == par_sum_even_sq(0)
         @test seq_dict_comp(0) == par_dict_comp(0)
-        
+
         # Single element
         @test seq_sum_even_sq(1) == par_sum_even_sq(1)
         @test seq_dict_comp(1) == par_dict_comp(1)
-        
+
         # All odd (no matches)
         @test seq_sum_even_sq(99) == par_sum_even_sq(99)
         @test seq_dict_comp(99) == par_dict_comp(99)
@@ -121,4 +121,3 @@ end
 println("✅ All property tests passed!")
 println("Thread count: ", Threads.nthreads())
 println("Use JULIA_NUM_THREADS to control thread count")
-

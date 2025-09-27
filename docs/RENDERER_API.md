@@ -97,4 +97,3 @@ ts_code = render("ts", ir, parallel=True)
 2. **Future-Proof**: New backend flags won't break your code
 3. **Consistent**: Same interface for all backends
 4. **Type Safe**: Compile-time type checking
-

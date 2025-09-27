@@ -10,12 +10,13 @@ import pathlib
 import statistics
 import sys
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "bench" / "results"
 
-def load_benchmark_data() -> List[Dict[str, Any]]:
+
+def load_benchmark_data() -> list[dict[str, Any]]:
     """Load all benchmark results from NDJSON files"""
     all_data = []
 
@@ -28,10 +29,10 @@ def load_benchmark_data() -> List[Dict[str, Any]]:
             with open(p) as f:
                 for line in f:
                     line = line.strip()
-                    if line and not line.startswith('#'):
+                    if line and not line.startswith("#"):
                         try:
                             data = json.loads(line)
-                            if 'error' not in data:  # Skip error results
+                            if "error" not in data:  # Skip error results
                                 all_data.append(data)
                         except json.JSONDecodeError:
                             continue
@@ -40,12 +41,18 @@ def load_benchmark_data() -> List[Dict[str, Any]]:
 
     return all_data
 
-def get_rolling_median(data: List[Dict[str, Any]], days: int = 7) -> Dict[str, float]:
+
+def get_rolling_median(data: list[dict[str, Any]], days: int = 7) -> dict[str, float]:
     """Calculate rolling median performance for each backend/test/mode combination"""
     # Group by backend/test/mode
     groups = {}
     for row in data:
-        key = (row.get('backend'), row.get('test'), row.get('mode'), row.get('parallel'))
+        key = (
+            row.get("backend"),
+            row.get("test"),
+            row.get("mode"),
+            row.get("parallel"),
+        )
         if key not in groups:
             groups[key] = []
         groups[key].append(row)
@@ -59,11 +66,13 @@ def get_rolling_median(data: List[Dict[str, Any]], days: int = 7) -> Dict[str, f
         recent_rows = []
         for row in rows:
             try:
-                timestamp = datetime.fromisoformat(row['timestamp'].replace('Z', '+00:00'))
+                timestamp = datetime.fromisoformat(
+                    row["timestamp"].replace("Z", "+00:00")
+                )
                 # Make cutoff_date timezone-aware for comparison
                 cutoff_aware = cutoff_date.replace(tzinfo=timestamp.tzinfo)
                 if timestamp >= cutoff_aware:
-                    recent_rows.append(row['mean_ns'])
+                    recent_rows.append(row["mean_ns"])
             except (ValueError, KeyError):
                 continue
 
@@ -72,41 +81,52 @@ def get_rolling_median(data: List[Dict[str, Any]], days: int = 7) -> Dict[str, f
 
     return rolling_medians
 
-def detect_regressions(data: List[Dict[str, Any]], threshold: float = 0.10) -> List[Dict[str, Any]]:
+
+def detect_regressions(
+    data: list[dict[str, Any]], threshold: float = 0.10
+) -> list[dict[str, Any]]:
     """Detect performance regressions > threshold"""
     rolling_medians = get_rolling_median(data)
     regressions = []
 
     # Get today's results
-    today = datetime.now().strftime('%Y-%m-%d')
-    today_results = [row for row in data if row.get('timestamp', '').startswith(today)]
+    today = datetime.now().strftime("%Y-%m-%d")
+    today_results = [row for row in data if row.get("timestamp", "").startswith(today)]
 
     for result in today_results:
-        key = (result.get('backend'), result.get('test'), result.get('mode'), result.get('parallel'))
+        key = (
+            result.get("backend"),
+            result.get("test"),
+            result.get("mode"),
+            result.get("parallel"),
+        )
 
         if key in rolling_medians:
-            current_perf = result['mean_ns']
+            current_perf = result["mean_ns"]
             median_perf = rolling_medians[key]
 
             # Calculate slowdown percentage
             slowdown = (current_perf - median_perf) / median_perf
 
             if slowdown > threshold:
-                regressions.append({
-                    'backend': result.get('backend'),
-                    'test': result.get('test'),
-                    'mode': result.get('mode'),
-                    'parallel': result.get('parallel'),
-                    'current_ns': current_perf,
-                    'median_ns': median_perf,
-                    'slowdown_pct': slowdown * 100,
-                    'commit': result.get('commit'),
-                    'timestamp': result.get('timestamp')
-                })
+                regressions.append(
+                    {
+                        "backend": result.get("backend"),
+                        "test": result.get("test"),
+                        "mode": result.get("mode"),
+                        "parallel": result.get("parallel"),
+                        "current_ns": current_perf,
+                        "median_ns": median_perf,
+                        "slowdown_pct": slowdown * 100,
+                        "commit": result.get("commit"),
+                        "timestamp": result.get("timestamp"),
+                    }
+                )
 
     return regressions
 
-def format_regression_comment(regressions: List[Dict[str, Any]]) -> str:
+
+def format_regression_comment(regressions: list[dict[str, Any]]) -> str:
     """Format regression alert as GitHub comment"""
     if not regressions:
         return "✅ **Performance Check**: No significant regressions detected!"
@@ -116,7 +136,7 @@ def format_regression_comment(regressions: List[Dict[str, Any]]) -> str:
 
     for reg in regressions:
         comment += f"### {reg['backend']} - {reg['test']} ({reg['mode']}"
-        if reg['parallel']:
+        if reg["parallel"]:
             comment += ", parallel"
         comment += ")\n"
         comment += f"- **Current**: {reg['current_ns']:,} ns\n"
@@ -128,18 +148,19 @@ def format_regression_comment(regressions: List[Dict[str, Any]]) -> str:
     comment += "- Check recent changes that might affect performance\n"
     comment += "- Consider reverting if regression is significant\n"
     comment += "- Run local benchmarks to verify\n"
-    comment += "- [View full dashboard](https://tunezilla-zz.github.io/polygot-code-sampler/)\n"
+    comment += "- [View full dashboard](https://tunezilla-zz.github.io/polyglot-code-sampler/)\n"
 
     return comment
 
+
 def post_github_comment(comment: str, pr_number: Optional[int] = None) -> bool:
     """Post comment to GitHub PR (if in CI environment)"""
-    if not pr_number and 'GITHUB_EVENT_PATH' in os.environ:
+    if not pr_number and "GITHUB_EVENT_PATH" in os.environ:
         # Try to extract PR number from GitHub event
         try:
-            with open(os.environ['GITHUB_EVENT_PATH']) as f:
+            with open(os.environ["GITHUB_EVENT_PATH"]) as f:
                 event_data = json.load(f)
-                pr_number = event_data.get('pull_request', {}).get('number')
+                pr_number = event_data.get("pull_request", {}).get("number")
         except Exception:
             pass
 
@@ -155,6 +176,7 @@ def post_github_comment(comment: str, pr_number: Optional[int] = None) -> bool:
     print("=" * 50)
 
     return True
+
 
 def main():
     """Main trend alerts function"""
@@ -175,7 +197,9 @@ def main():
     if regressions:
         print(f"🚨 Found {len(regressions)} performance regression(s)")
         for reg in regressions:
-            print(f"   {reg['backend']} {reg['test']} ({reg['mode']}): {reg['slowdown_pct']:.1f}% slower")
+            print(
+                f"   {reg['backend']} {reg['test']} ({reg['mode']}): {reg['slowdown_pct']:.1f}% slower"
+            )
     else:
         print("✅ No significant regressions detected")
 
@@ -183,7 +207,7 @@ def main():
     comment = format_regression_comment(regressions)
 
     # Try to post to GitHub PR
-    pr_number = os.environ.get('PR_NUMBER')
+    pr_number = os.environ.get("PR_NUMBER")
     if pr_number:
         try:
             pr_number = int(pr_number)
@@ -199,6 +223,7 @@ def main():
     else:
         print("\n✅ Performance check passed!")
         return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

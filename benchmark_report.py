@@ -9,7 +9,7 @@ including performance comparisons and trend analysis.
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 def format_time_ms(time_ms: float) -> str:
@@ -30,7 +30,7 @@ def format_memory_mb(memory_mb: float) -> str:
         return f"{memory_mb:.2f} MB"
 
 
-def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
+def generate_performance_table(data: list[dict[str, Any]], title: str) -> str:
     """Generate a markdown table for performance data"""
     if not data:
         return f"### {title}\n\nNo data available.\n\n"
@@ -41,7 +41,7 @@ def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
         all_keys.update(item.keys())
 
     # Filter out non-displayable keys
-    display_keys = [k for k in all_keys if k not in ['success', 'error', 'output']]
+    display_keys = [k for k in all_keys if k not in ["success", "error", "output"]]
 
     if not display_keys:
         return f"### {title}\n\nNo displayable data.\n\n"
@@ -91,8 +91,8 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-    if 'system_info' in results:
-        sys_info = results['system_info']
+    if "system_info" in results:
+        sys_info = results["system_info"]
         report += f"""- **CPU Cores:** {sys_info.get('cpu_count', 'Unknown')}
 - **Memory:** {sys_info.get('memory_gb', 0):.1f} GB
 - **Platform:** {sys_info.get('platform', 'Unknown')}
@@ -100,8 +100,8 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 """
 
     # Parsing Performance
-    if 'parsing' in results:
-        parsing = results['parsing']
+    if "parsing" in results:
+        parsing = results["parsing"]
         report += f"""## 🔍 Python Parsing & IR Generation
 
 **Average Performance:**
@@ -111,15 +111,14 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-        if 'parse_times' in parsing:
+        if "parse_times" in parsing:
             report += generate_performance_table(
-                parsing['parse_times'],
-                "Parse Times by Case"
+                parsing["parse_times"], "Parse Times by Case"
             )
 
     # Code Generation Performance
-    if 'rust_generation' in results:
-        rust_gen = results['rust_generation']
+    if "rust_generation" in results:
+        rust_gen = results["rust_generation"]
         report += f"""## ⚡ Rust Code Generation
 
 **Average Performance:**
@@ -128,14 +127,13 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-        if 'generation_times' in rust_gen:
+        if "generation_times" in rust_gen:
             report += generate_performance_table(
-                rust_gen['generation_times'],
-                "Rust Generation Times"
+                rust_gen["generation_times"], "Rust Generation Times"
             )
 
-    if 'typescript_generation' in results:
-        ts_gen = results['typescript_generation']
+    if "typescript_generation" in results:
+        ts_gen = results["typescript_generation"]
         report += f"""## 📘 TypeScript Code Generation
 
 **Average Performance:**
@@ -143,16 +141,15 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-        if 'generation_times' in ts_gen:
+        if "generation_times" in ts_gen:
             report += generate_performance_table(
-                ts_gen['generation_times'],
-                "TypeScript Generation Times"
+                ts_gen["generation_times"], "TypeScript Generation Times"
             )
 
     # Execution Performance
-    if 'rust_execution' in results:
-        rust_exec = results['rust_execution']
-        if 'avg_compilation_time_ms' in rust_exec:
+    if "rust_execution" in results:
+        rust_exec = results["rust_execution"]
+        if "avg_compilation_time_ms" in rust_exec:
             report += f"""## 🦀 Rust Execution Performance
 
 **Average Performance:**
@@ -161,15 +158,14 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-            if 'compilation_times' in rust_exec:
+            if "compilation_times" in rust_exec:
                 report += generate_performance_table(
-                    rust_exec['compilation_times'],
-                    "Rust Compilation Times"
+                    rust_exec["compilation_times"], "Rust Compilation Times"
                 )
 
-    if 'typescript_execution' in results:
-        ts_exec = results['typescript_execution']
-        if 'avg_execution_time_ms' in ts_exec:
+    if "typescript_execution" in results:
+        ts_exec = results["typescript_execution"]
+        if "avg_execution_time_ms" in ts_exec:
             report += f"""## 🚀 TypeScript Execution Performance
 
 **Average Performance:**
@@ -178,25 +174,23 @@ def generate_benchmark_report(results_file: str, output_file: str = None) -> str
 
 """
 
-            if 'execution_times' in ts_exec:
+            if "execution_times" in ts_exec:
                 report += generate_performance_table(
-                    ts_exec['execution_times'],
-                    "TypeScript Execution Times"
+                    ts_exec["execution_times"], "TypeScript Execution Times"
                 )
 
     # Scalability Analysis
-    if 'scalability' in results:
-        scalability = results['scalability']
+    if "scalability" in results:
+        scalability = results["scalability"]
         report += """## 📈 Scalability Analysis
 
 Performance across different data sizes:
 
 """
 
-        if 'cases' in scalability:
+        if "cases" in scalability:
             report += generate_performance_table(
-                scalability['cases'],
-                "Scalability by Range Size"
+                scalability["cases"], "Scalability by Range Size"
             )
 
     # Performance Insights
@@ -209,39 +203,53 @@ Performance across different data sizes:
     # Add insights based on the data
     insights = []
 
-    if 'rust_generation' in results and 'typescript_generation' in results:
-        rust_avg = results['rust_generation'].get('avg_generation_time_ms', 0)
-        ts_avg = results['typescript_generation'].get('avg_generation_time_ms', 0)
+    if "rust_generation" in results and "typescript_generation" in results:
+        rust_avg = results["rust_generation"].get("avg_generation_time_ms", 0)
+        ts_avg = results["typescript_generation"].get("avg_generation_time_ms", 0)
         if rust_avg > 0 and ts_avg > 0:
             ratio = rust_avg / ts_avg
             if ratio > 1.1:
-                insights.append(f"TypeScript generation is {ratio:.1f}x faster than Rust generation")
+                insights.append(
+                    f"TypeScript generation is {ratio:.1f}x faster than Rust generation"
+                )
             elif ratio < 0.9:
-                insights.append(f"Rust generation is {1/ratio:.1f}x faster than TypeScript generation")
+                insights.append(
+                    f"Rust generation is {1/ratio:.1f}x faster than TypeScript generation"
+                )
             else:
-                insights.append("Rust and TypeScript generation have similar performance")
+                insights.append(
+                    "Rust and TypeScript generation have similar performance"
+                )
 
-    if 'parsing' in results:
-        parse_avg = results['parsing'].get('avg_parse_time_ms', 0)
-        infer_avg = results['parsing'].get('avg_infer_time_ms', 0)
+    if "parsing" in results:
+        parse_avg = results["parsing"].get("avg_parse_time_ms", 0)
+        infer_avg = results["parsing"].get("avg_infer_time_ms", 0)
         if parse_avg > 0 and infer_avg > 0:
             if infer_avg > parse_avg * 0.5:
-                insights.append("Type inference takes significant time - consider caching for repeated operations")
+                insights.append(
+                    "Type inference takes significant time - consider caching for repeated operations"
+                )
             else:
                 insights.append("Type inference is fast and efficient")
 
-    if 'scalability' in results and 'cases' in results['scalability']:
-        cases = results['scalability']['cases']
+    if "scalability" in results and "cases" in results["scalability"]:
+        cases = results["scalability"]["cases"]
         if len(cases) >= 2:
-            small_parse = cases[0].get('parse_time_ms', 0)
-            large_parse = cases[-1].get('parse_time_ms', 0)
+            small_parse = cases[0].get("parse_time_ms", 0)
+            large_parse = cases[-1].get("parse_time_ms", 0)
             if small_parse > 0 and large_parse > 0:
                 scale_factor = large_parse / small_parse
-                data_scale = int(cases[-1].get('range_size', '0').split(',')[1]) / int(cases[0].get('range_size', '0').split(',')[1])
+                data_scale = int(cases[-1].get("range_size", "0").split(",")[1]) / int(
+                    cases[0].get("range_size", "0").split(",")[1]
+                )
                 if scale_factor < data_scale * 0.5:
-                    insights.append("Parsing scales sub-linearly - excellent performance characteristics")
+                    insights.append(
+                        "Parsing scales sub-linearly - excellent performance characteristics"
+                    )
                 elif scale_factor > data_scale * 2:
-                    insights.append("Parsing scales super-linearly - consider optimization for large inputs")
+                    insights.append(
+                        "Parsing scales super-linearly - consider optimization for large inputs"
+                    )
                 else:
                     insights.append("Parsing scales linearly with input size")
 
@@ -268,9 +276,18 @@ Performance across different data sizes:
 
 def main():
     """Main report generator"""
-    parser = argparse.ArgumentParser(description="Generate benchmark performance reports")
-    parser.add_argument("--input", "-i", default="benchmark_results.json", help="Input benchmark results file")
-    parser.add_argument("--output", "-o", help="Output markdown file (default: benchmark_report.md)")
+    parser = argparse.ArgumentParser(
+        description="Generate benchmark performance reports"
+    )
+    parser.add_argument(
+        "--input",
+        "-i",
+        default="benchmark_results.json",
+        help="Input benchmark results file",
+    )
+    parser.add_argument(
+        "--output", "-o", help="Output markdown file (default: benchmark_report.md)"
+    )
     parser.add_argument("--print", action="store_true", help="Print report to stdout")
 
     args = parser.parse_args()
@@ -294,4 +311,3 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
-

@@ -1,0 +1,134 @@
+# docker-compose.prod.yml - Production configuration for Code Live
+version: '3.8'
+
+services:
+  code-live:
+    build: .
+    container_name: code-live-prod
+    ports:
+      - "8787:8787"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=https://your-domain.com,https://www.your-domain.com
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://codelive:password@postgres:5432/codelive
+    volumes:
+      - ./site:/app/site:ro
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./config:/app/config:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - code-live-network
+
+  # Caddy reverse proxy
+  caddy:
+    image: caddy:2-alpine
+    container_name: code-live-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/app/site:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - code-live
+    restart: unless-stopped
+    networks:
+      - code-live-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: code-live-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    networks:
+      - code-live-network
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: code-live-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=codelive
+      - POSTGRES_USER=codelive
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    networks:
+      - code-live-network
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: code-live-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - code-live-network
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: code-live-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+    networks:
+      - code-live-network
+
+volumes:
+  caddy_data:
+  caddy_config:
+  redis_data:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  code-live-network:
+    driver: bridge

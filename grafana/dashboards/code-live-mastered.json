@@ -1,0 +1,339 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Code Live - Mastered Performance Spectrum",
+    "tags": ["code-live", "performance", "spectrum", "daw"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Performance Spectrum - Backend Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "code_live_requests_total{status=\"success\"} / code_live_requests_total * 100",
+            "legendFormat": "{{target}} Success Rate",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 80},
+                {"color": "green", "value": 95}
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Request Rate - Like a DAW's Input Level",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(code_live_requests_total[1m])",
+            "legendFormat": "{{target}} - {{method}} {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 3,
+        "title": "Latency Distribution - Like a DAW's Frequency Response",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "rate(code_live_request_duration_seconds_bucket[1m])",
+            "legendFormat": "{{target}} - {{le}}",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Circuit Breaker Status - Like a DAW's Limiter",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "code_live_circuit_breaker_trips_total",
+            "legendFormat": "{{target}} Trips",
+            "refId": "A"
+          },
+          {
+            "expr": "code_live_circuit_breaker_resets_total",
+            "legendFormat": "{{target}} Resets",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Adaptive Rate Limits - Like a DAW's Auto-Gain",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "code_live_adaptive_rate_limits",
+            "legendFormat": "{{target}} - {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Fallback Rate - Like a DAW's Sidechain Compression",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(code_live_fallbacks_total[1m])",
+            "legendFormat": "{{target}} - {{reason}}",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Fallbacks/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 7,
+        "title": "Cache Performance - Like a DAW's Buffer",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(code_live_cache_hits_total[1m])",
+            "legendFormat": "{{target}} Hits",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(code_live_cache_misses_total[1m])",
+            "legendFormat": "{{target}} Misses",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Cache Operations/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 8,
+        "title": "Error Rate - Like a DAW's Distortion Meter",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(code_live_requests_total{status=\"server_error\"}[1m]) / rate(code_live_requests_total[1m]) * 100",
+            "legendFormat": "{{target}} Error Rate",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Error Rate %",
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 28}
+      },
+      {
+        "id": 9,
+        "title": "Queue Depth - Like a DAW's Buffer Underrun",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "code_live_queue_depth",
+            "legendFormat": "Queue Depth",
+            "refId": "A"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 28}
+      },
+      {
+        "id": 10,
+        "title": "Creative Activity - Like a DAW's Activity Meter",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(code_live_requests_total{endpoint=\"/render\"}[1m])",
+            "legendFormat": "Single Renders",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(code_live_requests_total{endpoint=\"/render/batch\"}[1m])",
+            "legendFormat": "Batch Renders",
+            "refId": "B"
+          },
+          {
+            "expr": "rate(code_live_requests_total{endpoint=\"/midi\"}[1m])",
+            "legendFormat": "MIDI Activity",
+            "refId": "C"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 34}
+      },
+      {
+        "id": 11,
+        "title": "Glitch Activations - Like a DAW's Effects Rack",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(code_live_glitches_total[1m])",
+            "legendFormat": "Glitches/sec",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 40}
+      },
+      {
+        "id": 12,
+        "title": "Performance Regression Detection - Like a DAW's Spectrum Analyzer",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(code_live_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{target}} p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(code_live_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{target}} p50",
+            "refId": "B"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Latency (seconds)",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "target",
+          "type": "query",
+          "query": "label_values(code_live_requests_total, target)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        },
+        {
+          "name": "endpoint",
+          "type": "query",
+          "query": "label_values(code_live_requests_total, endpoint)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Circuit Breaker Trips",
+          "datasource": "Prometheus",
+          "expr": "code_live_circuit_breaker_trips_total > 0",
+          "iconColor": "red",
+          "titleFormat": "Circuit Breaker Trip",
+          "textFormat": "{{target}} circuit breaker tripped"
+        },
+        {
+          "name": "High Error Rate",
+          "datasource": "Prometheus",
+          "expr": "rate(code_live_requests_total{status=\"server_error\"}[5m]) / rate(code_live_requests_total[5m]) > 0.05",
+          "iconColor": "orange",
+          "titleFormat": "High Error Rate",
+          "textFormat": "Error rate > 5%"
+        },
+        {
+          "name": "Glitch Activation",
+          "datasource": "Prometheus",
+          "expr": "rate(code_live_glitches_total[1m]) > 0",
+          "iconColor": "purple",
+          "titleFormat": "Glitch Activated",
+          "textFormat": "Creative effects engaged"
+        }
+      ]
+    }
+  }
+}

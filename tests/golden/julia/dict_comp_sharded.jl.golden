@@ -2,10 +2,10 @@
 module PCS_Generated_e1e1
 
     const PCS_Generated = PCS_Generated_e1e1
-    
+
     include("pcs_runtime.jl")
     using .PCS_Runtime
-    
+
     function main()::Dict{Int, Int}
         # NOTE: parallelized with shard-merge pattern (thread-local writes)
         # NOTE: gensym reset at emit start for deterministic output
@@ -16,4 +16,3 @@ module PCS_Generated_e1e1
     end
 
 end # module
-
