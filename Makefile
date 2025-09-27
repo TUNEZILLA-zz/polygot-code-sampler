@@ -1103,6 +1103,41 @@ moonlight-sonata-seeded:
 	python3 moonlight_sonata_showflow.py --seed $(SEED)
 	@echo "🌙 Seeded Moonlight Sonata performance complete!"
 
+# Clair de Lune — 90s recital
+clair-de-lune:
+	@echo "🌙 Running full Clair de Lune (90s)..."
+	python3 scripts/clair_de_lune_showflow.py --mode show --duration 90
+	@echo "🌙 Clair de Lune performance complete!"
+
+clair-de-lune-seeded:
+	@echo "🌙 Running Clair de Lune with Seed..."
+	@echo "🌙 Seeded take for shot-for-shot repeatability..."
+	python3 scripts/clair_de_lune_showflow.py --mode show --duration 90 --seed $(or $(SEED),271828)
+	@echo "🌙 Seeded Clair de Lune performance complete!"
+
+clair-de-lune-jam:
+	@echo "🌙 Starting Clair de Lune Interactive Jam Mode..."
+	@echo "🌙 Interactive jam mode ready for live macros!"
+	python3 scripts/clair_de_lune_showflow.py --mode jam
+
+clair-de-lune-load-scene:
+	@echo "🌙 Loading Clair de Lune scene JSON into rig..."
+	@if command -v curl >/dev/null 2>&1; then \
+		curl -sS -X POST :8787/rig/scene/load -H "Content-Type: application/json" \
+		  --data-binary @shows/clair_de_lune.scene.json | jq .; \
+	else \
+		echo "🌙 Scene JSON ready for manual loading: shows/clair_de_lune.scene.json"; \
+	fi
+
+# Two-piece lunar set (≈3 min)
+moonlight+clair:
+	@echo "🌙🌙 Running 2-piece lunar set (Moonlight + Clair)..."
+	@echo "🌙 Movement 1: Moonlight Sonata (90s)"
+	$(MAKE) moonlight-sonata-seeded SEED=$(or $(SEED),314159)
+	@echo "🌙 Movement 2: Clair de Lune (90s)"
+	$(MAKE) clair-de-lune-seeded SEED=$(or $(SEED),271828)
+	@echo "🌙🌙 2-piece lunar set complete!"
+
 # All-in-one demo
 demo: clean creative-demo generate-snippets show-output
 	@echo "🎉 Complete demo ready!"

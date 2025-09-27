@@ -1,0 +1,45 @@
+{
+  "name": "Clair de Lune",
+  "scenes": {
+    "clair:M1_whisper": {
+      "routing": "serial",
+      "fx": [
+        {"name": "hologram", "mix": 0.65, "scanlines": 0.18, "jitter": 0.04},
+        {"name": "trails",   "mix": 0.55, "length": 0.40, "follow": 0.18},
+        {"name": "dust",     "mix": 0.30, "density": 0.16, "twinkle": 0.25}
+      ],
+      "macros": { "color":0.06, "space":0.35, "motion":0.15, "crunch":0.00 },
+      "sidechain": { "metrics": { "qps→rgb_offset": 0.25, "p95→fringe": 0.20 } },
+      "safety": { "reduced_motion": true, "strobe_cap_hz": 8 }
+    },
+    "clair:M2_ripples": {
+      "routing": "serial",
+      "fx": [
+        {"name":"neon_bloom","mix":0.50,"glow":0.45},
+        {"name":"reverb","mix":0.60,"decay":0.70},
+        {"name":"prism_fringe","mix":0.35,"slope":0.18}
+      ],
+      "macros": { "color":0.10, "space":0.55, "motion":0.28, "crunch":0.00 },
+      "sidechain": { "metrics": { "qps→bloom_glow": 0.35 } }
+    },
+    "clair:M3_dawn": {
+      "routing": "parallel",
+      "bands": {
+        "letters": [{"name":"glass_cathedral","mix":0.60,"shimmer":0.55}],
+        "spaces":  [{"name":"chromatic","mix":0.35,"offset":0.10}],
+        "digits":  [{"name":"trails","mix":0.55,"length":0.75}]
+      },
+      "macros": { "color":0.14, "space":0.75, "motion":0.22, "crunch":0.05 },
+      "sidechain": { "metrics": { "p95→trails_length": 0.25 } }
+    },
+    "clair:M3_resolve": {
+      "routing": "serial",
+      "fx": [
+        {"name":"glass_cathedral","mix":0.55,"shimmer":0.60},
+        {"name":"trails","mix":0.50,"length":0.65}
+      ],
+      "macros": { "color":0.12, "space":0.70, "motion":0.18, "crunch":0.00 }
+    }
+  },
+  "a11y": { "motion_reduced_max_fade_ms": 490, "mono_fallback": true }
+}
