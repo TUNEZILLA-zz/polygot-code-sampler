@@ -1,0 +1,93 @@
+Code Live v0.5 - Operator Pocket Card
+=====================================
+
+QUICK REFERENCE (FOH)
+
+Scene Control:
+  1-9: Jump to scene
+  0: Previous scene
+  Space: Pause/resume
+  G: Goto time +10s
+
+Intensity Control:
+  I: Intensity up (+5% with acceleration)
+  K: Intensity down (-5% with acceleration)
+
+Metrics Control:
+  M: Metrics link toggle
+  ,: Link strength decrease
+  .: Link strength increase
+
+Momentary Buttons:
+  B: Blackout
+  F: Flash
+  W: White bloom
+
+Undo/Redo:
+  U: Undo
+  R: Redo
+
+Special Functions:
+  F: Freeze/unfreeze
+  T: Tap tempo
+
+PRE-SHOW 5-MINUTE CHECK
+
+1. Load show and verify status
+2. Run show readiness check
+3. Run acceptance test
+4. Set intensity and metrics
+5. Verify thumbs render, rails respond, A11y on, spectrum panels green
+
+SAFETY CHECKLIST
+
+✅ Thumbs render
+✅ Rails respond
+✅ A11y on
+✅ Spectrum panels green
+
+EMERGENCY PROCEDURES
+
+Blackout:
+  Action: Press B (Blackout)
+  Effect: Kill motion/brightness instantly
+  Recovery: Press B again to resume
+
+Motion Watchdog Trip:
+  Indicator: Banner will appear
+  System Response: Auto-throttles trails & strobe
+  Operator Action: Keep intensity ≤0.7 for 20s
+
+Undo/Redo:
+  Misfired Tweak: Press U (Undo)
+  Redo: Press R (Redo)
+  History: 20-step undo/redo stack available
+
+SAFETY RAILS
+
+Strobe Cap:
+  Frequency: ≤8 Hz
+  On-time: ≥120 ms
+  Duty-cycle: ≤35% over 10s
+
+Frame Budget Governor:
+  Trigger: 30-frame p95 > 12 ms
+  Response: Auto-reduce trails, particle count, chroma offsets
+  Target: p95 ≤ 10 ms
+
+Param Slew Limiter:
+  Intensity: ≤0.6/s
+  Chroma Offset: ≤0.3/s
+  Purpose: Prevent visual "zip" artifacts
+
+Motion Compliance:
+  Trigger: System signal or user toggle
+  Response: Instant mono fallback
+  Recovery: 300ms crossfade back in
+
+ACCESSIBILITY BADGE
+
+♿ Respects prefers-reduced-motion • Mono mode available • Strobe-capped ≤8Hz
+
+Code Live v0.5 — Touring Rig + Operator Kit
+Ready for Stage! ✨

@@ -1,0 +1,32 @@
+{
+  "venue": "club",
+  "name": "Club Profile",
+  "description": "Intimate club setting with energetic visuals",
+  "safety_limits": {
+    "strobe_hz_max": 7.5,
+    "strobe_on_time_min_ms": 120.0,
+    "duty_cycle_max": 0.35,
+    "intensity_cap": 1.0,
+    "a11y_hard_mode": false,
+    "motion_fade_max_ms": 500.0
+  },
+  "visual_style": {
+    "chromatic_offset_max": 0.3,
+    "trail_length_max": 8,
+    "particle_count_max": 100,
+    "pulse_amplitude_max": 1.0,
+    "neon_intensity": 1.2
+  },
+  "operator_settings": {
+    "default_intensity": 0.85,
+    "metrics_link_strength": 0.8,
+    "auto_blackout_on_error": false,
+    "motion_watchdog_threshold": 0.7
+  },
+  "compliance": {
+    "strobe_safety": "moderate",
+    "a11y_compliance": "standard",
+    "motion_reduced": false,
+    "mono_fallback": false
+  }
+}

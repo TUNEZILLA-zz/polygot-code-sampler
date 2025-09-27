@@ -1,0 +1,31 @@
+{
+  "venue": "arena",
+  "name": "Arena Profile",
+  "description": "Large venue with strict safety requirements",
+  "safety_limits": {
+    "strobe_hz_max": 6.0,
+    "strobe_on_time_min_ms": 150.0,
+    "duty_cycle_max": 0.25,
+    "intensity_cap": 0.9,
+    "a11y_hard_mode": true,
+    "motion_fade_max_ms": 480.0
+  },
+  "visual_style": {
+    "chromatic_offset_max": 0.1,
+    "trail_length_max": 4,
+    "particle_count_max": 50,
+    "pulse_amplitude_max": 0.7
+  },
+  "operator_settings": {
+    "default_intensity": 0.75,
+    "metrics_link_strength": 0.6,
+    "auto_blackout_on_error": true,
+    "motion_watchdog_threshold": 0.5
+  },
+  "compliance": {
+    "strobe_safety": "strict",
+    "a11y_compliance": "hard",
+    "motion_reduced": true,
+    "mono_fallback": true
+  }
+}
