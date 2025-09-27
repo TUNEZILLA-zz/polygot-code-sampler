@@ -1,0 +1,42 @@
+{
+  "dense": {
+    "success": true,
+    "output_file": "out/loops/loop_dense.py",
+    "code": "\ud83c\udfa8 Applying dense texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: dense\n   Description: Nested loops, comprehensions, stacked transformations\n   Visual: cluster_clouds (#4b6cff)"
+  },
+  "sparse": {
+    "success": true,
+    "output_file": "out/loops/loop_sparse.py",
+    "code": "\ud83c\udfa8 Applying sparse texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: sparse\n   Description: Minimalistic, flat iteration with only essentials\n   Visual: isolated_points (#2dd4bf)"
+  },
+  "smooth": {
+    "success": true,
+    "output_file": "out/loops/loop_smooth.py",
+    "code": "\ud83c\udfa8 Applying smooth texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: smooth\n   Description: Vectorized ops, batch processing, continuous interpolation\n   Visual: flowing_arcs (#8b5cf6)"
+  },
+  "grainy": {
+    "success": true,
+    "output_file": "out/loops/loop_grainy.py",
+    "code": "\ud83c\udfa8 Applying grainy texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: grainy\n   Description: Stepwise, noisy iterations, explicit jitter\n   Visual: jittery_scatter (#f59e0b)"
+  },
+  "polyphonic": {
+    "success": true,
+    "output_file": "out/loops/loop_polyphonic.py",
+    "code": "\ud83c\udfa8 Applying polyphonic texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: polyphonic\n   Description: Multiple concurrent code paths, like musical voices\n   Visual: harmonic_waves (#ec4899)"
+  },
+  "minimal": {
+    "success": true,
+    "output_file": "out/loops/loop_minimal.py",
+    "code": "\ud83c\udfa8 Applying minimal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: minimal\n   Description: Very small, almost haiku-like loops\n   Visual: single_points (#6b7280)"
+  },
+  "maximal": {
+    "success": true,
+    "output_file": "out/loops/loop_maximal.py",
+    "code": "\ud83c\udfa8 Applying maximal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: maximal\n   Description: Overloaded with decorators, abstractions, parallelization\n   Visual: layered_clouds (#dc2626)"
+  },
+  "fractal": {
+    "success": true,
+    "output_file": "out/loops/loop_fractal.py",
+    "code": "\ud83c\udfa8 Applying fractal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    _fractal_depth = 3\n    fractal_process(i, _fractal_depth)\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: fractal\n   Description: Recursive texture, code 'folds in on itself'\n   Visual: recursive_patterns (#059669)"
+  }
+}

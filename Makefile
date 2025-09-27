@@ -1,229 +1,106 @@
-# Makefile for Polyglot Code Sampler - Julia Backend Dev Workflow
+# Code Live - Creative Demo Makefile
+# ===================================
 
-.PHONY: help test-julia test-fixtures test-differential benchmark-julia clean-julia dev-workflow
+.PHONY: help creative-demo texture-bakeoff texture-fx-matrix retro-modes 432-easter ab-analysis validation-report clean
 
 # Default target
 help:
-	@echo "🚀 Polyglot Code Sampler - Julia Backend Dev Workflow"
-	@echo "=================================================="
+	@echo "🎨 Code Live - Creative Demo System"
+	@echo "===================================="
 	@echo ""
 	@echo "Available targets:"
-	@echo "  test-julia      - Run all Julia backend tests"
-	@echo "  test-fixtures   - Test IR fixture → 4 goldens regression safety net"
-	@echo "  test-differential - Run differential tests (IR → Julia vs reference)"
-	@echo "  benchmark-julia - Run Julia performance benchmarks"
-	@echo "  dev-workflow    - Complete dev workflow (test + benchmark)"
-	@echo "  clean-julia     - Clean Julia test artifacts"
+	@echo "  creative-demo      Run all creative demos"
+	@echo "  texture-bakeoff    Run texture bake-off (8 textures)"
+	@echo "  texture-fx-matrix  Run texture×FX matrix"
+	@echo "  retro-modes        Run retro sampler modes"
+	@echo "  432-easter        Run 432 Hz easter preset"
+	@echo "  ab-analysis       Run A/B analysis"
+	@echo "  validation-report Generate validation report"
+	@echo "  clean             Clean output directory"
 	@echo ""
-	@echo "Benchmark targets:"
-	@echo "  bench           - Run all backend benchmarks (Julia, Rust, Go, TS, C#)"
-	@echo "  bench-agg       - Aggregate benchmark results for dashboard"
-	@echo "  bench-publish   - Publish benchmark dashboard to GitHub Pages"
-	@echo "  bench-full      - Run benchmarks and aggregate results"
-	@echo "  bench-status    - Show benchmark status and results"
-	@echo ""
-	@echo "Phase 2: Advanced benchmarking:"
-	@echo "  bench-multi     - Run comprehensive multi-test benchmark suite"
-	@echo "  trend-alerts    - Check for performance regressions with alerts"
-	@echo "  bench-phase2    - Complete Phase 2 benchmark suite"
-	@echo "  dashboard-preview - Preview enhanced dashboard locally"
-	@echo ""
-	@echo "Quick refresh:"
-	@echo "  bench-refresh   - One-liner: run benchmarks, aggregate, commit & push"
-	@echo ""
-	@echo "Performance canaries:"
-	@echo "  canary          - Run micro canary benchmark (fast regression detection)"
-	@echo "  canary-baseline - Set current performance as baseline"
-	@echo ""
+	@echo "Examples:"
+	@echo "  make creative-demo"
+	@echo "  make texture-bakeoff"
+	@echo "  make validation-report"
 
-# Test Julia backend
-test-julia:
-	@echo "🧪 Running Julia Backend Tests..."
-	python3 -m pytest tests/test_one_ir_many_goldens.py -v
-	@echo "✅ Julia backend tests completed"
+# Run all creative demos
+creative-demo:
+	@echo "🎨 Running all creative demos..."
+	python3 scripts/creative_demo.py --all
 
-# Test fixture golden files
-test-fixtures:
-	@echo "🧪 Testing IR Fixture → 4 Goldens Regression Safety Net..."
-	python3 scripts/test_fixture_goldens.py
-	@echo "✅ Fixture golden tests completed"
+# Individual demo targets
+texture-bakeoff:
+	@echo "🎨 Running texture bake-off..."
+	python3 scripts/creative_demo.py --texture-bakeoff
 
-# Run differential tests
-test-differential:
-	@echo "🧪 Running Differential Tests (IR → Julia vs Reference)..."
-	python3 scripts/test_differential.py
-	@echo "✅ Differential tests completed"
+texture-fx-matrix:
+	@echo "🎛️ Running texture×FX matrix..."
+	python3 scripts/creative_demo.py --texture-fx-matrix
 
-# Run Julia performance benchmarks
-benchmark-julia:
-	@echo "⚡ Running Julia Performance Benchmarks..."
-	@if command -v julia >/dev/null 2>&1; then \
-		echo "📊 Sequential vs Parallel Performance Comparison:"; \
-		julia --project -e 'include("examples/julia/sanity_perf_check.jl")'; \
-		echo "✅ Julia benchmarks completed"; \
-	else \
-		echo "⚠️  Julia not found - skipping benchmarks"; \
-		echo "   Install Julia to run performance benchmarks"; \
-	fi
+retro-modes:
+	@echo "🎛️ Running retro sampler modes..."
+	python3 scripts/creative_demo.py --retro-modes
 
-# Complete dev workflow
-dev-workflow: test-julia test-fixtures test-differential benchmark-julia
-	@echo ""
-	@echo "🎉 Complete Dev Workflow Completed!"
-	@echo "✅ All tests passed"
-	@echo "✅ Regression safety net intact"
-	@echo "✅ Performance benchmarks completed"
-	@echo ""
-	@echo "🚀 Julia backend is ready for production!"
+432-easter:
+	@echo "🎵 Running 432 Hz easter preset..."
+	python3 scripts/creative_demo.py --easter-432
 
-# Clean Julia test artifacts
-clean-julia:
-	@echo "🧹 Cleaning Julia test artifacts..."
-	@rm -f tests/generated_*.jl
-	@rm -f tests/diff_*.jl
-	@rm -f *.jl
-	@echo "✅ Julia artifacts cleaned"
+ab-analysis:
+	@echo "📊 Running A/B analysis..."
+	python3 scripts/creative_demo.py --ab-analysis
 
-# Quick test (for development)
-quick-test:
-	@echo "⚡ Quick Julia Backend Test..."
-	python3 -m pcs --code "sum(i*i for i in range(1, 10) if i%2==0)" --target julia --mode auto --parallel
-	@echo "✅ Quick test completed"
+validation-report:
+	@echo "📊 Generating validation report..."
+	python3 scripts/creative_demo.py --validation-report
 
-# Generate all golden files from fixture
-regenerate-goldens:
-	@echo "🔄 Regenerating Golden Files from Fixture..."
-	@echo "⚠️  This will overwrite existing golden files!"
-	@read -p "Continue? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-	python3 scripts/regenerate_goldens.py
-	@echo "✅ Golden files regenerated"
+# Clean output directory
+clean:
+	@echo "🧹 Cleaning output directory..."
+	rm -rf out/
+	@echo "✅ Cleaned output directory"
 
-# Show Julia backend status
-status:
-	@echo "📊 Julia Backend Status:"
-	@echo "========================"
-	@echo "Python version: $$(python3 --version)"
-	@echo "Julia version: $$(julia --version 2>/dev/null || echo 'Not installed')"
-	@echo "PCS version: $$(python3 -m pcs --version 2>/dev/null || echo 'Not available')"
-	@echo ""
-	@echo "Test files:"
-	@ls -la tests/fixtures/ 2>/dev/null || echo "  No fixtures found"
-	@ls -la tests/golden/julia/ 2>/dev/null || echo "  No golden files found"
-	@echo ""
-	@echo "Scripts:"
-	@ls -la scripts/test_*.py 2>/dev/null || echo "  No test scripts found"
+# Demo data generation
+demo-data: creative-demo
+	@echo "📊 Demo data generated in out/"
 
-# Benchmark targets
-bench:
-	@echo "🚀 Running all backend benchmarks..."
-	python3 scripts/bench_all.py
-
-bench-agg:
-	@echo "📊 Aggregating benchmark results..."
-	python3 scripts/aggregate_bench.py
-
-bench-publish:
-	@echo "📈 Publishing benchmark dashboard..."
-	@if command -v gh-pages >/dev/null 2>&1; then \
-		gh-pages -d site; \
-	else \
-		echo "⚠️  gh-pages not found. Install with: npm install -g gh-pages"; \
-		echo "   Or use GitHub Actions for automatic publishing"; \
-	fi
-
-bench-full: bench bench-agg
-	@echo "🎉 Full benchmark suite completed!"
-
-bench-status:
-	@echo "📊 Benchmark Status:"
-	@echo "==================="
-	@echo "Results directory:"
-	@ls -la bench/results/ 2>/dev/null || echo "  No results found"
-	@echo ""
-	@echo "Site directory:"
-	@ls -la site/ 2>/dev/null || echo "  No site files found"
-	@echo ""
-	@echo "Last benchmark:"
-	@ls -t bench/results/*.ndjson 2>/dev/null | head -1 | xargs ls -la 2>/dev/null || echo "  No benchmarks found"
-
-# Phase 2: Advanced benchmarking features
-bench-multi:
-	@echo "🚀 Running multi-test benchmark suite..."
-	python3 scripts/bench_multi_test.py
-
-trend-alerts:
-	@echo "🔍 Checking for performance regressions..."
-	python3 scripts/trend_alerts.py
-
-bench-phase2: bench-multi bench-agg trend-alerts
-	@echo "🎉 Phase 2 benchmark suite completed!"
-
-# Enhanced dashboard features
-dashboard-preview:
-	@echo "📈 Previewing enhanced dashboard..."
-	@if command -v python3 >/dev/null 2>&1; then \
-		cd site && python3 -m http.server 8080; \
-	else \
-		echo "⚠️  Python3 not found. Open site/index.html in your browser"; \
-	fi
-
-# One-liner refresh: run benchmarks, aggregate, commit & push
-bench-refresh:
-	@echo "🔄 Running complete benchmark refresh..."
-	@echo "1️⃣ Running benchmarks..."
-	$(MAKE) bench
-	@echo "2️⃣ Aggregating results..."
-	$(MAKE) bench-agg
-	@echo "3️⃣ Checking for regressions..."
-	python3 scripts/regression_check.py --input site/benchmarks.json
-	@echo "4️⃣ Committing and pushing..."
-	git add bench/results site/benchmarks.json
-ifdef DRY_RUN
-	@echo "🔍 DRY RUN: Would commit with message: bench: refresh $(shell date -u +%Y-%m-%d)"
-	@echo "🔍 DRY RUN: Would push to origin main"
-else
-	git commit -m "bench: refresh $(shell date -u +%Y-%m-%d)" || echo "No changes to commit"
-	git push origin main
-endif
-	@echo "✅ Benchmark refresh complete!"
-
-# Demo data generation (no toolchains required)
-DEMO_SEED ?= 1337
-DEMO_DAYS ?= 7
-DEMO_BACKENDS ?= julia,rust,go,ts,csharp
-
-demo-data:
-	@echo "🎭 Generating synthetic benchmark data..."
-	@echo "📊 Days: $(DEMO_DAYS), Backends: $(DEMO_BACKENDS), Seed: $(DEMO_SEED)"
-	python3 scripts/generate_demo_data.py --days $(DEMO_DAYS) --backends $(DEMO_BACKENDS) --out site/benchmarks.json --seed $(DEMO_SEED)
-	@echo "✅ Demo data generated! Use 'make demo-serve' to preview dashboard."
-
-# Generate fat demo with 30 days of data
-demo-fat:
-	@echo "🍔 Generating fat demo data (30 days)..."
-	$(MAKE) demo-data DEMO_DAYS=30
-	@echo "✅ Fat demo data generated!"
-
-# Serve demo dashboard locally
+# Demo server (placeholder)
 demo-serve:
-	@echo "🚀 Starting demo dashboard server..."
-	@echo "📊 Dashboard will be available at http://localhost:8080"
-	@echo "⏹️  Press Ctrl+C to stop"
-	python3 -m http.server --directory site 8080
+	@echo "🚀 Starting demo server..."
+	@echo "📁 Serving from out/ directory"
+	@echo "🌐 Open site/code-live-physics-fx-dropin.html for live demo"
 
-# Clean demo data
-demo-clean:
-	@echo "🧹 Cleaning demo data..."
-	rm -f site/benchmarks.json
-	rm -f bench/results/*.ndjson || true
-	@echo "✅ Demo data cleaned!"
+# Quick validation
+quick-test:
+	@echo "🧪 Running quick validation..."
+	python3 scripts/creative_demo.py --texture-bakeoff --easter-432
+	@echo "✅ Quick test complete"
 
-# Performance canaries
-canary:
-	@echo "🚀 Running micro canary benchmark..."
-	python3 scripts/canary_bench.py
+# Full validation suite
+full-test: creative-demo validation-report
+	@echo "🧪 Full validation suite complete"
+	@echo "📊 Check out/reports/validation.json for results"
 
-canary-baseline:
-	@echo "📊 Setting current performance as baseline..."
-	python3 scripts/canary_bench.py
-	@echo "✅ Baseline updated!"
+# Show output structure
+show-output:
+	@echo "📁 Output directory structure:"
+	@find out/ -type f -name "*.py" -o -name "*.json" | head -20
+	@echo "📊 Total files: $$(find out/ -type f | wc -l)"
+
+# Generate README snippets
+generate-snippets:
+	@echo "📝 Generating README snippets..."
+	@mkdir -p out/snippets
+	@echo "🎨 Texture Sampler Gallery" > out/snippets/README.md
+	@echo "=========================" >> out/snippets/README.md
+	@echo "" >> out/snippets/README.md
+	@echo "Generated texture samples:" >> out/snippets/README.md
+	@find out/loops/ -name "*.py" | while read file; do \
+		echo "- $$(basename $$file): $$(head -1 $$file)"; \
+	done >> out/snippets/README.md
+	@echo "✅ README snippets generated in out/snippets/"
+
+# All-in-one demo
+demo: clean creative-demo generate-snippets show-output
+	@echo "🎉 Complete demo ready!"
+	@echo "📁 Check out/ directory for all artifacts"
+	@echo "📊 Ready for release or tweet thread!"

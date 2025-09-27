@@ -1,0 +1,19 @@
+{
+  "sparse": {
+    "file": "out/loops/loop_sparse.py",
+    "lines": 18,
+    "tokens": 40,
+    "nesting_depth": 2
+  },
+  "dense": {
+    "file": "out/loops/loop_dense.py",
+    "lines": 18,
+    "tokens": 39,
+    "nesting_depth": 2
+  },
+  "deltas": {
+    "lines": 0,
+    "tokens": -1,
+    "nesting_depth": 0
+  }
+}
