@@ -102,7 +102,7 @@ extend-exclude = '''
 '''
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py311"
 line-length = 88
 select = [
     "E",  # pycodestyle errors
@@ -120,7 +120,13 @@ ignore = [
 ]
 
 [tool.ruff.per-file-ignores]
-"__init__.py" = ["F401"]
+"tests/**" = ["S101"]
+"scripts/**" = ["B007", "B023", "F841", "E722", "E402"]
+"server*.py" = ["B904", "F841", "E722"]
+"pcs_step3_ts*.py" = ["F811", "E402", "F821"]
+"server/routes.py" = ["F403", "F405", "F841", "B904"]
+"tests/test_mixer_core.py" = ["F403", "F405", "E712"]
+
 
 [tool.mypy]
 python_version = "3.8"
