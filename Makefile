@@ -151,6 +151,13 @@ help:
 	@echo "  timing-harness Run Timing Harness (FPS Sweep)"
 	@echo "  timing-harness-report Run Timing Harness with Report"
 	@echo "  timing-harness-custom Run Custom Timing Harness"
+	@echo "  go-live-1 Cut RC + Artifact Bundle"
+	@echo "  go-live-2 Lock Acceptance"
+	@echo "  go-live-3 Dress Rehearsal Script (15 min)"
+	@echo "  go-live-4 Safety Rails Trip Test (2 min)"
+	@echo "  go-live-5 Observability Pin (Grafana panels green)"
+	@echo "  go-live-6 Publish Show Kit"
+	@echo "  go-live-all Go-Live in 6 Moves (Complete Deployment)"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -977,6 +984,52 @@ timing-harness-custom:
 	@echo "🧪 Running Custom Timing Harness..."
 	python3 scripts/timing_harness.py --fps 58,59,60,61 --jitter-budget 8.0
 	@echo "🧪 Custom timing harness complete!"
+
+# Go-Live in 6 Moves targets
+go-live-1:
+	@echo "1️⃣ Cutting RC + Artifact Bundle..."
+	git tag -a v0.5.0-rc1 -m "touring rig + operator kit" && git push origin v0.5.0-rc1
+	make snapshot-kit
+	make foh-runbook
+	@echo "1️⃣ RC + Artifact Bundle complete!"
+
+go-live-2:
+	@echo "2️⃣ Locking Acceptance..."
+	make stage-proof-acceptance
+	@echo "2️⃣ Acceptance locked!"
+
+go-live-3:
+	@echo "3️⃣ Dress Rehearsal Script (15 min)..."
+	make show-readiness-check
+	make touring-rig-load && make touring-rig-play
+	@echo "3️⃣ Dress rehearsal complete!"
+
+go-live-4:
+	@echo "4️⃣ Safety Rails Trip Test (2 min)..."
+	./scripts/safety_rails_trip_test.sh
+	@echo "4️⃣ Safety rails trip test complete!"
+
+go-live-5:
+	@echo "5️⃣ Observability Pin (Grafana panels green)..."
+	./scripts/observability_pin.sh
+	@echo "5️⃣ Observability pin complete!"
+
+go-live-6:
+	@echo "6️⃣ Publish Show Kit..."
+	make rack-show-create-demo
+	./scripts/30_sec_capture.sh
+	@echo "6️⃣ Show kit published!"
+
+go-live-all:
+	@echo "🎭 GO-LIVE IN 6 MOVES - TOURING RIG DEPLOYMENT"
+	@echo "==============================================="
+	make go-live-1
+	make go-live-2
+	make go-live-3
+	make go-live-4
+	make go-live-5
+	make go-live-6
+	@echo "🎭 GO-LIVE COMPLETE - READY FOR STAGE!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

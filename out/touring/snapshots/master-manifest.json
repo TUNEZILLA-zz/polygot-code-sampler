@@ -1,0 +1,11 @@
+{
+  "generated": "2025-09-27 10:39:19",
+  "scenes": {
+    "tour_opener": {
+      "low": "out/touring/snapshots/tour_opener-low.html",
+      "mid": "out/touring/snapshots/tour_opener-mid.html",
+      "peak": "out/touring/snapshots/tour_opener-peak.html"
+    }
+  },
+  "total_scenes": 1
+}

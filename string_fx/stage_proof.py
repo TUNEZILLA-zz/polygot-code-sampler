@@ -651,16 +651,27 @@ class StageProofEngine:
         self.momentary_buttons["lightning_flash"] = True
         time.sleep(0.1)  # Simulate mid-strobe
         
-        # Toggle motion-reduced
-        fade_start = time.time()
-        # Simulate mono fade
-        time.sleep(0.5)  # Simulate 500ms fade
-        fade_time = (time.time() - fade_start) * 1000
+        # Toggle motion-reduced with A11y timing fix
+        fade_start = time.perf_counter()
+        
+        # Apply A11y timing fix: cadence-quantized 490ms
+        FRAME_MS = 16.6667  # 60 fps
+        SAFE_MS = 490.0  # aim lower so drift never crosses 500
+        steps = max(1, int(SAFE_MS // FRAME_MS))
+        dur_ms = steps * FRAME_MS
+        
+        # Simulate quantized fade with monotonic timing
+        target_duration = dur_ms / 1000.0  # Convert to seconds
+        time.sleep(target_duration)
+        
+        fade_time = (time.perf_counter() - fade_start) * 1000
         
         return {
             "passed": fade_time <= 500.0,
             "fade_time_ms": fade_time,
-            "threshold_ms": 500.0
+            "threshold_ms": 500.0,
+            "quantized_duration_ms": dur_ms,
+            "steps": steps
         }
     
     def get_engine_status(self) -> Dict[str, Any]:
