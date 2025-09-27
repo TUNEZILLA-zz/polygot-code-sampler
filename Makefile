@@ -69,6 +69,24 @@ help:
 	@echo "  chromatic-preset    Chromatic RGB Preset"
 	@echo "  prism-mode         Prism Mode (Refraction + Chromatic)"
 	@echo "  chromatic-html     Chromatic Aberration HTML Gallery"
+	@echo "  light-fx           Light-Based Text FX (glow/bloom)"
+	@echo "  light-flare        Lens Flare with rainbow gradient"
+	@echo "  light-strobe       Strobe Rave with chromatic aberration"
+	@echo "  light-caustics     Caustic Water with waveform distortion"
+	@echo "  light-volumetric   Volumetric Beams with blue shadows"
+	@echo "  light-lightning    Storm Lightning with strobe"
+	@echo "  light-hologram     Hologram Glow with glitch colors"
+	@echo "  light-laser        Laser Sweep with neon glow"
+	@echo "  light-preset       Neon Bloom Preset"
+	@echo "  lighting-desk      Lighting Desk (Glow + Flare + Strobe + Chromatic)"
+	@echo "  light-html         Light-Based Text FX HTML Gallery"
+	@echo "  chromatic-light-desk Chromatic Light Desk (Live metrics mapping)"
+	@echo "  chromatic-neon-bloom Enhanced Neon Bloom Preset"
+	@echo "  chromatic-prism-burst Prism Burst Preset"
+	@echo "  chromatic-hologram  Enhanced Hologram Preset"
+	@echo "  chromatic-storm     Enhanced Storm Lightning Preset"
+	@echo "  chromatic-cinemascope Cinemascope Preset"
+	@echo "  chromatic-enhanced-html Enhanced Chromatic HTML Gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -460,6 +478,98 @@ chromatic-html:
 	@echo "🌈 Creating Chromatic Aberration HTML Gallery..."
 	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain chromatic:type=rgb_offset,neon_fx,rainbow_gradient --mode html --output out/chromatic_fx.html --intensity 0.9 --seed 42
 	@echo "🌈 Chromatic Aberration HTML complete! Check out/chromatic_fx.html"
+
+# Light-Based Text FX targets
+light-fx:
+	@echo "🌟 Running Light-Based Text FX..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain light:type=glow,neon_fx --intensity 0.8 --seed 42
+	@echo "🌟 Light-Based Text FX complete!"
+
+light-flare:
+	@echo "🌟 Running Lens Flare..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain light:type=flare,rainbow_gradient --intensity 0.9 --seed 42
+	@echo "🌟 Lens Flare complete!"
+
+light-strobe:
+	@echo "🌟 Running Strobe Rave..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --chain light:type=strobe,chromatic:type=rgb_offset --intensity 0.8 --seed 42
+	@echo "🌟 Strobe Rave complete!"
+
+light-caustics:
+	@echo "🌟 Running Caustic Water..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain light:type=caustics,waveform --intensity 0.9 --seed 42
+	@echo "🌟 Caustic Water complete!"
+
+light-volumetric:
+	@echo "🌟 Running Volumetric Beams..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain light:type=volumetric,shadow --intensity 0.8 --seed 42
+	@echo "🌟 Volumetric Beams complete!"
+
+light-lightning:
+	@echo "🌟 Running Storm Lightning..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --chain light:type=lightning,strobe --intensity 0.9 --seed 42
+	@echo "🌟 Storm Lightning complete!"
+
+light-hologram:
+	@echo "🌟 Running Hologram Glow..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain light:type=hologram,glitch_colors --intensity 0.8 --seed 42
+	@echo "🌟 Hologram Glow complete!"
+
+light-laser:
+	@echo "🌟 Running Laser Sweep..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain light:type=laser_sweep,neon_fx --intensity 0.9 --seed 42
+	@echo "🌟 Laser Sweep complete!"
+
+light-preset:
+	@echo "🌟 Running Neon Bloom Preset..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset neon_bloom --intensity 0.9 --seed 42
+	@echo "🌟 Neon Bloom Preset complete!"
+
+lighting-desk:
+	@echo "🌟 Running Lighting Desk (Glow + Flare + Strobe + Chromatic)..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset lighting_desk --intensity 0.9 --seed 42
+	@echo "🌟 Lighting Desk complete!"
+
+light-html:
+	@echo "🌟 Creating Light-Based Text FX HTML Gallery..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain light:type=glow,neon_fx,rainbow_gradient --mode html --output out/light_fx.html --intensity 0.9 --seed 42
+	@echo "🌟 Light-Based Text FX HTML complete! Check out/light_fx.html"
+
+# Enhanced Chromatic Light Desk targets
+chromatic-light-desk:
+	@echo "🌟 Opening Chromatic Light Desk..."
+	@echo "🌟 Chromatic Light Desk ready! Open site/chromatic-light-desk.html in browser"
+	@echo "🌟 Features: Live metrics mapping, performance controls, presets, accessibility"
+
+chromatic-neon-bloom:
+	@echo "🌟 Running Enhanced Neon Bloom..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset neon_bloom_enhanced --intensity 0.9 --seed 42
+	@echo "🌟 Enhanced Neon Bloom complete!"
+
+chromatic-prism-burst:
+	@echo "🌟 Running Prism Burst..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset prism_burst --intensity 0.8 --seed 42
+	@echo "🌟 Prism Burst complete!"
+
+chromatic-hologram:
+	@echo "🌟 Running Enhanced Hologram..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset hologram_enhanced --intensity 0.9 --seed 42
+	@echo "🌟 Enhanced Hologram complete!"
+
+chromatic-storm:
+	@echo "🌟 Running Enhanced Storm Lightning..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset storm_lightning_enhanced --intensity 0.8 --seed 42
+	@echo "🌟 Enhanced Storm Lightning complete!"
+
+chromatic-cinemascope:
+	@echo "🌟 Running Cinemascope..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset cinemascope --intensity 0.7 --seed 42
+	@echo "🌟 Cinemascope complete!"
+
+chromatic-enhanced-html:
+	@echo "🌟 Creating Enhanced Chromatic HTML Gallery..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset neon_bloom_enhanced --mode html --output out/chromatic_enhanced.html --intensity 0.9 --seed 42
+	@echo "🌟 Enhanced Chromatic HTML complete! Check out/chromatic_enhanced.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

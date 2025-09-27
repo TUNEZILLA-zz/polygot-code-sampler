@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chromatic Light Desk - Code Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .light-desk {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-panel h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .slider-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .value-display {
+            color: #888;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #00ff00;
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preset-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            border-color: #fff;
+        }
+
+        .text-display {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chromatic {
+            position: relative;
+            color: var(--fg, #fff);
+            filter: blur(var(--fringe, 0));
+            transition: all 0.1s ease;
+        }
+
+        .chromatic::before,
+        .chromatic::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            transition: all 0.1s ease;
+        }
+
+        .chromatic::before {
+            color: rgb(255, 0, 0);
+            transform: translate(var(--rx, 0), 0);
+        }
+
+        .chromatic::after {
+            color: rgb(0, 255, 255);
+            transform: translate(calc(var(--rx, 0) * -1), 0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chromatic {
+                filter: blur(0);
+            }
+            .chromatic::before,
+            .chromatic::after {
+                transform: none;
+            }
+        }
+
+        .metrics-display {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .metrics-display h4 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .metric-label {
+            color: #ccc;
+        }
+
+        .metric-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 5px;
+            color: #00ff00;
+        }
+
+        .status.error {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.3);
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Chromatic Light Desk</h1>
+            <p>Live metrics-driven chromatic aberration control panel</p>
+        </div>
+
+        <div class="text-display">
+            <div id="chromatic-text" class="chromatic" data-text="Code Live">Code Live</div>
+        </div>
+
+        <div class="light-desk">
+            <div class="control-panel">
+                <h3>🎛️ Manual Controls</h3>
+                
+                <div class="control-group">
+                    <label for="rgb-offset">RGB Offset (px)</label>
+                    <div class="slider-container">
+                        <input type="range" id="rgb-offset" class="slider" min="0" max="20" value="2" step="0.1">
+                        <div class="value-display" id="rgb-offset-value">2.0px</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="fringe-blur">Fringe Blur (px)</label>
+                    <div class="slider-container">
+                        <input type="range" id="fringe-blur" class="slider" min="0" max="10" value="1" step="0.1">
+                        <div class="value-display" id="fringe-blur-value">1.0px</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="pulse-rate">Pulse Rate (BPM)</label>
+                    <div class="slider-container">
+                        <input type="range" id="pulse-rate" class="slider" min="0" max="200" value="60" step="1">
+                        <div class="value-display" id="pulse-rate-value">60 BPM</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="broken-intensity">Broken Spectrum</label>
+                    <div class="slider-container">
+                        <input type="range" id="broken-intensity" class="slider" min="0" max="1" value="0" step="0.01">
+                        <div class="value-display" id="broken-intensity-value">0.00</div>
+                    </div>
+                </div>
+
+                <div class="toggle">
+                    <input type="checkbox" id="metrics-link" checked>
+                    <label for="metrics-link">Link to Live Metrics</label>
+                </div>
+
+                <div class="toggle">
+                    <input type="checkbox" id="reduced-motion">
+                    <label for="reduced-motion">Respect Reduced Motion</label>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎨 Presets</h3>
+                
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-preset="neon-bloom">Neon Bloom</button>
+                    <button class="preset-btn" data-preset="prism-burst">Prism Burst</button>
+                    <button class="preset-btn" data-preset="hologram">Hologram</button>
+                    <button class="preset-btn" data-preset="storm-lightning">Storm Lightning</button>
+                    <button class="preset-btn" data-preset="cinemascope">Cinemascope</button>
+                    <button class="preset-btn" data-preset="off">Off</button>
+                </div>
+
+                <div class="metrics-display">
+                    <h4>📊 Live Metrics</h4>
+                    <div class="metric">
+                        <span class="metric-label">QPS:</span>
+                        <span class="metric-value" id="qps-value">0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">P95 Latency:</span>
+                        <span class="metric-value" id="p95-value">0ms</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Error Rate:</span>
+                        <span class="metric-value" id="error-value">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">BPM:</span>
+                        <span class="metric-value" id="bpm-value">60</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status">
+            🎛️ Light Desk Active - Ready for Performance
+        </div>
+    </div>
+
+    <script>
+        // Chromatic Light Desk Controller
+        class ChromaticLightDesk {
+            constructor() {
+                this.el = document.getElementById('chromatic-text');
+                this.el.dataset.text = this.el.textContent;
+                
+                this.controls = {
+                    rgbOffset: document.getElementById('rgb-offset'),
+                    fringeBlur: document.getElementById('fringe-blur'),
+                    pulseRate: document.getElementById('pulse-rate'),
+                    brokenIntensity: document.getElementById('broken-intensity'),
+                    metricsLink: document.getElementById('metrics-link'),
+                    reducedMotion: document.getElementById('reduced-motion')
+                };
+
+                this.metrics = {
+                    qps: 0,
+                    p95: 0,
+                    errorRate: 0,
+                    bpm: 60
+                };
+
+                this.presets = {
+                    'neon-bloom': { rgbOffset: 1, fringeBlur: 3, pulseRate: 30, brokenIntensity: 0 },
+                    'prism-burst': { rgbOffset: 8, fringeBlur: 2, pulseRate: 120, brokenIntensity: 0.8 },
+                    'hologram': { rgbOffset: 2, fringeBlur: 0, pulseRate: 60, brokenIntensity: 0.3 },
+                    'storm-lightning': { rgbOffset: 5, fringeBlur: 4, pulseRate: 180, brokenIntensity: 0.6 },
+                    'cinemascope': { rgbOffset: 1, fringeBlur: 1, pulseRate: 40, brokenIntensity: 0 },
+                    'off': { rgbOffset: 0, fringeBlur: 0, pulseRate: 0, brokenIntensity: 0 }
+                };
+
+                this.startTime = performance.now();
+                this.isRunning = true;
+                
+                this.init();
+            }
+
+            init() {
+                // Bind control events
+                Object.values(this.controls).forEach(control => {
+                    if (control.type === 'range') {
+                        control.addEventListener('input', () => this.updateDisplay());
+                    } else if (control.type === 'checkbox') {
+                        control.addEventListener('change', () => this.updateDisplay());
+                    }
+                });
+
+                // Bind preset buttons
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.applyPreset(e.target.dataset.preset));
+                });
+
+                // Start animation loop
+                this.tick();
+            }
+
+            ease(t) {
+                return 0.5 - 0.5 * Math.cos(Math.PI * t);
+            }
+
+            updateChromatic() {
+                const t = (performance.now() - this.startTime) / 1000;
+                
+                let rgbOffset = parseFloat(this.controls.rgbOffset.value);
+                let fringeBlur = parseFloat(this.controls.fringeBlur.value);
+                let pulseRate = parseFloat(this.controls.pulseRate.value);
+                let brokenIntensity = parseFloat(this.controls.brokenIntensity.value);
+
+                // Apply metrics mapping if enabled
+                if (this.controls.metricsLink.checked) {
+                    const qps = this.metrics.qps;
+                    const p95 = this.metrics.p95;
+                    const errorRate = this.metrics.errorRate;
+                    const bpm = this.metrics.bpm;
+
+                    // Map live metrics → FX
+                    const rx = Math.min(8, 0.06 * qps);
+                    const fringe = Math.min(3, Math.max(0, (p95 - 20) / 80));
+                    const pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * (bpm / 60) * t);
+                    const broken = errorRate > 0.05 ? this.ease((t * 2) % 1) : 0;
+
+                    // Combine & clamp
+                    rgbOffset = (rx * (0.6 + 0.4 * pulse)) + (broken * 2);
+                    fringeBlur = fringe * (0.7 + 0.3 * pulse);
+                }
+
+                // Apply pulse modulation
+                if (pulseRate > 0) {
+                    const pulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * (pulseRate / 60) * t);
+                    rgbOffset *= (0.6 + 0.4 * pulse);
+                    fringeBlur *= (0.7 + 0.3 * pulse);
+                }
+
+                // Apply broken spectrum
+                if (brokenIntensity > 0) {
+                    const broken = this.ease((t * 2) % 1) * brokenIntensity;
+                    rgbOffset += broken * 2;
+                }
+
+                // Clamp values
+                rgbOffset = Math.min(20, Math.max(0, rgbOffset));
+                fringeBlur = Math.min(10, Math.max(0, fringeBlur));
+
+                // Apply to element
+                this.el.style.setProperty('--rx', `${rgbOffset.toFixed(2)}px`);
+                this.el.style.setProperty('--fringe', `${fringeBlur.toFixed(2)}px`);
+
+                // Update display values
+                document.getElementById('rgb-offset-value').textContent = `${rgbOffset.toFixed(1)}px`;
+                document.getElementById('fringe-blur-value').textContent = `${fringeBlur.toFixed(1)}px`;
+            }
+
+            updateDisplay() {
+                document.getElementById('rgb-offset-value').textContent = `${this.controls.rgbOffset.value}px`;
+                document.getElementById('fringe-blur-value').textContent = `${this.controls.fringeBlur.value}px`;
+                document.getElementById('pulse-rate-value').textContent = `${this.controls.pulseRate.value} BPM`;
+                document.getElementById('broken-intensity-value').textContent = parseFloat(this.controls.brokenIntensity.value).toFixed(2);
+            }
+
+            applyPreset(presetName) {
+                const preset = this.presets[presetName];
+                if (!preset) return;
+
+                // Update controls
+                this.controls.rgbOffset.value = preset.rgbOffset;
+                this.controls.fringeBlur.value = preset.fringeBlur;
+                this.controls.pulseRate.value = preset.pulseRate;
+                this.controls.brokenIntensity.value = preset.brokenIntensity;
+
+                // Update active button
+                document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-preset="${presetName}"]`).classList.add('active');
+
+                this.updateDisplay();
+            }
+
+            simulateMetrics() {
+                // Simulate live metrics for demo
+                const t = (performance.now() - this.startTime) / 1000;
+                
+                this.metrics.qps = 50 + 30 * Math.sin(t * 0.5);
+                this.metrics.p95 = 20 + 60 * Math.sin(t * 0.3);
+                this.metrics.errorRate = Math.max(0, 0.02 + 0.03 * Math.sin(t * 0.7));
+                this.metrics.bpm = 60 + 40 * Math.sin(t * 0.2);
+
+                // Update metrics display
+                document.getElementById('qps-value').textContent = Math.round(this.metrics.qps);
+                document.getElementById('p95-value').textContent = `${Math.round(this.metrics.p95)}ms`;
+                document.getElementById('error-value').textContent = `${(this.metrics.errorRate * 100).toFixed(1)}%`;
+                document.getElementById('bpm-value').textContent = Math.round(this.metrics.bpm);
+            }
+
+            tick() {
+                if (!this.isRunning) return;
+
+                this.simulateMetrics();
+                this.updateChromatic();
+
+                requestAnimationFrame(() => this.tick());
+            }
+
+            stop() {
+                this.isRunning = false;
+            }
+        }
+
+        // Initialize the light desk
+        const lightDesk = new ChromaticLightDesk();
+
+        // Handle reduced motion preference
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.getElementById('reduced-motion').checked = true;
+        }
+
+        // Handle window focus/blur
+        window.addEventListener('focus', () => lightDesk.isRunning = true);
+        window.addEventListener('blur', () => lightDesk.isRunning = false);
+    </script>
+</body>
+</html>

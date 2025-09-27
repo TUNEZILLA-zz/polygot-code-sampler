@@ -931,6 +931,251 @@ def _chromatic_trails(text: str, intensity: float, params: Dict[str, Any]) -> st
     return result
 
 
+@fx("light")
+def light(text: str, params: Dict[str, Any]) -> str:
+    """Light-based text effects - treating text like it's made of light"""
+    intensity = params.get("intensity", 0.75)
+    light_type = params.get("type", "glow")  # glow, flare, diffraction, strobe, caustics, volumetric, shadow, lightning, hologram, laser_sweep
+    
+    if light_type == "glow":
+        return _light_glow(text, intensity, params)
+    elif light_type == "flare":
+        return _light_flare(text, intensity, params)
+    elif light_type == "diffraction":
+        return _light_diffraction(text, intensity, params)
+    elif light_type == "strobe":
+        return _light_strobe(text, intensity, params)
+    elif light_type == "caustics":
+        return _light_caustics(text, intensity, params)
+    elif light_type == "volumetric":
+        return _light_volumetric(text, intensity, params)
+    elif light_type == "shadow":
+        return _light_shadow(text, intensity, params)
+    elif light_type == "lightning":
+        return _light_lightning(text, intensity, params)
+    elif light_type == "hologram":
+        return _light_hologram(text, intensity, params)
+    elif light_type == "laser_sweep":
+        return _light_laser_sweep(text, intensity, params)
+    else:
+        return text
+
+
+def _light_glow(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Glow/bloom - text radiates soft aura that bleeds into surrounding space"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add glow effect
+        if params.get("mode") == "html":
+            glow_radius = int(intensity * 10)
+            glow_color = params.get("glow_color", "#ffffff")
+            result += f'<span style="text-shadow: 0 0 {glow_radius}px {glow_color}, 0 0 {glow_radius*2}px {glow_color}">{char}</span>'
+        else:
+            # Use combining characters for glow effect
+            glow_chars = ["✧", "✦", "✩", "✪", "✫"]
+            glow_char = glow_chars[i % len(glow_chars)]
+            result += f'{char}{glow_char}'
+    
+    return result
+
+
+def _light_flare(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Lens flare - adds streaks, circles, or light bursts at highlights"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add flare effect
+        if params.get("mode") == "html":
+            flare_color = params.get("flare_color", "#ffff00")
+            result += f'<span style="text-shadow: 0 0 5px {flare_color}, 0 0 10px {flare_color}">{char}</span>'
+        else:
+            # Use combining characters for flare effect
+            flare_chars = ["✦", "✧", "✩", "✪", "✫"]
+            flare_char = flare_chars[i % len(flare_chars)]
+            result += f'{char}{flare_char}'
+    
+    return result
+
+
+def _light_diffraction(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Diffraction/prism split - splitting text into full rainbow fragments"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add diffraction effect
+        if params.get("mode") == "html":
+            result += f'<span style="color: #ff0000">{char}</span>'
+        else:
+            # Use combining characters for diffraction effect
+            diff_chars = ["͢", "͜", "̴", "̷", "̶"]
+            diff_char = diff_chars[i % len(diff_chars)]
+            result += f'{char}{diff_char}'
+    
+    return result
+
+
+def _light_strobe(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Strobe/flicker - rapid on/off pulses like stage strobes"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add strobe effect
+        if params.get("mode") == "html":
+            strobe_speed = int(intensity * 5)
+            result += f'<span style="animation: strobe {strobe_speed}s infinite">{char}</span>'
+        else:
+            # Use combining characters for strobe effect
+            strobe_chars = ["⚡", "⚡", "⚡", "⚡", "⚡"]
+            strobe_char = strobe_chars[i % len(strobe_chars)]
+            result += f'{char}{strobe_char}'
+    
+    return result
+
+
+def _light_caustics(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Caustics - text distorted by shimmering water-like light patterns"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add caustics effect
+        if params.get("mode") == "html":
+            result += f'<span style="text-shadow: 0 0 3px #00ffff, 0 0 6px #00ffff">{char}</span>'
+        else:
+            # Use combining characters for caustics effect
+            caustic_chars = ["͟", "͠", "͝", "͞", "͟"]
+            caustic_char = caustic_chars[i % len(caustic_chars)]
+            result += f'{char}{caustic_char}'
+    
+    return result
+
+
+def _light_volumetric(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Volumetric beams - light shafts behind text"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add volumetric effect
+        if params.get("mode") == "html":
+            result += f'<span style="text-shadow: 0 0 8px #ffffff, 0 0 16px #ffffff">{char}</span>'
+        else:
+            # Use combining characters for volumetric effect
+            vol_chars = ["☼", "☀", "☼", "☀", "☼"]
+            vol_char = vol_chars[i % len(vol_chars)]
+            result += f'{char}{vol_char}'
+    
+    return result
+
+
+def _light_shadow(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Shadow casting - text throws exaggerated colored shadows"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add shadow effect
+        if params.get("mode") == "html":
+            shadow_color = params.get("shadow_color", "#0000ff")
+            result += f'<span style="text-shadow: 2px 2px 4px {shadow_color}, 4px 4px 8px {shadow_color}">{char}</span>'
+        else:
+            # Use combining characters for shadow effect
+            shadow_chars = ["͠", "͝", "͞", "͟", "͠"]
+            shadow_char = shadow_chars[i % len(shadow_chars)]
+            result += f'{char}{shadow_char}'
+    
+    return result
+
+
+def _light_lightning(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Lightning/sparks - electric arcs between letters"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add lightning effect
+        if params.get("mode") == "html":
+            result += f'<span style="color: #ffff00; text-shadow: 0 0 5px #ffff00">{char}</span>'
+        else:
+            # Use combining characters for lightning effect
+            lightning_chars = ["⚡", "⚡", "⚡", "⚡", "⚡"]
+            lightning_char = lightning_chars[i % len(lightning_chars)]
+            result += f'{char}{lightning_char}'
+    
+    return result
+
+
+def _light_hologram(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Hologram - text flickers, warps, and has interference lines"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add hologram effect
+        if params.get("mode") == "html":
+            result += f'<span style="color: #00ffff; text-shadow: 0 0 3px #00ffff">{char}</span>'
+        else:
+            # Use combining characters for hologram effect
+            holo_chars = ["░", "▒", "▓", "░", "▒"]
+            holo_char = holo_chars[i % len(holo_chars)]
+            result += f'{char}{holo_char}'
+    
+    return result
+
+
+def _light_laser_sweep(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Laser sweep - thin line sweeps across text, illuminating it briefly"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add laser sweep effect
+        if params.get("mode") == "html":
+            result += f'<span style="color: #ff0000; text-shadow: 0 0 3px #ff0000">{char}</span>'
+        else:
+            # Use combining characters for laser sweep effect
+            laser_chars = ["|", "|", "|", "|", "|"]
+            laser_char = laser_chars[i % len(laser_chars)]
+            result += f'{char}{laser_char}'
+    
+    return result
+
+
 def _tremolo_amplitude(text: str, intensity: float, rate: float, params: Dict[str, Any]) -> str:
     """Amplitude tremolo - volume-like pulses"""
     result = ""
@@ -1338,6 +1583,125 @@ def get_preset_pack() -> Dict[str, Dict[str, Any]]:
                 {"name": "neon_fx", "params": {"glow": 1.8}}
             ],
             "Prism mode: refraction + chromatic aberration"
+        ),
+        "neon_bloom": create_preset(
+            "Neon Bloom",
+            [
+                {"name": "light", "params": {"type": "glow"}},
+                {"name": "neon_fx", "params": {"glow": 1.5}}
+            ],
+            "Neon bloom with soft glow aura"
+        ),
+        "lens_flare": create_preset(
+            "Lens Flare",
+            [
+                {"name": "light", "params": {"type": "flare"}},
+                {"name": "rainbow_gradient", "params": {}}
+            ],
+            "Lens flare with rainbow gradient"
+        ),
+        "strobe_rave": create_preset(
+            "Strobe Rave",
+            [
+                {"name": "light", "params": {"type": "strobe"}},
+                {"name": "chromatic", "params": {"type": "rgb_offset"}}
+            ],
+            "Strobe rave with chromatic aberration"
+        ),
+        "caustic_water": create_preset(
+            "Caustic Water",
+            [
+                {"name": "light", "params": {"type": "caustics"}},
+                {"name": "waveform", "params": {"depth": 0.6}}
+            ],
+            "Caustic water with waveform distortion"
+        ),
+        "volumetric_beams": create_preset(
+            "Volumetric Beams",
+            [
+                {"name": "light", "params": {"type": "volumetric"}},
+                {"name": "shadow", "params": {"shadow_color": "#0000ff"}}
+            ],
+            "Volumetric beams with blue shadows"
+        ),
+        "storm_lightning": create_preset(
+            "Storm Lightning",
+            [
+                {"name": "light", "params": {"type": "lightning"}},
+                {"name": "strobe", "params": {"rate": 8.0}}
+            ],
+            "Storm lightning with strobe"
+        ),
+        "hologram_glow": create_preset(
+            "Hologram Glow",
+            [
+                {"name": "light", "params": {"type": "hologram"}},
+                {"name": "glitch_colors", "params": {"glitch_factor": 0.7}}
+            ],
+            "Hologram glow with glitch colors"
+        ),
+        "laser_sweep": create_preset(
+            "Laser Sweep",
+            [
+                {"name": "light", "params": {"type": "laser_sweep"}},
+                {"name": "neon_fx", "params": {"glow": 2.0}}
+            ],
+            "Laser sweep with neon glow"
+        ),
+        "lighting_desk": create_preset(
+            "Lighting Desk",
+            [
+                {"name": "light", "params": {"type": "glow"}},
+                {"name": "light", "params": {"type": "flare"}},
+                {"name": "light", "params": {"type": "strobe"}},
+                {"name": "chromatic", "params": {"type": "rgb_offset"}}
+            ],
+            "Lighting desk: glow + flare + strobe + chromatic"
+        ),
+        "neon_bloom_enhanced": create_preset(
+            "Neon Bloom Enhanced",
+            [
+                {"name": "chromatic", "params": {"type": "rgb_offset"}},
+                {"name": "light", "params": {"type": "glow"}},
+                {"name": "neon_fx", "params": {"glow": 2.0}}
+            ],
+            "Enhanced neon bloom with small RGB offset and big bloom"
+        ),
+        "prism_burst": create_preset(
+            "Prism Burst",
+            [
+                {"name": "chromatic", "params": {"type": "broken_spectrum"}},
+                {"name": "light", "params": {"type": "flare"}},
+                {"name": "strobe", "params": {"rate": 8.0}}
+            ],
+            "Prism burst with short broken-spectrum spikes"
+        ),
+        "hologram_enhanced": create_preset(
+            "Hologram Enhanced",
+            [
+                {"name": "chromatic", "params": {"type": "rgb_offset"}},
+                {"name": "light", "params": {"type": "hologram"}},
+                {"name": "glitch_colors", "params": {"glitch_factor": 0.5}}
+            ],
+            "Enhanced hologram with low offset and scanlines"
+        ),
+        "storm_lightning_enhanced": create_preset(
+            "Storm Lightning Enhanced",
+            [
+                {"name": "light", "params": {"type": "lightning"}},
+                {"name": "chromatic", "params": {"type": "broken_spectrum"}},
+                {"name": "strobe", "params": {"rate": 12.0}}
+            ],
+            "Enhanced storm lightning with white vertical streaks"
+        ),
+        "cinemascope": create_preset(
+            "Cinemascope",
+            [
+                {"name": "chromatic", "params": {"type": "rgb_offset"}},
+                {"name": "light", "params": {"type": "shadow"}},
+                {"name": "invert_fx", "params": {}}
+            ],
+            "Cinemascope with subtle offset and dark vignette"
         )
     }
 
