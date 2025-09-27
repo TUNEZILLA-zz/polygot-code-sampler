@@ -1,0 +1,137 @@
+<!doctype html><meta charset="utf-8"><title>Beat Bloom Sensitive</title>
+<style>html,body{margin:0;background:#000;color:#9ef;font:12px ui-monospace}
+#status{position:fixed;left:10px;top:10px;opacity:.8}
+#level{position:fixed;left:10px;top:40px;width:300px;height:20px;background:#333;border:1px solid #666;}
+#bar{height:100%;background:linear-gradient(90deg, #0f0, #ff0, #f00);width:0%;transition:width 0.1s ease-out;}
+#bloom{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100vh;background:radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, transparent 80%);pointer-events:none;opacity:0;transition:opacity 0.2s ease-out;}
+#debug{position:fixed;left:10px;bottom:10px;font-size:10px;opacity:.6;max-height:200px;overflow-y:auto;}
+#test{position:fixed;right:10px;top:10px;background:#333;padding:10px;border:1px solid #666;}
+</style>
+<div id="status">🎵 Beat Bloom Sensitive - Starting...</div>
+<div id="level"><div id="bar"></div></div>
+<div id="bloom"></div>
+<div id="debug"></div>
+<div id="test">
+  <button onclick="testAudio()">🔊 Test Audio</button>
+  <button onclick="manualBloom()">💥 Manual Bloom</button>
+  <button onclick="adjustThreshold(-0.01)">📉 Lower Threshold</button>
+  <button onclick="adjustThreshold(0.01)">📈 Raise Threshold</button>
+</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+let ctx,an,buf,last=0,acc=0,th=0.008,cool=200; // Much lower threshold and faster cooldown
+const bloomEl = document.getElementById('bloom');
+const barEl = document.getElementById('bar');
+const statusEl = document.getElementById('status');
+const debugEl = document.getElementById('debug');
+
+function log(msg) {
+  debugEl.innerHTML = new Date().toLocaleTimeString() + ': ' + msg + '<br>' + debugEl.innerHTML;
+  console.log(msg);
+}
+
+function adjustThreshold(delta) {
+  th = Math.max(0.001, Math.min(0.1, th + delta));
+  log(`🎛️ Threshold adjusted to: ${th.toFixed(4)}`);
+}
+
+function testAudio() {
+  // Create a test tone
+  if (!ctx) ctx = new (window.AudioContext||webkitAudioContext)();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+  gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.1);
+  log('🔊 Test tone played');
+}
+
+function manualBloom() {
+  bloom();
+  log('💥 Manual bloom triggered');
+}
+
+async function boot(){
+  try {
+    log('🎵 Requesting mic permission...');
+    ctx=new (window.AudioContext||webkitAudioContext)();
+    
+    // Resume context if suspended
+    if (ctx.state === 'suspended') {
+      await ctx.resume();
+      log('🎵 Audio context resumed');
+    }
+    
+    an=ctx.createAnalyser(); 
+    an.fftSize=256; // Smaller for better performance
+    an.smoothingTimeConstant = 0.2; // Less smoothing for more sensitivity
+    buf=new Uint8Array(an.frequencyBinCount);
+    
+    log('🎵 Getting user media...');
+    const s=await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    });
+    log('✅ Mic permission granted!');
+    
+    const source = ctx.createMediaStreamSource(s);
+    source.connect(an);
+    statusEl.textContent = '🎵 Beat Bloom Sensitive - Mic Ready ✅';
+    log('🎵 Audio analysis started');
+    log(`🎛️ Initial threshold: ${th.toFixed(4)}`);
+    loop();
+  } catch(e) {
+    log('❌ Error: ' + e.message);
+    statusEl.textContent = '🎵 Beat Bloom Sensitive - Error: ' + e.message;
+  }
+}
+
+function bloom(ms=600){
+  log('🎵 BEAT DETECTED! Bloom triggered');
+  bloomEl.style.opacity = '1';
+  setTimeout(() => {
+    bloomEl.style.opacity = '0';
+  }, ms);
+}
+
+function loop(t=0){requestAnimationFrame(loop); 
+  if(!an) return; 
+  
+  an.getByteTimeDomainData(buf);
+  
+  // Calculate RMS energy (more sensitive)
+  let sum = 0;
+  for(let i=0;i<buf.length;i++){
+    const sample = (buf[i] - 128) / 128;
+    sum += sample * sample;
+  }
+  const rms = Math.sqrt(sum / buf.length);
+  
+  // Smooth the energy
+  acc = acc*0.6 + rms*0.4; // More responsive
+  
+  // Update level bar
+  const levelPercent = Math.min(acc * 2000, 100); // Scale up more for visibility
+  barEl.style.width = levelPercent + '%';
+  
+  // Show current values every 2 seconds
+  if(Math.floor(t/2000) !== Math.floor((t-16)/2000)) {
+    log(`Level: ${acc.toFixed(4)} (${levelPercent.toFixed(1)}%) Threshold: ${th.toFixed(4)}`);
+  }
+  
+  const now=performance.now();
+  if(acc>th && now-last>cool){ 
+    last=now; 
+    bloom(); 
+  }
+}
+
+log('🎵 Starting beat bloom sensitive...');
+boot();
+</script>

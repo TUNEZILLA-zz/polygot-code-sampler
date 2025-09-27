@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><title>ASCII Water</title>
+<style>
+html,body{margin:0;height:100%;background:#030509;color:#7fd;overflow:hidden}
+pre{position:fixed;inset:0;margin:0;white-space:pre;line-height:1;font:12px/1.05 ui-monospace,monospace;opacity:.9}
+.badge{position:fixed;right:12px;bottom:10px;color:#9ef;font:12px ui-monospace;opacity:.6}
+</style><pre id="p"></pre><div class="badge">ASCII Water • ?reduced=1</div>
+<script>
+const R=new URLSearchParams(location.search).get('reduced')==='1';
+const chars=" .,:;*oO0@#";const el=document.getElementById('p');let cols,rows;
+function size(){cols=Math.floor(innerWidth/8);rows=Math.floor(innerHeight/12)}addEventListener('resize',size);size();
+function frame(t){let s="";for(let y=0;y<rows;y++){for(let x=0;x<cols;x++){const v=Math.sin(x*.12+t*.0013)+Math.sin(y*.18+t*.0017)+(R?0:Math.sin((x+y)*.07+t*.001));
+const n=Math.floor((v+3)/6*(chars.length-1));s+=chars[Math.max(0,Math.min(chars.length-1,n))]}s+='\n'}el.textContent=s;requestAnimationFrame(frame)}requestAnimationFrame(frame);
+</script>

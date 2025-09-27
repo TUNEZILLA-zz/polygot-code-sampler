@@ -1,0 +1,162 @@
+<!doctype html><meta charset="utf-8"><title>Stage Combiner</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#000}
+iframe{position:fixed;border:0;width:100%;height:100%}
+#backdrop{position:fixed;inset:0;z-index:1}
+#stage{position:fixed;inset:0;z-index:2;pointer-events:auto}
+#controls{position:fixed;top:10px;left:10px;z-index:1000;background:rgba(0,0,0,0.8);padding:10px;border-radius:5px;color:#fff;font:12px ui-monospace}
+#controls button{margin:2px;padding:4px 8px;background:#333;color:#fff;border:1px solid #555;cursor:pointer;border-radius:3px}
+#controls button:hover{background:#555}
+#controls select,input{margin:2px;background:#333;color:#fff;border:1px solid #555;padding:2px 4px}
+.split-mode #backdrop{width:50%}
+.split-mode #stage{left:50%;width:50%}
+.overlay-mode #backdrop{opacity:0.3}
+.overlay-mode #stage{background:transparent}
+</style>
+<div id="controls">
+  <div><strong>Stage Combiner</strong></div>
+  <div>
+    <label>Backdrop: <select id="backdrop-select">
+      <option value="starfield_warp.html">Starfield Warp</option>
+      <option value="aurora_ribbons.html">Aurora Ribbons</option>
+      <option value="neon_grid.html">Neon Grid</option>
+      <option value="firefly_swarm.html">Firefly Swarm</option>
+      <option value="laser_sweeps.html">Laser Sweeps</option>
+      <option value="ascii_water.html">ASCII Water</option>
+      <option value="spectrum_bars.html">Spectrum Bars</option>
+      <option value="audio_react_bars.html">Audio React Bars</option>
+      <option value="audio_react_rings.html">Audio React Rings</option>
+      <option value="matrix_glitch.html">Matrix Glitch</option>
+      <option value="crt_overlay.html">CRT Overlay</option>
+      <option value="rain_effect.html">Rain Effect</option>
+      <option value="snow_effect.html">Snow Effect</option>
+      <option value="fire_effect.html">Fire Effect</option>
+      <option value="explosion_effect.html">Explosion Effect</option>
+    </select></label>
+  </div>
+  <div>
+    <label>Stage: <select id="stage-select">
+      <option value="cinema.html">Cinemascope</option>
+      <option value="morph.html">Rack Morph</option>
+      <option value="nyan.html">LOLcat++ Nyan</option>
+      <option value="lunar.html">Lunar Recital</option>
+      <option value="symphony.html">Code Symphony</option>
+      <option value="chaos.html">Chaos Encore</option>
+    </select></label>
+  </div>
+  <div>
+    <label>Mode: <select id="mode-select">
+      <option value="overlay">Overlay (Stage on Backdrop)</option>
+      <option value="split">Split Screen</option>
+    </select></label>
+  </div>
+  <div>
+    <button id="apply-settings">Apply</button>
+    <button id="fullscreen">Fullscreen</button>
+    <button id="reload">Reload</button>
+  </div>
+  <div>
+    <label>Reduced Motion: <input type="checkbox" id="reduced-motion"></label>
+  </div>
+</div>
+<iframe id="backdrop" src="starfield_warp.html"></iframe>
+<iframe id="stage" src="cinema.html"></iframe>
+<script>
+const backdrop = document.getElementById('backdrop');
+const stage = document.getElementById('stage');
+const backdropSelect = document.getElementById('backdrop-select');
+const stageSelect = document.getElementById('stage-select');
+const modeSelect = document.getElementById('mode-select');
+const reducedMotion = document.getElementById('reduced-motion');
+
+function updateLayout() {
+  const mode = modeSelect.value;
+  document.body.className = `${mode}-mode`;
+  
+  if (mode === 'split') {
+    stage.style.pointerEvents = 'auto';
+  } else {
+    stage.style.pointerEvents = 'auto';
+  }
+}
+
+function updateSources() {
+  const backdropSrc = backdropSelect.value;
+  const stageSrc = stageSelect.value;
+  const reduced = reducedMotion.checked ? '?reduced=1' : '';
+  
+  backdrop.src = backdropSrc + reduced;
+  stage.src = stageSrc + reduced;
+}
+
+function applySettings() {
+  updateLayout();
+  updateSources();
+}
+
+// Event listeners
+document.getElementById('apply-settings').onclick = applySettings;
+document.getElementById('fullscreen').onclick = () => {
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  }
+};
+document.getElementById('reload').onclick = () => {
+  location.reload();
+};
+
+// Initialize from URL params
+const params = new URLSearchParams(location.search);
+const bg = params.get('bg');
+const stageParam = params.get('stage');
+const split = params.get('split') === '1';
+const reduced = params.get('reduced') === '1';
+
+if (bg) {
+  backdropSelect.value = bg;
+}
+if (stageParam) {
+  stageSelect.value = stageParam;
+}
+if (split) {
+  modeSelect.value = 'split';
+}
+if (reduced) {
+  reducedMotion.checked = true;
+}
+
+// Apply initial settings
+applySettings();
+
+// Auto-apply on change
+backdropSelect.onchange = applySettings;
+stageSelect.onchange = applySettings;
+modeSelect.onchange = applySettings;
+reducedMotion.onchange = applySettings;
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'f' || e.key === 'F') {
+    document.getElementById('fullscreen').click();
+  } else if (e.key === 'r' || e.key === 'R') {
+    document.getElementById('reload').click();
+  } else if (e.key === 's' || e.key === 'S') {
+    modeSelect.value = modeSelect.value === 'overlay' ? 'split' : 'overlay';
+    applySettings();
+  }
+});
+
+// Hide controls after 3 seconds of inactivity
+let hideTimeout;
+function resetHideTimeout() {
+  clearTimeout(hideTimeout);
+  document.getElementById('controls').style.opacity = '1';
+  hideTimeout = setTimeout(() => {
+    document.getElementById('controls').style.opacity = '0.3';
+  }, 3000);
+}
+
+document.addEventListener('mousemove', resetHideTimeout);
+document.addEventListener('click', resetHideTimeout);
+resetHideTimeout();
+</script>

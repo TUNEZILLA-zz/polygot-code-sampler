@@ -1,0 +1,28 @@
+<!doctype html><meta charset="utf-8"><title>Audio React • Bars</title>
+<style>
+  html,body{margin:0;height:100%;background:#0a0c13;overflow:hidden}
+  canvas{display:block} .ui{position:fixed;left:12px;bottom:10px;font:12px ui-monospace;color:#9ef;opacity:.8}
+  button,input{margin-right:8px}
+</style>
+<canvas id="c"></canvas>
+<div class="ui">
+  <button id="mic">🎤 Mic</button>
+  <label>File <input id="file" type="file" accept="audio/*"></label>
+  <span>• ?reduced=1</span>
+</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),x=c.getContext('2d'); let W,H; function rs(){W=c.width=innerWidth;H=c.height=innerHeight} addEventListener('resize',rs); rs();
+let ctx,src,an,buf; const BINS=RED?64:128;
+async function ensure(){ if(ctx) return; ctx=new (window.AudioContext||webkitAudioContext)(); an=ctx.createAnalyser(); an.fftSize = RED?256:512; buf=new Uint8Array(an.frequencyBinCount); }
+async function fromMic(){ await ensure(); const s=await navigator.mediaDevices.getUserMedia({audio:true}); src && src.disconnect(); src=ctx.createMediaStreamSource(s); src.connect(an); }
+function fromFile(file){ ensure().then(()=>{ const el=new Audio(URL.createObjectURL(file)); el.loop=true; el.crossOrigin="anonymous"; el.play(); src&&src.disconnect(); const n=ctx.createMediaElementSource(el); n.connect(an); n.connect(ctx.destination); src=n; });}
+document.getElementById('mic').onclick=fromMic;
+document.getElementById('file').onchange=e=>e.target.files[0]&&fromFile(e.target.files[0]);
+let t=0; (function loop(){ requestAnimationFrame(loop); if(!an){x.fillStyle="#0a0c13"; x.fillRect(0,0,W,H); x.fillStyle="#234"; x.fillRect(0,H-4,W,4); return;}
+an.getByteFrequencyData(buf); x.clearRect(0,0,W,H);
+const n=Math.min(BINS,buf.length), w=W/n; for(let i=0;i<n;i++){const v=buf[i]/255, h=(RED?H*.5:H*.7)*(0.15+0.85*v);
+x.fillStyle=`hsl(${180+ i*.8},90%,${30+45*v}%)`; x.fillRect(i*w+2,H-h,w-4,h);} 
+// subtle glow
+t+=0.016; x.globalCompositeOperation="lighter"; x.fillStyle=`hsla(180,100%,60%,${RED?.04:.08})`; x.fillRect(0,0,W,H); x.globalCompositeOperation="source-over";
+})();</script>

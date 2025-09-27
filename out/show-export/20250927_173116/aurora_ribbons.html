@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>Aurora Ribbons</title>
+<style>html,body{margin:0;height:100%;background:#04070b;overflow:hidden}
+canvas{display:block;filter:blur(0.2px)} .badge{position:fixed;right:12px;bottom:10px;color:#aef;font:12px ui-monospace;opacity:.6}
+</style><canvas id="c"></canvas><div class="badge">Aurora • ?reduced=1</div>
+<script>
+const REDUCED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),g=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight} addEventListener('resize',rs);rs();
+const bands=REDUCED?3:6; const pal=[180,200,220,260,300,330];
+function grad(h,l){const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,`hsla(${h},90%,${l}%,.08)`);gr.addColorStop(1,`hsla(${h+40},90%,${l+15}%,.06)`);return gr}
+function tick(t){g.fillStyle="rgba(4,7,11,.25)";g.fillRect(0,0,W,H);
+for(let i=0;i<bands;i++){const k=.0008+i*.0004, amp=REDUCED?14:26; g.fillStyle=grad(pal[i%pal.length],45);
+g.beginPath(); g.moveTo(0,H/2);
+for(let x=0;x<=W;x+=6){const y=H*.5 + Math.sin(x*k + t*.0012 + i)*amp*(1+i*.25); g.lineTo(x,y)}
+g.lineTo(W,H); g.lineTo(0,H); g.closePath(); g.fill();}
+requestAnimationFrame(tick)} requestAnimationFrame(tick);
+</script>

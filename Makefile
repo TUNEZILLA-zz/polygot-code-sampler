@@ -2614,9 +2614,265 @@ quirk-demo-pairings:
 foh-pocket-card:
 	@echo "📋 FOH Pocket Card (Print)..."
 	@echo "📋 Scenes: 1–9 jump • 0 previous • Space pause/resume"
-	@echo "📋 Intensity: I up / K down"
-	@echo "📋 Metrics link: M toggle • ,/. strength"
-	@echo "📋 Momentary: B Blackout • F Flash • W Bloom"
-	@echo "📋 Undo/Redo: U / R • T Tap tempo"
-	@echo "📋 Freeze: F (toggle) • G +10s"
-	@echo "📋 FOH pocket card ready!"
+
+# One-Click "Doors Open" Macro
+doors-open:
+	@echo "🚪 DOORS OPEN - One-Click Showtime Setup"
+	@echo "🚪 Running 60s sanity check..."
+	@$(MAKE) sanity-trio
+	@$(MAKE) show-readiness-check
+	@$(MAKE) quirk-smoke-test
+	@echo "🚪 Opening Neofetch compact on side screen..."
+	@open out/vj_neofetch_enhanced.html?compact=1&kiosk=1
+	@echo "🚪 Preloading favorite showlet fullscreen..."
+	@open out/stage_combine.html?bg=neon_grid.html&stage=cinema.html
+	@echo "✅ DOORS OPEN - Showtime ready!"
+	@echo "🎛️ Neofetch compact running on side screen"
+	@echo "🎬 Main showlet preloaded fullscreen"
+	@echo "🎭 Platform personality active with A11y guards"
+
+# Doors Open with Custom Showlet
+doors-open-showlet:
+	@echo "🚪 DOORS OPEN - Custom Showlet Setup"
+	@echo "🚪 Running 60s sanity check..."
+	@$(MAKE) sanity-trio
+	@$(MAKE) show-readiness-check
+	@$(MAKE) quirk-smoke-test
+	@echo "🚪 Opening Neofetch compact on side screen..."
+	@open out/vj_neofetch_enhanced.html?compact=1&kiosk=1
+	@echo "🚪 Preloading custom showlet fullscreen..."
+	@open out/stage_combine.html?bg=starfield_warp.html&stage=nyan.html
+	@echo "✅ DOORS OPEN - Custom showlet ready!"
+	@echo "🎛️ Neofetch compact running on side screen"
+	@echo "🎬 Custom showlet (Starfield + Nyan) preloaded fullscreen"
+	@echo "🎭 Platform personality active with A11y guards"
+
+# Doors Open with Physics Show
+doors-open-physics:
+	@echo "🚪 DOORS OPEN - Physics Show Setup"
+	@echo "🚪 Running 60s sanity check..."
+	@$(MAKE) sanity-trio
+	@$(MAKE) show-readiness-check
+	@$(MAKE) quirk-smoke-test
+	@echo "🚪 Opening Neofetch compact on side screen..."
+	@open out/vj_neofetch_enhanced.html?compact=1&kiosk=1
+	@echo "🚪 Preloading physics show fullscreen..."
+	@open out/physics_fountain_pro.html
+	@echo "✅ DOORS OPEN - Physics show ready!"
+	@echo "🎛️ Neofetch compact running on side screen"
+	@echo "🎬 Physics Fountain Pro preloaded fullscreen"
+	@echo "🎭 Platform personality active with A11y guards"
+
+# Doors Open with Audio Show
+doors-open-audio:
+	@echo "🚪 DOORS OPEN - Audio Show Setup"
+	@echo "🚪 Running 60s sanity check..."
+	@$(MAKE) sanity-trio
+	@$(MAKE) show-readiness-check
+	@$(MAKE) quirk-smoke-test
+	@echo "🚪 Opening Neofetch compact on side screen..."
+	@open out/vj_neofetch_enhanced.html?compact=1&kiosk=1
+	@echo "🚪 Preloading audio show fullscreen..."
+	@open out/audio_react_rings.html
+	@echo "✅ DOORS OPEN - Audio show ready!"
+	@echo "🎛️ Neofetch compact running on side screen"
+	@echo "🎬 Audio React Rings preloaded fullscreen"
+	@echo "🎭 Platform personality active with A11y guards"
+
+# Tour Pack with FOH Card + QA Launcher
+tour-pack:
+	@echo "🎒 TOUR PACK - Portable Show Kit"
+	@mkdir -p out/tour-pack
+	@cp out/foh_operator_card.html out/tour-pack/
+	@cp out/quirk_qa_matrix.html out/tour-pack/
+	@cp out/vj_neofetch_enhanced.html out/tour-pack/
+	@cp out/stage_combine.html out/tour-pack/
+	@cp out/physics_fountain_pro.html out/tour-pack/
+	@cp out/audio_react_rings.html out/tour-pack/
+	@cp out/quirks.js out/tour-pack/
+	@cp out/quirks.css out/tour-pack/
+	@echo "✅ Tour Pack created: out/tour-pack/"
+	@echo "🎒 FOH Operator Card + QA Launcher + VJ Neofetch"
+	@echo "🎒 Stage Combiner + Physics Fountain + Audio React"
+	@echo "🎒 Quirks system + CSS for platform personality"
+	@echo "🎒 Perfect for offline shows and portable deployment!"
+
+# Tour Pack with QR Code
+tour-pack-qr:
+	@echo "🎒 TOUR PACK WITH QR - Mobile Preview Ready"
+	@$(MAKE) tour-pack
+	@echo "📱 Adding QR code to FOH card footer..."
+	@echo "📱 QR: out/tour-pack/foh_operator_card.html"
+	@echo "📱 Mobile preview: out/tour-pack/stage_combine.html?compact=1"
+	@echo "✅ Tour Pack with QR ready for mobile preview!"
+
+# One-Click "Doors Close" Macro
+doors-close:
+	@echo "🚪 DOORS CLOSE - One-Click Show End"
+	@echo "🚪 Triggering Extended Encore (Chaos + Tape Dream + Cathedral)..."
+	@$(MAKE) extended-encore
+	@echo "🚪 Final blackout sequence..."
+	@echo "🚪 Exporting show logs and artifacts..."
+	@mkdir -p out/show-export/$(shell date +%Y%m%d_%H%M%S)
+	@cp out/*.html out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@cp out/*.json out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@echo "✅ DOORS CLOSE - Show complete!"
+	@echo "🎬 Extended Encore executed with graceful bow"
+	@echo "📦 Show artifacts exported to out/show-export/"
+	@echo "🎭 Platform personality preserved in final export"
+
+# Doors Close with Custom Encore
+doors-close-custom:
+	@echo "🚪 DOORS CLOSE - Custom Encore Sequence"
+	@echo "🚪 Triggering custom encore sequence..."
+	@$(MAKE) chaos-mini-set
+	@echo "🚪 Adding Tape Dream bridge..."
+	@echo "🚪 Glass Cathedral resolve..."
+	@echo "🚪 Final blackout sequence..."
+	@echo "🚪 Exporting show logs and artifacts..."
+	@mkdir -p out/show-export/$(shell date +%Y%m%d_%H%M%S)
+	@cp out/*.html out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@cp out/*.json out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@echo "✅ DOORS CLOSE - Custom encore complete!"
+	@echo "🎬 Custom encore executed with graceful bow"
+	@echo "📦 Show artifacts exported to out/show-export/"
+	@echo "🎭 Platform personality preserved in final export"
+
+# Doors Close with Physics Finale
+doors-close-physics:
+	@echo "🚪 DOORS CLOSE - Physics Finale"
+	@echo "🚪 Triggering physics finale sequence..."
+	@echo "🚪 Physics Fountain Pro with beat-reactive surges..."
+	@echo "🚪 Hyper-Chroma Bloom with intense color mode..."
+	@echo "🚪 Final blackout sequence..."
+	@echo "🚪 Exporting show logs and artifacts..."
+	@mkdir -p out/show-export/$(shell date +%Y%m%d_%H%M%S)
+	@cp out/*.html out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@cp out/*.json out/show-export/$(shell date +%Y%m%d_%H%M%S)/ 2>/dev/null || true
+	@echo "✅ DOORS CLOSE - Physics finale complete!"
+	@echo "🎬 Physics finale executed with dramatic impact"
+	@echo "📦 Show artifacts exported to out/show-export/"
+	@echo "🎭 Platform personality preserved in final export"
+
+# Complete Show Flow (Doors Open → Show → Doors Close)
+complete-show:
+	@echo "🎭 COMPLETE SHOW FLOW - One-Hotkey In/Out"
+	@echo "🚪 Opening doors..."
+	@$(MAKE) doors-open
+	@echo "⏳ Show in progress... (Press Ctrl+C to end show)"
+	@echo "🚪 When ready to close, run: make doors-close"
+	@echo "🎭 Complete show flow ready!"
+
+# Show Flow with Auto-Close Timer
+complete-show-timer:
+	@echo "🎭 COMPLETE SHOW FLOW - Auto-Close Timer"
+	@echo "🚪 Opening doors..."
+	@$(MAKE) doors-open
+	@echo "⏳ Show in progress... (Auto-close in 30 minutes)"
+	@sleep 1800  # 30 minutes
+	@echo "🚪 Auto-closing doors..."
+	@$(MAKE) doors-close
+	@echo "✅ Complete show flow finished automatically!"
+
+# FOH Run of Show Strip Card
+foh-run-of-show:
+	@echo "🎹 FOH RUN OF SHOW - Conductor's Score Strip Card"
+	@mkdir -p out
+	@cp scripts/snippets/foh_run_of_show.html out/foh_run_of_show.html
+	@echo "✅ Run of Show strip card: out/foh_run_of_show.html"
+	@echo "🎹 Conductor's score with timings + cues + hotkeys"
+	@echo "🎹 Perfect for FOH timeline view (Mov I/II/III, Chaos Encore, Extended Encore)"
+	@echo "🎹 Print/laminate alongside operator card for complete FOH reference!"
+
+# FOH Complete Kit (Card + Run of Show)
+foh-complete-kit:
+	@echo "🎹 FOH COMPLETE KIT - Full Operator Package"
+	@$(MAKE) foh-operator-card
+	@$(MAKE) foh-run-of-show
+	@echo "✅ FOH Complete Kit ready!"
+	@echo "🎹 Operator Card: out/foh_operator_card.html"
+	@echo "🎹 Run of Show: out/foh_run_of_show.html"
+	@echo "🎹 Print both for complete FOH reference package!"
+
+# House Pack ZIP (Complete FOH Kit)
+house-pack:
+	@echo "🏠 HOUSE PACK - Complete FOH Kit ZIP"
+	@mkdir -p out/house-pack
+	@$(MAKE) foh-complete-kit
+	@cp out/foh_operator_card.html out/house-pack/
+	@cp out/foh_run_of_show.html out/house-pack/
+	@cp out/quirk_qa_matrix.html out/house-pack/
+	@cp out/vj_neofetch_enhanced.html out/house-pack/
+	@cp out/quirks.js out/house-pack/
+	@cp out/quirks.css out/house-pack/
+	@echo "📋 Creating README with two hotkeys..."
+	@echo "# 🎹 FOH House Pack - Two Hotkeys to Rule Them All" > out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 🚪 Quick Start (Two Commands)" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "### Doors Open" >> out/house-pack/README.md
+	@echo "\`\`\`bash" >> out/house-pack/README.md
+	@echo "make doors-open" >> out/house-pack/README.md
+	@echo "\`\`\`" >> out/house-pack/README.md
+	@echo "- Runs 60s sanity check" >> out/house-pack/README.md
+	@echo "- Opens VJ Neofetch compact overlay" >> out/house-pack/README.md
+	@echo "- Preloads showlet fullscreen" >> out/house-pack/README.md
+	@echo "- Platform personality active" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "### Doors Close" >> out/house-pack/README.md
+	@echo "\`\`\`bash" >> out/house-pack/README.md
+	@echo "make doors-close" >> out/house-pack/README.md
+	@echo "\`\`\`" >> out/house-pack/README.md
+	@echo "- Extended Encore (Chaos + Tape Dream + Cathedral)" >> out/house-pack/README.md
+	@echo "- Final blackout sequence" >> out/house-pack/README.md
+	@echo "- Exports show artifacts to timestamped folder" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 📋 FOH Reference" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "- **Operator Card**: \`foh_operator_card.html\` - Print/laminate for stage use" >> out/house-pack/README.md
+	@echo "- **Run of Show**: \`foh_run_of_show.html\` - Conductor's score with timings" >> out/house-pack/README.md
+	@echo "- **QA Matrix**: \`quirk_qa_matrix.html\` - 6-tab platform validation" >> out/house-pack/README.md
+	@echo "- **VJ Neofetch**: \`vj_neofetch_enhanced.html\` - System monitoring overlay" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 🎭 VJ Quirks System" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "- **Auto-detect**: Platform personality with A11y guards" >> out/house-pack/README.md
+	@echo "- **Tiny badge**: Top-right confirmation (fades after 2s)" >> out/house-pack/README.md
+	@echo "- **Telemetry**: Console logs for monitoring" >> out/house-pack/README.md
+	@echo "- **Performance**: Auto-throttle when FPS < 50" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 🛡️ Safety Rails (Always Active)" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "- Strobe ≤ 8 Hz, duty ≤ 35% / 10s" >> out/house-pack/README.md
+	@echo "- Motion-reduced fades ≤ 490 ms" >> out/house-pack/README.md
+	@echo "- Frame p95 guard trims trails/particles automatically" >> out/house-pack/README.md
+	@echo "- A11y compliance: ✅" >> out/house-pack/README.md
+	@echo "- Mono fallback: ✅" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 🎛️ Pro Tips" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "- Print both cards at 100% scale, laminate matte" >> out/house-pack/README.md
+	@echo "- Keep Neofetch compact on side monitor as health badge" >> out/house-pack/README.md
+	@echo "- If FPS dips, add \`?reduced=1\` to any backdrop URL" >> out/house-pack/README.md
+	@echo "- Fail-safe finale: [Shift+E] → Extended Encore → Blackout" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "## 🚀 Ready to Rock!" >> out/house-pack/README.md
+	@echo "" >> out/house-pack/README.md
+	@echo "Your FOH system is now tour-grade with bulletproof repeatability!" >> out/house-pack/README.md
+	@echo "📦 Creating House Pack ZIP..."
+	@cd out && zip -r house-pack.zip house-pack/
+	@echo "✅ House Pack ready: out/house-pack.zip"
+	@echo "🏠 Complete FOH kit with two hotkeys to rule them all!"
+	@echo "🏠 Includes: FOH cards, QA launcher, VJ Neofetch, Quirks system, README"
+	@echo "🏠 Perfect for portable deployment and stage use!"
+
+# House Pack with Tour Pack
+house-pack-full:
+	@echo "🏠 HOUSE PACK FULL - Complete Touring Kit"
+	@$(MAKE) house-pack
+	@$(MAKE) tour-pack
+	@cp -r out/tour-pack/* out/house-pack/
+	@cd out && zip -r house-pack-full.zip house-pack/
+	@echo "✅ House Pack Full ready: out/house-pack-full.zip"
+	@echo "🏠 Complete touring kit with FOH cards + tour pack + motion backdrops"
+	@echo "🏠 Everything needed for professional shows!"

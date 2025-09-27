@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Spectrum Bars</title>
+<style>
+html,body{margin:0;height:100%;background:#090a0f;overflow:hidden}
+canvas{display:block} .badge{position:fixed;left:12px;bottom:10px;color:#f9f;font:12px ui-monospace;opacity:.6}
+</style><canvas id="c"></canvas><div class="badge">Spectrum Bars • ?reduced=1</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+const N=RED?28:56; const ph=new Array(N).fill(0);
+function tick(t){x.clearRect(0,0,W,H);const w=W/N;for(let i=0;i<N;i++){ph[i]+=0.015+(i%5)*0.002;
+const h=(Math.sin(ph[i])+1)/2; const Hpx=(RED?H*.45:H*.65)*(.25+ .75*h);
+x.fillStyle=`hsl(${200+ i*2},90%,${40+30*h}%)`; x.fillRect(i*w+2,H-Hpx,w-4,Hpx);}
+requestAnimationFrame(tick)}requestAnimationFrame(tick);
+</script>

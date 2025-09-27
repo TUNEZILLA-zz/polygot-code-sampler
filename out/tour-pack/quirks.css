@@ -1,0 +1,65 @@
+/* VJ Desk Quirks - Platform-specific CSS enhancements */
+
+/* A11y-first overrides */
+html.a11y-reduced * { 
+  animation-duration: 0.001ms !important; 
+  animation-iteration-count: 1 !important; 
+  transition-duration: 0.001ms !important;
+}
+
+/* macOS + Safari - Glassy bloom + softer motion */
+html.quirk-mac-safari .hud { 
+  filter: drop-shadow(0 0 10px rgba(255,255,255,.25)); 
+  backdrop-filter: blur(4px);
+}
+
+/* Windows + Chrome/Edge - CRT scanlines + phosphor bloom */
+html.quirk-win-lcd .crt-scan { 
+  opacity: 0.06; 
+  background: repeating-linear-gradient(
+    to bottom, 
+    rgba(255,255,255,.06), 
+    rgba(255,255,255,.06) 1px, 
+    transparent 1px, 
+    transparent 3px
+  );
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Linux + Firefox - ASCII overlay / mono HUD */
+html.quirk-linux-ff .hud { 
+  font-feature-settings: "tnum" 1; 
+  filter: none;
+}
+
+/* iOS - High-contrast neon, touch-friendly */
+html.quirk-ios body { 
+  touch-action: manipulation; 
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+
+/* Android - AMOLED true black + punchier colors */
+html.quirk-android body { 
+  background: #000; 
+}
+
+/* Edge - Fluent acrylic blur */
+html.quirk-edge .hud { 
+  backdrop-filter: blur(8px) saturate(1.1); 
+  background: rgba(30,30,40,.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+}
+
+/* Quirk toggle button */
+#quirkBtn {
+  transition: opacity 0.2s ease;
+}
+#quirkBtn:hover {
+  opacity: 1;
+  background: rgba(0,255,0,0.1);
+}

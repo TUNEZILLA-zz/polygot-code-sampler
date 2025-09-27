@@ -14,113 +14,118 @@ import argparse
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+
 class MatrixRain:
     def __init__(self, width: int = 80, height: int = 24, speed: float = 0.1):
         self.width = width
         self.height = height
         self.speed = speed
-        self.matrix = [[' ' for _ in range(width)] for _ in range(height)]
+        self.matrix = [[" " for _ in range(width)] for _ in range(height)]
         self.drops = []
         self.chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
         self.colors = [
-            '\033[32m',  # Green
-            '\033[36m',  # Cyan  
-            '\033[33m', # Yellow
-            '\033[35m',  # Magenta
-            '\033[31m',  # Red
-            '\033[34m',  # Blue
+            "\033[32m",  # Green
+            "\033[36m",  # Cyan
+            "\033[33m",  # Yellow
+            "\033[35m",  # Magenta
+            "\033[31m",  # Red
+            "\033[34m",  # Blue
         ]
-        self.reset = '\033[0m'
-        
+        self.reset = "\033[0m"
+
     def init_drops(self):
         """Initialize rain drops"""
         for x in range(self.width):
             if random.random() < 0.3:  # 30% chance to start a drop
-                self.drops.append({
-                    'x': x,
-                    'y': 0,
-                    'speed': random.uniform(0.5, 2.0),
-                    'char': random.choice(self.chars),
-                    'color': random.choice(self.colors),
-                    'brightness': 1.0
-                })
-    
+                self.drops.append(
+                    {
+                        "x": x,
+                        "y": 0,
+                        "speed": random.uniform(0.5, 2.0),
+                        "char": random.choice(self.chars),
+                        "color": random.choice(self.colors),
+                        "brightness": 1.0,
+                    }
+                )
+
     def update_drops(self):
         """Update all rain drops"""
         for drop in self.drops[:]:
             # Move drop down
-            drop['y'] += drop['speed'] * self.speed
-            
+            drop["y"] += drop["speed"] * self.speed
+
             # Fade brightness
-            drop['brightness'] *= 0.98
-            
+            drop["brightness"] *= 0.98
+
             # Remove if off screen or too dim
-            if drop['y'] >= self.height or drop['brightness'] < 0.1:
+            if drop["y"] >= self.height or drop["brightness"] < 0.1:
                 self.drops.remove(drop)
                 # Maybe spawn new drop
                 if random.random() < 0.1:
-                    self.drops.append({
-                        'x': random.randint(0, self.width-1),
-                        'y': 0,
-                        'speed': random.uniform(0.5, 2.0),
-                        'char': random.choice(self.chars),
-                        'color': random.choice(self.colors),
-                        'brightness': 1.0
-                    })
-    
+                    self.drops.append(
+                        {
+                            "x": random.randint(0, self.width - 1),
+                            "y": 0,
+                            "speed": random.uniform(0.5, 2.0),
+                            "char": random.choice(self.chars),
+                            "color": random.choice(self.colors),
+                            "brightness": 1.0,
+                        }
+                    )
+
     def render_matrix(self):
         """Render the matrix to screen"""
         # Clear screen
-        print('\033[2J\033[H', end='')
-        
+        print("\033[2J\033[H", end="")
+
         # Clear matrix
         for y in range(self.height):
             for x in range(self.width):
-                self.matrix[y][x] = ' '
-        
+                self.matrix[y][x] = " "
+
         # Draw drops
         for drop in self.drops:
-            x, y = int(drop['x']), int(drop['y'])
+            x, y = int(drop["x"]), int(drop["y"])
             if 0 <= x < self.width and 0 <= y < self.height:
                 # Create trail effect
-                trail_length = int(drop['brightness'] * 8)
+                trail_length = int(drop["brightness"] * 8)
                 for i in range(trail_length):
                     trail_y = y - i
                     if 0 <= trail_y < self.height:
-                        char = drop['char'] if i == 0 else random.choice(self.chars)
+                        char = drop["char"] if i == 0 else random.choice(self.chars)
                         self.matrix[trail_y][x] = char
-        
+
         # Print matrix
         for y in range(self.height):
             line = ""
             for x in range(self.width):
                 char = self.matrix[y][x]
-                if char != ' ':
+                if char != " ":
                     # Find the drop for this position to get color
-                    color = '\033[32m'  # Default green
+                    color = "\033[32m"  # Default green
                     brightness = 1.0
                     for drop in self.drops:
-                        if int(drop['x']) == x and int(drop['y']) == y:
-                            color = drop['color']
-                            brightness = drop['brightness']
+                        if int(drop["x"]) == x and int(drop["y"]) == y:
+                            color = drop["color"]
+                            brightness = drop["brightness"]
                             break
-                    
+
                     # Apply brightness
                     if brightness < 0.3:
-                        color = '\033[90m'  # Dim
+                        color = "\033[90m"  # Dim
                     elif brightness < 0.6:
-                        color = '\033[37m'  # Bright
-                    
+                        color = "\033[37m"  # Bright
+
                     line += f"{color}{char}{self.reset}"
                 else:
                     line += " "
             print(line)
-    
+
     def run(self, duration: float = 30.0):
         """Run the matrix rain effect"""
         self.init_drops()
         start_time = time.time()
-        
+
         try:
             while time.time() - start_time < duration:
                 self.update_drops()
@@ -130,18 +135,29 @@ class MatrixRain:
             pass
         finally:
             # Clear screen and reset
-            print('\033[2J\033[H\033[0m', end='')
+            print("\033[2J\033[H\033[0m", end="")
+
 
 def main():
-    parser = argparse.ArgumentParser(description='Matrix Rain Effect - Cmatrix-style animated text rain')
-    parser.add_argument('--width', type=int, default=80, help='Matrix width (default: 80)')
-    parser.add_argument('--height', type=int, default=24, help='Matrix height (default: 24)')
-    parser.add_argument('--speed', type=float, default=0.1, help='Animation speed (default: 0.1)')
-    parser.add_argument('--duration', type=float, default=30.0, help='Duration in seconds (default: 30)')
-    parser.add_argument('--output', type=str, help='Output HTML file')
-    
+    parser = argparse.ArgumentParser(
+        description="Matrix Rain Effect - Cmatrix-style animated text rain"
+    )
+    parser.add_argument(
+        "--width", type=int, default=80, help="Matrix width (default: 80)"
+    )
+    parser.add_argument(
+        "--height", type=int, default=24, help="Matrix height (default: 24)"
+    )
+    parser.add_argument(
+        "--speed", type=float, default=0.1, help="Animation speed (default: 0.1)"
+    )
+    parser.add_argument(
+        "--duration", type=float, default=30.0, help="Duration in seconds (default: 30)"
+    )
+    parser.add_argument("--output", type=str, help="Output HTML file")
+
     args = parser.parse_args()
-    
+
     if args.output:
         # Generate HTML version
         html_content = f"""
@@ -278,14 +294,15 @@ def main():
 </body>
 </html>
         """
-        
-        with open(args.output, 'w') as f:
+
+        with open(args.output, "w") as f:
             f.write(html_content)
         print(f"✅ Matrix Rain HTML saved to: {args.output}")
     else:
         # Run terminal version
         matrix = MatrixRain(args.width, args.height, args.speed)
         matrix.run(args.duration)
+
 
 if __name__ == "__main__":
     main()

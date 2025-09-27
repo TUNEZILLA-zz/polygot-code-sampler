@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Rain Effect - Chaos Concert</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .matrix-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .matrix-char {
+            position: absolute;
+            color: #0f0;
+            font-size: 14px;
+            line-height: 1;
+            animation: fade 2s linear infinite;
+        }
+        @keyframes fade {
+            0% { opacity: 1; color: #0f0; }
+            50% { opacity: 0.7; color: #0a0; }
+            100% { opacity: 0.1; color: #050; }
+        }
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #0f0;
+            text-shadow: 0 0 20px #0f0;
+            z-index: 10;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+        @keyframes pulse {
+            from { text-shadow: 0 0 20px #0f0; }
+            to { text-shadow: 0 0 40px #0f0, 0 0 60px #0f0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-container">
+        <div class="title">CHAOS CONCERT</div>
+        <div id="matrix"></div>
+    </div>
+    
+    <script>
+        const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+        const colors = ['#0f0', '#0a0', '#050', '#0f0', '#0a0', '#050'];
+        const matrix = document.getElementById('matrix');
+        const width = 100;
+        const height = 30;
+        const speed = 0.06;
+        
+        let drops = [];
+        
+        function initDrops() {
+            for (let x = 0; x < width; x++) {
+                if (Math.random() < 0.3) {
+                    drops.push({
+                        x: x,
+                        y: 0,
+                        speed: Math.random() * 1.5 + 0.5,
+                        char: chars[Math.floor(Math.random() * chars.length)],
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        brightness: 1.0
+                    });
+                }
+            }
+        }
+        
+        function updateDrops() {
+            drops = drops.filter(drop => {
+                drop.y += drop.speed * speed;
+                drop.brightness *= 0.98;
+                return drop.y < height && drop.brightness > 0.1;
+            });
+            
+            // Spawn new drops
+            if (Math.random() < 0.1) {
+                drops.push({
+                    x: Math.floor(Math.random() * width),
+                    y: 0,
+                    speed: Math.random() * 1.5 + 0.5,
+                    char: chars[Math.floor(Math.random() * chars.length)],
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    brightness: 1.0
+                });
+            }
+        }
+        
+        function renderMatrix() {
+            matrix.innerHTML = '';
+            
+            drops.forEach(drop => {
+                const x = Math.floor(drop.x);
+                const y = Math.floor(drop.y);
+                
+                if (x >= 0 && x < width && y >= 0 && y < height) {
+                    const char = document.createElement('div');
+                    char.className = 'matrix-char';
+                    char.textContent = drop.char;
+                    char.style.left = (x * 14) + 'px';
+                    char.style.top = (y * 14) + 'px';
+                    char.style.color = drop.color;
+                    char.style.opacity = drop.brightness;
+                    matrix.appendChild(char);
+                }
+            });
+        }
+        
+        function animate() {
+            updateDrops();
+            renderMatrix();
+            requestAnimationFrame(animate);
+        }
+        
+        initDrops();
+        animate();
+    </script>
+</body>
+</html>
+        

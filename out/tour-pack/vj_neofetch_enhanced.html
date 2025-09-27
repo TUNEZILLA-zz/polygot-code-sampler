@@ -1,0 +1,225 @@
+<!doctype html><meta charset="utf-8"><title>VJ Neofetch Enhanced</title>
+<style>
+html,body{margin:0;height:100%;background:#0a0a0a;color:#00ff00;font:14px 'Courier New',monospace;overflow:hidden}
+.container{display:flex;height:100vh;align-items:center;justify-content:center}
+.info{display:flex;gap:40px;align-items:center}
+.logo{font-size:48px;line-height:1;color:#ff0080;text-shadow:0 0 10px #ff0080}
+.details{line-height:1.6}
+.label{color:#00ffff}
+.value{color:#ffff00}
+.bar{display:inline-block;width:20px;height:12px;background:#00ff00;margin-left:8px}
+.bar:nth-child(2){background:#ffff00}
+.bar:nth-child(3){background:#ff8000}
+.bar:nth-child(4){background:#ff0000}
+.bar:nth-child(5){background:#8000ff}
+.bar:nth-child(6){background:#ff0080}
+.bar:nth-child(7){background:#00ff80}
+.bar:nth-child(8){background:#8080ff}
+.bar:nth-child(9){background:#ff8080}
+.bar:nth-child(10){background:#80ff80}
+.bar:nth-child(11){background:#ff80ff}
+.bar:nth-child(12){background:#80ffff}
+.bar:nth-child(13){background:#ffff80}
+.bar:nth-child(14){background:#808080}
+.bar:nth-child(15){background:#ffffff}
+.rainbow{animation:rainbow 2s linear infinite}
+@keyframes rainbow{0%{color:#ff0000}16%{color:#ff8000}33%{color:#ffff00}50%{color:#00ff00}66%{color:#0080ff}83%{color:#8000ff}100%{color:#ff0080}}
+.pulse{animation:pulse 1s ease-in-out infinite alternate}
+@keyframes pulse{from{opacity:0.7}to{opacity:1}}
+
+/* FPS and Guardrail Styles */
+#fps{color:#00ffa6;font-weight:bold}
+#rails{position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:1000}
+.pill{padding:.2rem .5rem;border-radius:.7rem;background:#111;color:#aaa;margin-right:.4rem;font-size:10px;font-weight:bold}
+.ok{color:#00ffa6}
+.warn{color:#ffd400}
+.cut{color:#ff4d4f}
+
+/* Compact mode */
+.compact .container{flex-direction:column;gap:20px}
+.compact .logo{font-size:24px}
+.compact .details{font-size:12px;line-height:1.4}
+.compact .bar{width:12px;height:8px}
+
+/* Kiosk mode */
+.kiosk #rails{display:none}
+.kiosk .container{margin:20px}
+
+/* Theme variants */
+.theme-mono{color:#ffffff;background:#000000}
+.theme-mono .logo{color:#ffffff}
+.theme-mono .label{color:#cccccc}
+.theme-mono .value{color:#ffffff}
+</style>
+<div id="rails">
+  <span id="strobe" class="pill">STROBE</span>
+  <span id="motion" class="pill">MOTION</span>
+  <span id="perf" class="pill">FRAME</span>
+</div>
+<div class="container">
+  <div class="info">
+    <div class="logo rainbow">🎬<br>VJ<br>DESK</div>
+    <div class="details">
+      <div><span class="label">OS:</span> <span class="value">Chaos Concert v1.0</span></div>
+      <div><span class="label">Host:</span> <span class="value">Touring Rig Pro</span></div>
+      <div><span class="label">Kernel:</span> <span class="value">Text-FX Engine 5.2.1</span></div>
+      <div><span class="label">Uptime:</span> <span class="value" id="uptime">0d 0h 0m 0s</span></div>
+      <div><span class="label">Packages:</span> <span class="value">15 FX modules</span></div>
+      <div><span class="label">Shell:</span> <span class="value">Makefile 2.361k</span></div>
+      <div><span class="label">Resolution:</span> <span class="value" id="resolution">1920x1080</span></div>
+      <div><span class="label">CPU:</span> <span class="value">WebAudio API</span></div>
+      <div><span class="label">GPU:</span> <span class="value">Canvas 2D + CSS3</span></div>
+      <div><span class="label">Memory:</span> <span class="value">Unlimited Creativity</span></div>
+      <div><span class="label">Disk:</span> <span class="value">out/ directory</span></div>
+      <div><span class="label">Theme:</span> <span class="value">Neon Cyberpunk</span></div>
+      <div><span class="label">Icons:</span> <span class="value">🌈🎵⚡🔥💥</span></div>
+      <div><span class="label">Colors:</span> <span class="value pulse">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </span></div>
+      <div><span class="label">FX Racks:</span> <span class="value">Glass Cathedral, Data Storm, Neon Bloom</span></div>
+      <div><span class="label">Motion Pack:</span> <span class="value">15 effects + weather + glitch</span></div>
+      <div><span class="label">Audio React:</span> <span class="value">Bars, Rings, Beat Bloom</span></div>
+      <div><span class="label">FOH Bundles:</span> <span class="value">7 one-button showlets</span></div>
+      <div><span class="label">A11y:</span> <span class="value">?reduced=1 support</span></div>
+      <div><span class="label">FPS:</span> <span class="value" id="fps">60 fps</span></div>
+      <div><span class="label">Status:</span> <span class="value rainbow">READY FOR SHOWTIME</span></div>
+    </div>
+  </div>
+</div>
+<script>
+// URL Parameters
+const params = new URLSearchParams(location.search);
+const kiosk = params.get('kiosk') === '1';
+const compact = params.get('compact') === '1';
+const theme = params.get('theme') || 'neon';
+
+// Apply modes
+if (kiosk) document.body.classList.add('kiosk');
+if (compact) document.body.classList.add('compact');
+if (theme === 'mono') document.body.classList.add('theme-mono');
+
+// FPS Counter
+let last = performance.now(), frames = 0, fps = 0;
+function tick(t) {
+  frames++;
+  if (t - last >= 1000) {
+    fps = frames;
+    frames = 0;
+    last = t;
+    const el = document.getElementById('fps');
+    if (el) {
+      el.textContent = `${fps} fps`;
+      el.style.color = fps >= 58 ? '#00ffa6' : fps >= 45 ? '#ffd400' : '#ff4d4f';
+    }
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// Update uptime
+let startTime = Date.now();
+function updateUptime() {
+  const now = Date.now();
+  const diff = now - startTime;
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+  document.getElementById('uptime').textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+setInterval(updateUptime, 1000);
+
+// Update resolution
+function updateResolution() {
+  document.getElementById('resolution').textContent = `${window.innerWidth}x${window.innerHeight}`;
+}
+updateResolution();
+window.addEventListener('resize', updateResolution);
+
+// Guardrail Telemetry
+function updateRails({strobeCap = true, reducedMotion = false, frameP95 = 8} = {}) {
+  const strobeEl = document.getElementById('strobe');
+  const motionEl = document.getElementById('motion');
+  const perfEl = document.getElementById('perf');
+  
+  if (strobeEl) strobeEl.className = `pill ${strobeCap ? 'ok' : 'warn'}`;
+  if (motionEl) motionEl.className = `pill ${reducedMotion ? 'cut' : 'ok'}`;
+  if (perfEl) perfEl.className = `pill ${frameP95 <= 12 ? 'ok' : frameP95 <= 16 ? 'warn' : 'cut'}`;
+}
+
+// Simulate telemetry updates (replace with real touring-rig API calls)
+setInterval(() => {
+  const mockTelemetry = {
+    strobeCap: Math.random() > 0.1, // 90% of time strobe is capped
+    reducedMotion: Math.random() > 0.8, // 20% of time motion is reduced
+    frameP95: 6 + Math.random() * 12 // 6-18ms frame times
+  };
+  updateRails(mockTelemetry);
+}, 2000);
+
+// Device persistence
+function saveDeviceId(deviceId) {
+  localStorage.setItem('vj.deviceId', deviceId);
+}
+
+function getSavedDeviceId() {
+  return localStorage.getItem('vj.deviceId');
+}
+
+// OSC/MIDI ping simulation
+let bloomFlash = false;
+function triggerBloom() {
+  bloomFlash = true;
+  const statusEl = document.querySelector('.value:last-child');
+  if (statusEl) {
+    statusEl.textContent = 'BLOOM TRIGGERED!';
+    statusEl.style.color = '#ff0080';
+    setTimeout(() => {
+      statusEl.textContent = 'READY FOR SHOWTIME';
+      statusEl.style.color = '';
+      bloomFlash = false;
+    }, 2000);
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'r' || e.key === 'R') {
+    location.reload();
+  } else if (e.key === 'b' || e.key === 'B') {
+    triggerBloom();
+  } else if (e.key === 'f' || e.key === 'F') {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    }
+  }
+});
+
+// Add some random system info
+const packages = ['LOLcat++', 'Matrix Rain', 'Aurora Ribbons', 'Neon Grid', 'Firefly Swarm', 'Laser Sweeps', 'ASCII Water', 'Spectrum Bars', 'Audio React', 'Matrix Glitch', 'CRT Overlay', 'Stage Combiner', 'Beat Bloom', 'Weather Pack', 'FOH Bundles'];
+const randomPackage = packages[Math.floor(Math.random() * packages.length)];
+document.querySelector('.value').textContent = `${packages.length} FX modules (${randomPackage} active)`;
+
+// Auto-hide controls in kiosk mode
+if (kiosk) {
+  document.getElementById('rails').style.display = 'none';
+}
+
+// Compact mode adjustments
+if (compact) {
+  // Hide some details in compact mode
+  const details = document.querySelector('.details');
+  const itemsToHide = details.querySelectorAll('div:nth-child(n+6):nth-child(-n+10)');
+  itemsToHide.forEach(item => item.style.display = 'none');
+}
+
+// Click to refresh
+document.addEventListener('click', function() {
+  if (!kiosk) location.reload();
+});
+
+// Initial telemetry update
+updateRails();
+</script>

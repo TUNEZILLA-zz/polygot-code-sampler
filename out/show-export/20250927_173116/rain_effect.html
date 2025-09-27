@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Rain Effect</title>
+<style>html,body{margin:0;height:100%;background:#0a0c15;overflow:hidden}
+canvas{display:block} .badge{position:fixed;right:12px;bottom:10px;color:#7af;font:12px ui-monospace;opacity:.6}</style>
+<canvas id="c"></canvas><div class="badge">Rain • ?reduced=1</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+const N=RED?120:300;const drops=[...Array(N)].map(()=>({x:Math.random()*W,y:Math.random()*H,vx:Math.random()*2-1,vy:Math.random()*3+2,life:1}));
+function tick(t){x.fillStyle="rgba(10,12,21,.1)";x.fillRect(0,0,W,H);
+for(const d of drops){d.x+=d.vx;d.y+=d.vy;d.life*=0.999;
+if(d.y>H||d.x<0||d.x>W||d.life<0.1){d.x=Math.random()*W;d.y=-10;d.life=1;}
+x.strokeStyle=`hsla(200,80%,70%,${d.life*0.6})`;x.lineWidth=1+d.life;x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-d.vx*2,d.y-d.vy*2);x.stroke();}
+requestAnimationFrame(tick)}requestAnimationFrame(tick);
+</script>
