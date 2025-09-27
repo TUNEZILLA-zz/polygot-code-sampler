@@ -97,6 +97,16 @@ help:
 	@echo "  effect-rack-custom   Custom Effect Rack (Distortion + Neon + Glitch)"
 	@echo "  effect-rack-status  Show Effect Rack Status"
 	@echo "  effect-rack-html    Effect Rack HTML Gallery"
+	@echo "  show-controller-flow Professional Showpiece Flow (10-15 min)"
+	@echo "  show-controller-cinemascope Cinemascope Scene (Warm-up)"
+	@echo "  show-controller-neon-bloom Neon Bloom Scene (Build Energy)"
+	@echo "  show-controller-prism-burst Prism Burst Scene (Impact Moment)"
+	@echo "  show-controller-hologram Hologram Scene (Cool-down)"
+	@echo "  show-controller-a11y A11y-Safe Scene (Accessibility)"
+	@echo "  show-controller-mono Mono Mode Scene (No Chromatic)"
+	@echo "  show-controller-snapshot Snapshot Kit for Social/Docs"
+	@echo "  show-controller-save-scene Save Scene Configuration"
+	@echo "  show-controller-load-scene Load Scene Configuration"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -631,6 +641,57 @@ effect-rack-html:
 	@echo "🎛️ Creating Effect Rack HTML Gallery..."
 	python3 scripts/effect_rack_cli.py --text "Code Live" --preset decapitator --mode html --output out/effect_rack.html --seed 42
 	@echo "🎛️ Effect Rack HTML complete! Check out/effect_rack.html"
+
+# Show Controller targets
+show-controller-flow:
+	@echo "🎭 Running Professional Showpiece Flow..."
+	python3 scripts/show_controller_cli.py --flow showpiece --text "Code Live" --seed 777
+	@echo "🎭 Professional Showpiece Flow complete!"
+
+show-controller-cinemascope:
+	@echo "🎬 Running Cinemascope Scene..."
+	python3 scripts/show_controller_cli.py --scene cinemascope --text "Code Live" --seed 777
+	@echo "🎬 Cinemascope Scene complete!"
+
+show-controller-neon-bloom:
+	@echo "🎬 Running Neon Bloom Scene..."
+	python3 scripts/show_controller_cli.py --scene neon_bloom --text "TuneZilla" --seed 777
+	@echo "🎬 Neon Bloom Scene complete!"
+
+show-controller-prism-burst:
+	@echo "🎬 Running Prism Burst Scene..."
+	python3 scripts/show_controller_cli.py --scene prism_burst --text "Rawtunez" --seed 777
+	@echo "🎬 Prism Burst Scene complete!"
+
+show-controller-hologram:
+	@echo "🎬 Running Hologram Scene..."
+	python3 scripts/show_controller_cli.py --scene hologram --text "Code Live" --seed 777
+	@echo "🎬 Hologram Scene complete!"
+
+show-controller-a11y:
+	@echo "♿ Running A11y-Safe Scene..."
+	python3 scripts/show_controller_cli.py --scene cinemascope --text "Code Live" --a11y --seed 777
+	@echo "♿ A11y-Safe Scene complete!"
+
+show-controller-mono:
+	@echo "🎵 Running Mono Mode Scene..."
+	python3 scripts/show_controller_cli.py --scene neon_bloom --text "TuneZilla" --mono --seed 777
+	@echo "🎵 Mono Mode Scene complete!"
+
+show-controller-snapshot:
+	@echo "📸 Creating Snapshot Kit..."
+	python3 scripts/show_controller_cli.py --snapshot-kit --scene prism_burst
+	@echo "📸 Snapshot Kit complete! Check out/snapshot_kit_prism_burst.json"
+
+show-controller-save-scene:
+	@echo "💾 Saving Scene Configuration..."
+	python3 scripts/show_controller_cli.py --save-scene out/neon_bloom_scene.json --scene neon_bloom
+	@echo "💾 Scene Configuration saved! Check out/neon_bloom_scene.json"
+
+show-controller-load-scene:
+	@echo "📁 Loading Scene Configuration..."
+	python3 scripts/show_controller_cli.py --load-scene out/neon_bloom_scene.json --text "Code Live"
+	@echo "📁 Scene Configuration loaded!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

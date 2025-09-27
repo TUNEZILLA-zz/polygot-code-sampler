@@ -1,0 +1,48 @@
+{
+  "scene": "Prism Burst",
+  "seed": 777,
+  "states": {
+    "low": {
+      "metrics": {
+        "qps": 10,
+        "p95": 20,
+        "error_rate": 0.01
+      },
+      "controls": {
+        "offset_px": 0.8,
+        "fringe_px": 0,
+        "trail_len": 10,
+        "bpm": 120,
+        "broken_spectrum": 0.0
+      }
+    },
+    "medium": {
+      "metrics": {
+        "qps": 50,
+        "p95": 60,
+        "error_rate": 0.03
+      },
+      "controls": {
+        "offset_px": 4.0,
+        "fringe_px": 0.5,
+        "trail_len": 10,
+        "bpm": 120,
+        "broken_spectrum": 0.0
+      }
+    },
+    "peak": {
+      "metrics": {
+        "qps": 100,
+        "p95": 120,
+        "error_rate": 0.08
+      },
+      "controls": {
+        "offset_px": 8,
+        "fringe_px": 1.25,
+        "trail_len": 10,
+        "bpm": 120,
+        "broken_spectrum": 0.0
+      }
+    }
+  }
+}
