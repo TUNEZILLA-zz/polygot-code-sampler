@@ -1,6 +1,6 @@
 # server/routes.py - FastAPI route handlers
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
@@ -419,7 +419,7 @@ async def get_performance_overlay(request: OverlayRequest):
 # === UTILITY FUNCTIONS ===
 
 
-def get_nested_value(obj: Dict[str, Any], path: str) -> Any:
+def get_nested_value(obj: dict[str, Any], path: str) -> Any:
     """Get nested value from dictionary using dot notation."""
     keys = path.split(".")
     current = obj
@@ -431,7 +431,7 @@ def get_nested_value(obj: Dict[str, Any], path: str) -> Any:
     return current
 
 
-def set_nested_value(obj: Dict[str, Any], path: str, value: Any) -> None:
+def set_nested_value(obj: dict[str, Any], path: str, value: Any) -> None:
     """Set nested value in dictionary using dot notation."""
     keys = path.split(".")
     current = obj
@@ -443,8 +443,8 @@ def set_nested_value(obj: Dict[str, Any], path: str, value: Any) -> None:
 
 
 def interpolate_states(
-    state_a: Dict[str, Any], state_b: Dict[str, Any], t: float
-) -> Dict[str, Any]:
+    state_a: dict[str, Any], state_b: dict[str, Any], t: float
+) -> dict[str, Any]:
     """Interpolate between two states."""
     result = {}
     for key in set(state_a.keys()) | set(state_b.keys()):
@@ -457,7 +457,7 @@ def interpolate_states(
     return result
 
 
-def quantize_state(state: Dict[str, Any]) -> Dict[str, Any]:
+def quantize_state(state: dict[str, Any]) -> dict[str, Any]:
     """Quantize state values to grid."""
     result = {}
     for key, value in state.items():
@@ -468,7 +468,7 @@ def quantize_state(state: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-async def coalesce_requests(requests: List[RenderRequest]) -> List[RenderRequest]:
+async def coalesce_requests(requests: list[RenderRequest]) -> list[RenderRequest]:
     """Coalesce similar requests to reduce processing."""
     # Simple coalescing: group by Python code
     groups = {}

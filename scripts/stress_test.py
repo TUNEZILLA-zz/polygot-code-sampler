@@ -8,7 +8,7 @@ import random
 import statistics
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -25,7 +25,7 @@ class CodeLiveStressTest:
         backend: str,
         code: str,
         parallel: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Single render request"""
         payload = {"target": backend, "code": code, "parallel": parallel}
 
@@ -61,8 +61,8 @@ class CodeLiveStressTest:
             }
 
     async def batch_render(
-        self, session: aiohttp.ClientSession, tracks: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, session: aiohttp.ClientSession, tracks: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Batch render request"""
         payload = {"tracks": tracks}
 
@@ -90,7 +90,7 @@ class CodeLiveStressTest:
                 "error": str(e),
             }
 
-    def generate_test_codes(self) -> List[str]:
+    def generate_test_codes(self) -> list[str]:
         """Generate various test codes for stress testing"""
         return [
             # Simple list comprehension
@@ -251,7 +251,7 @@ class CodeLiveStressTest:
         )
         return results
 
-    def analyze_results(self, results: List[Dict[str, Any]]):
+    def analyze_results(self, results: list[dict[str, Any]]):
         """Analyze stress test results"""
         if not results:
             print("❌ No results to analyze")

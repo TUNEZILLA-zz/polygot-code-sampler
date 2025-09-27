@@ -2,7 +2,7 @@
 Centralized strategy selection for Julia code generation
 """
 
-from typing import Optional, Tuple
+from typing import Optional
 
 from ...core import IRComp
 from .associativity import (
@@ -20,7 +20,7 @@ def choose_strategy(
     elem_type: str = "Int",
     parallel_requested: bool,
     explain: bool = True,
-) -> Tuple[str, str, str]:
+) -> tuple[str, str, str]:
     """
     Centralized strategy selection for Julia code generation
 

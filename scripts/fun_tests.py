@@ -6,7 +6,7 @@ Demonstrate the production-hardened physics FX system with exciting test cases
 
 import random
 import time
-from typing import Any, Dict
+from typing import Any
 
 
 class PhysicsFXTestRunner:
@@ -27,7 +27,7 @@ class PhysicsFXTestRunner:
         self.test_results.append(result)
         print(f"🎛️ [{timestamp}] {test_name}: {status} {details}")
 
-    def simulate_metrics(self, scenario: str) -> Dict[str, Any]:
+    def simulate_metrics(self, scenario: str) -> dict[str, Any]:
         """Simulate realistic metrics for different scenarios"""
         base_time = time.time()
 

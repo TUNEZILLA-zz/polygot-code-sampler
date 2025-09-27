@@ -6,7 +6,7 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 from functools import lru_cache
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import orjson
 from fastapi import FastAPI, HTTPException, Request
@@ -72,30 +72,30 @@ class RenderRequest(BaseModel):
 
 class RenderResponse(BaseModel):
     code: str
-    notes: List[str] = []
+    notes: list[str] = []
     degraded: bool = False
-    metrics: Dict[str, Any]
-    warnings: List[str] = []
-    fallbacks: List[str] = []
+    metrics: dict[str, Any]
+    warnings: list[str] = []
+    fallbacks: list[str] = []
 
 
 class BatchRequest(BaseModel):
-    tracks: List[RenderRequest] = Field(
+    tracks: list[RenderRequest] = Field(
         ..., max_items=10, description="Render tracks (max 10)"
     )
     coalesce: bool = Field(True, description="Coalesce similar requests")
 
 
 class BatchResponse(BaseModel):
-    tracks: List[RenderResponse]
-    metrics: Dict[str, Any]
+    tracks: list[RenderResponse]
+    metrics: dict[str, Any]
 
 
 class HealthResponse(BaseModel):
     status: str
     version: str
     uptime: float
-    metrics: Dict[str, Any]
+    metrics: dict[str, Any]
 
 
 class ReadyResponse(BaseModel):
@@ -548,26 +548,26 @@ async def render_batch(request: BatchRequest):
 
 # Creative endpoints
 @app.post("/sidechain")
-async def sidechain(request: Dict[str, Any]):
+async def sidechain(request: dict[str, Any]):
     """Apply adaptive mixing rules"""
     return {"status": "sidechain applied"}
 
 
 @app.post("/timeline")
-async def timeline(request: Dict[str, Any]):
+async def timeline(request: dict[str, Any]):
     """Keyframe interpolation"""
     return {"status": "timeline applied"}
 
 
 @app.post("/glitch")
-async def glitch(request: Dict[str, Any]):
+async def glitch(request: dict[str, Any]):
     """Apply glitch effects"""
     GLITCH_COUNT.inc()
     return {"status": "glitch applied"}
 
 
 @app.post("/ab-compare")
-async def ab_compare(request: Dict[str, Any]):
+async def ab_compare(request: dict[str, Any]):
     """A/B state comparison"""
     return {"status": "A/B comparison applied"}
 
@@ -580,13 +580,13 @@ async def list_presets():
 
 
 @app.post("/presets")
-async def create_preset(request: Dict[str, Any]):
+async def create_preset(request: dict[str, Any]):
     """Create new preset"""
     return {"status": "preset created"}
 
 
 @app.put("/presets/{preset_id}")
-async def update_preset(preset_id: str, request: Dict[str, Any]):
+async def update_preset(preset_id: str, request: dict[str, Any]):
     """Update preset"""
     return {"status": "preset updated"}
 
@@ -599,7 +599,7 @@ async def delete_preset(preset_id: str):
 
 # MIDI integration
 @app.post("/midi")
-async def apply_midi(request: Dict[str, Any]):
+async def apply_midi(request: dict[str, Any]):
     """Apply MIDI CC mapping"""
     return {"status": "MIDI applied"}
 
@@ -611,7 +611,7 @@ async def list_midi_mappings():
 
 
 @app.post("/midi/mappings")
-async def create_midi_mapping(request: Dict[str, Any]):
+async def create_midi_mapping(request: dict[str, Any]):
     """Create MIDI mapping"""
     return {"status": "MIDI mapping created"}
 

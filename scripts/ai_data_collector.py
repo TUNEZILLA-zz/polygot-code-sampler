@@ -11,7 +11,7 @@ import random
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -70,7 +70,7 @@ class UserInteraction:
 
     timestamp: datetime
     user_action: str
-    parameters: Dict[str, Any]
+    parameters: dict[str, Any]
     result_satisfaction: float
     performance_feedback: float
     creativity_rating: float
@@ -81,17 +81,17 @@ class UserInteraction:
 class AITrainingData:
     """Complete AI training dataset"""
 
-    code_patterns: List[CodePattern]
-    performance_metrics: List[PerformanceMetrics]
-    optimization_results: List[OptimizationResult]
-    user_interactions: List[UserInteraction]
-    preset_recommendations: List[Dict[str, Any]]
-    adaptive_tuning_data: List[Dict[str, Any]]
-    patch_generation_data: List[Dict[str, Any]]
-    pattern_detection_data: List[Dict[str, Any]]
-    chaos_enhancement_data: List[Dict[str, Any]]
-    prediction_data: List[Dict[str, Any]]
-    style_transfer_data: List[Dict[str, Any]]
+    code_patterns: list[CodePattern]
+    performance_metrics: list[PerformanceMetrics]
+    optimization_results: list[OptimizationResult]
+    user_interactions: list[UserInteraction]
+    preset_recommendations: list[dict[str, Any]]
+    adaptive_tuning_data: list[dict[str, Any]]
+    patch_generation_data: list[dict[str, Any]]
+    pattern_detection_data: list[dict[str, Any]]
+    chaos_enhancement_data: list[dict[str, Any]]
+    prediction_data: list[dict[str, Any]]
+    style_transfer_data: list[dict[str, Any]]
 
 
 class AIDataCollector:
@@ -181,7 +181,7 @@ class AIDataCollector:
     def collect_user_interaction(
         self,
         action: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         satisfaction: float,
         performance_feedback: float,
         creativity_rating: float,

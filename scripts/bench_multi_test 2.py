@@ -10,7 +10,7 @@ import os
 import pathlib
 import subprocess
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUTDIR = ROOT / "bench" / "results"
@@ -24,7 +24,7 @@ GENDIR.mkdir(parents=True, exist_ok=True)
 TARGETDIR.mkdir(parents=True, exist_ok=True)
 
 
-def load_test_suite() -> Dict[str, Any]:
+def load_test_suite() -> dict[str, Any]:
     """Load the multi-test suite configuration"""
     suite_file = FIXTURES / "multi_test_suite.json"
     if not suite_file.exists():
@@ -36,8 +36,8 @@ def load_test_suite() -> Dict[str, Any]:
 
 
 def run_backend_benchmark(
-    backend: str, test_case: Dict[str, Any], test_config: Dict[str, Any]
-) -> List[str]:
+    backend: str, test_case: dict[str, Any], test_config: dict[str, Any]
+) -> list[str]:
     """Run benchmark for a specific backend and test case"""
     test_name = test_case["name"]
     python_code = test_case["python_code"]
@@ -74,7 +74,7 @@ def run_backend_benchmark(
         return []
 
 
-def run_julia_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str]:
+def run_julia_benchmark(test_case: dict[str, Any], env: dict[str, str]) -> list[str]:
     """Run Julia benchmark for a test case"""
     try:
         # Generate Julia code
@@ -129,7 +129,7 @@ def run_julia_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[
         return [create_error_result(env, "julia", test_case["name"], str(e))]
 
 
-def run_rust_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str]:
+def run_rust_benchmark(test_case: dict[str, Any], env: dict[str, str]) -> list[str]:
     """Run Rust benchmark for a test case"""
     try:
         # Generate Rust code
@@ -201,7 +201,7 @@ def run_rust_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[s
         return [create_error_result(env, "rust", test_case["name"], str(e))]
 
 
-def run_go_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str]:
+def run_go_benchmark(test_case: dict[str, Any], env: dict[str, str]) -> list[str]:
     """Run Go benchmark for a test case"""
     try:
         # Generate Go code
@@ -262,7 +262,7 @@ def run_go_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str
         return [create_error_result(env, "go", test_case["name"], str(e))]
 
 
-def run_ts_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str]:
+def run_ts_benchmark(test_case: dict[str, Any], env: dict[str, str]) -> list[str]:
     """Run TypeScript benchmark for a test case"""
     try:
         # Generate TypeScript code
@@ -301,7 +301,7 @@ def run_ts_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str
         return [create_error_result(env, "ts", test_case["name"], str(e))]
 
 
-def run_csharp_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List[str]:
+def run_csharp_benchmark(test_case: dict[str, Any], env: dict[str, str]) -> list[str]:
     """Run C# benchmark for a test case"""
     try:
         # Generate C# code
@@ -376,8 +376,8 @@ def run_csharp_benchmark(test_case: Dict[str, Any], env: Dict[str, str]) -> List
 
 
 def create_benchmark_results(
-    env: Dict[str, str], backend: str, test_case: Dict[str, Any]
-) -> List[str]:
+    env: dict[str, str], backend: str, test_case: dict[str, Any]
+) -> list[str]:
     """Create benchmark result entries for a successful run"""
     results = []
     timestamp = datetime.datetime.utcnow().isoformat() + "Z"
@@ -434,7 +434,7 @@ def create_benchmark_results(
 
 
 def create_error_result(
-    env: Dict[str, str], backend: str, test_name: str, error_msg: str
+    env: dict[str, str], backend: str, test_name: str, error_msg: str
 ) -> str:
     """Create an error result entry"""
     result = {

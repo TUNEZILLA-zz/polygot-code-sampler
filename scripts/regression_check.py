@@ -12,7 +12,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import median
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 # Import policy loader
 try:
@@ -29,7 +29,7 @@ except ImportError:
         return 3
 
 
-def load_benchmark_data(file_path: Path) -> List[Dict[str, Any]]:
+def load_benchmark_data(file_path: Path) -> list[dict[str, Any]]:
     """Load benchmark data from JSON file."""
     try:
         with open(file_path) as f:
@@ -43,8 +43,8 @@ def load_benchmark_data(file_path: Path) -> List[Dict[str, Any]]:
 
 
 def filter_recent_data(
-    data: List[Dict[str, Any]], days: int = 7
-) -> List[Dict[str, Any]]:
+    data: list[dict[str, Any]], days: int = 7
+) -> list[dict[str, Any]]:
     """Filter data to last N days."""
     cutoff_date = datetime.now() - timedelta(days=days)
 
@@ -69,8 +69,8 @@ def filter_recent_data(
 
 
 def group_by_backend_test_mode(
-    data: List[Dict[str, Any]],
-) -> Dict[str, List[Dict[str, Any]]]:
+    data: list[dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
     """Group data by (backend, test, mode) combination."""
     groups = {}
 
@@ -88,7 +88,7 @@ def group_by_backend_test_mode(
 
 
 def calculate_rolling_median(
-    records: List[Dict[str, Any]], current_record: Dict[str, Any]
+    records: list[dict[str, Any]], current_record: dict[str, Any]
 ) -> Optional[float]:
     """Calculate rolling median excluding the current record."""
     if len(records) < 2:
@@ -111,7 +111,7 @@ def calculate_rolling_median(
     return median(values)
 
 
-def parse_thresholds(threshold_str: str) -> Dict[str, float]:
+def parse_thresholds(threshold_str: str) -> dict[str, float]:
     """Parse per-backend thresholds from string like '+12%:julia,+8%:rust,+15%:go'"""
     thresholds = {}
     if not threshold_str:
@@ -130,11 +130,11 @@ def parse_thresholds(threshold_str: str) -> Dict[str, float]:
 
 
 def check_regressions(
-    data: List[Dict[str, Any]],
+    data: list[dict[str, Any]],
     threshold: float = 0.10,
-    per_backend_thresholds: Dict[str, float] = None,
+    per_backend_thresholds: dict[str, float] = None,
     grace_period_days: int = 3,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Check for performance regressions."""
     recent_data = filter_recent_data(data, days=7)
     groups = group_by_backend_test_mode(recent_data)
@@ -187,7 +187,7 @@ def check_regressions(
     return regressions
 
 
-def format_regression_report(regressions: List[Dict[str, Any]]) -> str:
+def format_regression_report(regressions: list[dict[str, Any]]) -> str:
     """Format regression report for display."""
     if not regressions:
         return "✅ No performance regressions detected"

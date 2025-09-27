@@ -8,7 +8,7 @@ import random
 import statistics
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -25,7 +25,7 @@ class MasteredStressTest:
         target: str,
         code: str,
         parallel: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Mastered render request with circuit breaker and rate limiting"""
         payload = {"target": target, "code": code, "parallel": parallel}
 
@@ -62,7 +62,7 @@ class MasteredStressTest:
                 "error": str(e),
             }
 
-    def generate_mastered_codes(self) -> List[str]:
+    def generate_mastered_codes(self) -> list[str]:
         """Generate test codes for mastered performance testing"""
         return [
             # Simple cases (should work perfectly)
@@ -255,7 +255,7 @@ class MasteredStressTest:
         print(f"✅ Creative workflow test completed: {len(results)} requests")
         return results
 
-    def analyze_mastered_results(self, results: List[Dict[str, Any]]):
+    def analyze_mastered_results(self, results: list[dict[str, Any]]):
         """Analyze mastered stress test results"""
         if not results:
             print("❌ No results to analyze")

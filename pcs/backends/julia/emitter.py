@@ -4,14 +4,14 @@ Julia AST/strings builder with block context manager
 
 import re
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
 
 @dataclass
 class JL:
     """Julia code emitter with indentation and block management"""
 
-    code: List[str]
+    code: list[str]
     indent: int = 0
 
     def w(self, s: str = ""):

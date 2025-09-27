@@ -8,7 +8,7 @@ import random
 import statistics
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -25,7 +25,7 @@ class ExtremeStressTest:
         target: str,
         code: str,
         parallel: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Extreme single render request"""
         payload = {"target": target, "code": code, "parallel": parallel}
 
@@ -60,7 +60,7 @@ class ExtremeStressTest:
                 "error": str(e),
             }
 
-    def generate_extreme_codes(self) -> List[str]:
+    def generate_extreme_codes(self) -> list[str]:
         """Generate extreme test codes for maximum stress"""
         return [
             # Massive nested comprehension
@@ -206,7 +206,7 @@ class ExtremeStressTest:
         print(f"✅ Extreme mixed workload completed: {len(results)} requests")
         return results
 
-    def analyze_extreme_results(self, results: List[Dict[str, Any]]):
+    def analyze_extreme_results(self, results: list[dict[str, Any]]):
         """Analyze extreme stress test results"""
         if not results:
             print("❌ No results to analyze")

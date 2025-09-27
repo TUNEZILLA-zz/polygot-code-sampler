@@ -2,7 +2,7 @@
 import math
 import random
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,15 +49,15 @@ class AudioSimulatorRequest(BaseModel):
 
 class AudioSimulatorResponse(BaseModel):
     code: str
-    notes: List[str] = []
+    notes: list[str] = []
     degraded: bool = False
-    metrics: Dict[str, Any]
-    warnings: List[str] = []
-    fallbacks: List[str] = []
-    audio_effects: Dict[str, Any] = {}
-    compiler_physics: Dict[str, Any] = {}
-    dsp_simulation: Dict[str, Any] = {}
-    backend_instruments: Dict[str, Any] = {}
+    metrics: dict[str, Any]
+    warnings: list[str] = []
+    fallbacks: list[str] = []
+    audio_effects: dict[str, Any] = {}
+    compiler_physics: dict[str, Any] = {}
+    dsp_simulation: dict[str, Any] = {}
+    backend_instruments: dict[str, Any] = {}
 
 
 # Audio Simulator Implementation

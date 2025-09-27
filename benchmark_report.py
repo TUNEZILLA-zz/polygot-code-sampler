@@ -9,7 +9,7 @@ including performance comparisons and trend analysis.
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
 def format_time_ms(time_ms: float) -> str:
@@ -30,7 +30,7 @@ def format_memory_mb(memory_mb: float) -> str:
         return f"{memory_mb:.2f} MB"
 
 
-def generate_performance_table(data: List[Dict[str, Any]], title: str) -> str:
+def generate_performance_table(data: list[dict[str, Any]], title: str) -> str:
     """Generate a markdown table for performance data"""
     if not data:
         return f"### {title}\n\nNo data available.\n\n"

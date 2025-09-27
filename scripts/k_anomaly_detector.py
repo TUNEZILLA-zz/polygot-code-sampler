@@ -12,10 +12,10 @@ import json
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
-def load_benchmark_data(file_path: Path) -> List[Dict[str, Any]]:
+def load_benchmark_data(file_path: Path) -> list[dict[str, Any]]:
     """Load benchmark data from JSON file."""
     try:
         with open(file_path) as f:
@@ -28,7 +28,7 @@ def load_benchmark_data(file_path: Path) -> List[Dict[str, Any]]:
         sys.exit(1)
 
 
-def group_by_date(data: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+def group_by_date(data: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     """Group data by date (YYYY-MM-DD)."""
     by_date = defaultdict(list)
 
@@ -47,8 +47,8 @@ def group_by_date(data: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]
 
 
 def detect_k_anomaly(
-    data: List[Dict[str, Any]], k_threshold: float = 0.8
-) -> List[Dict[str, Any]]:
+    data: list[dict[str, Any]], k_threshold: float = 0.8
+) -> list[dict[str, Any]]:
     """
     Detect K-anomalies: days where k% of backends show regressions.
 
@@ -110,7 +110,7 @@ def detect_k_anomaly(
     return anomalies
 
 
-def format_anomaly_report(anomalies: List[Dict[str, Any]]) -> str:
+def format_anomaly_report(anomalies: list[dict[str, Any]]) -> str:
     """Format anomaly report for display."""
     if not anomalies:
         return "✅ No K-anomalies detected (infrastructure looks stable)"

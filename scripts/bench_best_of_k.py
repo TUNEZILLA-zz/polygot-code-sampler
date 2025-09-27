@@ -11,10 +11,10 @@ import json
 import statistics
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 
-def run_benchmark_k_times(test_func, k: int = 5) -> Dict[str, Any]:
+def run_benchmark_k_times(test_func, k: int = 5) -> dict[str, Any]:
     """Run a benchmark function k times and return best result."""
     times = []
 
@@ -46,12 +46,12 @@ def benchmark_sum_even_squares(n: int = 1000000) -> int:
     return sum(x * x for x in range(0, n) if x % 2 == 0)
 
 
-def benchmark_dict_comprehension(n: int = 100000) -> Dict[int, int]:
+def benchmark_dict_comprehension(n: int = 100000) -> dict[int, int]:
     """Benchmark: dictionary comprehension."""
     return {x: x * x for x in range(n) if x % 2 == 0}
 
 
-def run_all_benchmarks(k: int = 5) -> List[Dict[str, Any]]:
+def run_all_benchmarks(k: int = 5) -> list[dict[str, Any]]:
     """Run all benchmarks with best-of-k strategy."""
     results = []
 

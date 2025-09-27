@@ -8,7 +8,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Tuple
 
 # Add project root to path
 project_root = Path(__file__).resolve().parents[1]
@@ -18,7 +17,7 @@ from pcs.core import IRComp, PyToIR
 from pcs.renderer_api import render
 
 
-def benchmark_backend(backend: str, ir: IRComp, k: int = 5) -> Tuple[float, float]:
+def benchmark_backend(backend: str, ir: IRComp, k: int = 5) -> tuple[float, float]:
     """Benchmark a single backend with best-of-k timing."""
     times = []
 
@@ -34,7 +33,7 @@ def benchmark_backend(backend: str, ir: IRComp, k: int = 5) -> Tuple[float, floa
     return mean_time, std_time
 
 
-def load_baseline() -> Dict[str, float]:
+def load_baseline() -> dict[str, float]:
     """Load baseline performance from canary_baseline.json."""
     baseline_file = Path("bench/canary_baseline.json")
     if baseline_file.exists():
@@ -43,7 +42,7 @@ def load_baseline() -> Dict[str, float]:
     return {}
 
 
-def save_baseline(results: Dict[str, float]) -> None:
+def save_baseline(results: dict[str, float]) -> None:
     """Save current results as new baseline."""
     baseline_file = Path("bench/canary_baseline.json")
     baseline_file.parent.mkdir(exist_ok=True)

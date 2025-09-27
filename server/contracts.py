@@ -1,6 +1,6 @@
 # server/contracts.py - FastAPI contracts and models
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -60,7 +60,7 @@ class Effects(BaseModel):
 
 class Policy(BaseModel):
     grace_days: int = Field(ge=0, le=30, default=3)
-    thresholds: Dict[str, float] = Field(default_factory=dict)
+    thresholds: dict[str, float] = Field(default_factory=dict)
     max_gen_time_ms: int = Field(ge=100, le=5000, default=1000)
 
 
@@ -69,7 +69,7 @@ class Policy(BaseModel):
 
 class RenderRequest(BaseModel):
     python: str = Field(..., min_length=1, max_length=10000)
-    tracks: List[Track]
+    tracks: list[Track]
     effects: Effects = Field(default_factory=Effects)
     policy: Policy = Field(default_factory=Policy)
     quantize: bool = False
@@ -79,8 +79,8 @@ class RenderRequest(BaseModel):
 class PerformanceStats(BaseModel):
     gen_ms: float
     loc: int
-    fallbacks: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    fallbacks: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
     memory_mb: Optional[float] = None
 
 
@@ -93,7 +93,7 @@ class RenderResult(BaseModel):
 
 
 class RenderResponse(BaseModel):
-    results: List[RenderResult]
+    results: list[RenderResult]
     total_gen_ms: float
     quantized: bool = False
 
@@ -119,14 +119,14 @@ class Rule(BaseModel):
 
 
 class SidechainRequest(BaseModel):
-    rules: List[Rule]
-    metrics: Dict[str, Any]
-    current_state: Dict[str, Any]
+    rules: list[Rule]
+    metrics: dict[str, Any]
+    current_state: dict[str, Any]
 
 
 class SidechainResponse(BaseModel):
-    updated_state: Dict[str, Any]
-    triggered_rules: List[str]
+    updated_state: dict[str, Any]
+    triggered_rules: list[str]
 
 
 # === KEYFRAME & TIMELINE ===
@@ -134,19 +134,19 @@ class SidechainResponse(BaseModel):
 
 class Keyframe(BaseModel):
     t: float = Field(ge=0, le=100)
-    state: Dict[str, Any]
+    state: dict[str, Any]
     easing: Literal["linear", "exp", "s"] = "linear"
 
 
 class TimelineRequest(BaseModel):
-    keyframes: List[Keyframe]
+    keyframes: list[Keyframe]
     current_time: float = Field(ge=0, le=100)
     quantize: bool = False
 
 
 class TimelineResponse(BaseModel):
-    interpolated_state: Dict[str, Any]
-    active_keyframes: List[str]
+    interpolated_state: dict[str, Any]
+    active_keyframes: list[str]
 
 
 # === PRESET MANAGEMENT ===
@@ -155,21 +155,21 @@ class TimelineResponse(BaseModel):
 class Preset(BaseModel):
     version: str = "1.0"
     name: str = Field(..., min_length=1, max_length=100)
-    state: Dict[str, Any]
+    state: dict[str, Any]
     notes: Optional[str] = None
-    tags: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
 
 
 class PresetListResponse(BaseModel):
-    presets: List[Preset]
+    presets: list[Preset]
     total: int
 
 
 class PresetRequest(BaseModel):
     name: str
-    state: Dict[str, Any]
+    state: dict[str, Any]
     notes: Optional[str] = None
-    tags: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
 
 
 # === MIDI MAPPING ===
@@ -184,12 +184,12 @@ class MidiMap(BaseModel):
 class MidiRequest(BaseModel):
     cc: int = Field(ge=0, le=127)
     value: int = Field(ge=0, le=127)
-    mappings: List[MidiMap]
+    mappings: list[MidiMap]
 
 
 class MidiResponse(BaseModel):
-    updated_state: Dict[str, Any]
-    triggered_mappings: List[str]
+    updated_state: dict[str, Any]
+    triggered_mappings: list[str]
 
 
 # === PROJECT MANAGEMENT ===
@@ -198,11 +198,11 @@ class MidiResponse(BaseModel):
 class Project(BaseModel):
     project_version: str = "1.0"
     python_source: str
-    clips: List[Dict[str, Any]] = Field(default_factory=list)
-    keyframes: List[Keyframe] = Field(default_factory=list)
-    rules: List[Rule] = Field(default_factory=list)
-    midi_map: List[MidiMap] = Field(default_factory=list)
-    history: List[Dict[str, Any]] = Field(default_factory=list)
+    clips: list[dict[str, Any]] = Field(default_factory=list)
+    keyframes: list[Keyframe] = Field(default_factory=list)
+    rules: list[Rule] = Field(default_factory=list)
+    midi_map: list[MidiMap] = Field(default_factory=list)
+    history: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ProjectRequest(BaseModel):
@@ -226,7 +226,7 @@ class GlitchRequest(BaseModel):
 
 
 class GlitchResponse(BaseModel):
-    glitched_state: Dict[str, Any]
+    glitched_state: dict[str, Any]
     seed_used: int
     safe_applied: bool
 
@@ -235,14 +235,14 @@ class GlitchResponse(BaseModel):
 
 
 class ABCompareRequest(BaseModel):
-    state_a: Dict[str, Any]
-    state_b: Dict[str, Any]
+    state_a: dict[str, Any]
+    state_b: dict[str, Any]
     active: Literal["a", "b"] = "a"
 
 
 class ABCompareResponse(BaseModel):
-    active_state: Dict[str, Any]
-    diff_summary: Dict[str, Any]
+    active_state: dict[str, Any]
+    diff_summary: dict[str, Any]
 
 
 # === PERFORMANCE OVERLAYS ===
@@ -254,22 +254,22 @@ class OverlayRequest(BaseModel):
 
 
 class OverlayResponse(BaseModel):
-    overlays: List[str]
+    overlays: list[str]
     severity: Literal["info", "warning", "error"]
-    recommendations: List[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
 
 
 # === BATCH OPERATIONS ===
 
 
 class BatchRenderRequest(BaseModel):
-    requests: List[RenderRequest]
+    requests: list[RenderRequest]
     coalesce: bool = True
     max_wait_ms: int = Field(ge=100, le=2000, default=500)
 
 
 class BatchRenderResponse(BaseModel):
-    results: List[RenderResponse]
+    results: list[RenderResponse]
     total_time_ms: float
     coalesced: bool
 
@@ -280,12 +280,12 @@ class BatchRenderResponse(BaseModel):
 class TelemetryEvent(BaseModel):
     event_type: str
     timestamp: float
-    data: Dict[str, Any]
+    data: dict[str, Any]
     session_id: Optional[str] = None
 
 
 class TelemetryRequest(BaseModel):
-    events: List[TelemetryEvent]
+    events: list[TelemetryEvent]
     opt_in: bool = True
 
 
@@ -330,7 +330,7 @@ def validate_sidechain_rule(rule: Rule) -> bool:
 class APIError(BaseModel):
     error: str
     code: str
-    details: Optional[Dict[str, Any]] = None
+    details: Optional[dict[str, Any]] = None
 
 
 class ValidationError(APIError):

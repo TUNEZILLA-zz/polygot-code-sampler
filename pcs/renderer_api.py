@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from typing import Any, Callable, Protocol
+from collections.abc import Callable
+from typing import Any, Protocol
 
 from pcs.renderers.csharp import render_csharp  # noqa: F401
 from pcs.renderers.go import render_go  # noqa: F401

@@ -8,7 +8,7 @@ Maps audio production metaphors to actual renderer_api.render() calls.
 
 import logging
 import time
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Literal, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -59,7 +59,7 @@ class RenderRequest(BaseModel):
     )
 
     # Effects rack toggles
-    effects: Dict[str, bool] = Field(
+    effects: dict[str, bool] = Field(
         default_factory=dict, description="Optimization effects"
     )
 
@@ -81,8 +81,8 @@ class RenderResponse(BaseModel):
     ok: bool
     target: str
     code: str
-    meta: Dict[str, Any] = Field(default_factory=dict)
-    timing: Dict[str, float] = Field(default_factory=dict)
+    meta: dict[str, Any] = Field(default_factory=dict)
+    timing: dict[str, float] = Field(default_factory=dict)
 
 
 # Initialize the parser

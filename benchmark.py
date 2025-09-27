@@ -17,7 +17,7 @@ import subprocess
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import psutil
 
@@ -35,7 +35,7 @@ class BenchmarkSuite:
     """Comprehensive benchmark suite for Polyglot Code Sampler"""
 
     def __init__(self):
-        self.results: Dict[str, Any] = {}
+        self.results: dict[str, Any] = {}
         self.temp_dir = Path(tempfile.mkdtemp(prefix="pcs_benchmark_"))
 
     def cleanup(self):
@@ -44,7 +44,7 @@ class BenchmarkSuite:
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    def measure_memory(self, func, *args, **kwargs) -> Tuple[Any, float]:
+    def measure_memory(self, func, *args, **kwargs) -> tuple[Any, float]:
         """Measure memory usage during function execution"""
         process = psutil.Process()
         mem_before = process.memory_info().rss / 1024 / 1024  # MB
@@ -56,7 +56,7 @@ class BenchmarkSuite:
 
         return result, mem_used
 
-    def benchmark_parsing(self, test_cases: List[Tuple[str, str]]) -> Dict[str, Any]:
+    def benchmark_parsing(self, test_cases: list[tuple[str, str]]) -> dict[str, Any]:
         """Benchmark Python AST parsing and IR generation"""
         print("🔍 Benchmarking Python parsing and IR generation...")
 
@@ -103,8 +103,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_rust_generation(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark Rust code generation"""
         print("🦀 Benchmarking Rust code generation...")
 
@@ -157,8 +157,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_typescript_generation(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark TypeScript code generation"""
         print("📘 Benchmarking TypeScript code generation...")
 
@@ -188,8 +188,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_sql_generation(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark SQL code generation"""
         print("🗄️ Benchmarking SQL code generation...")
 
@@ -218,8 +218,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_go_generation(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark Go code generation"""
         print("🐹 Benchmarking Go code generation...")
 
@@ -248,8 +248,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_go_parallel_generation(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark Go parallel code generation"""
         print("🚀 Benchmarking Go parallel code generation...")
 
@@ -278,8 +278,8 @@ class BenchmarkSuite:
         return results
 
     def benchmark_rust_execution(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark Rust compilation and execution"""
         print("⚡ Benchmarking Rust compilation and execution...")
 
@@ -386,8 +386,8 @@ rayon = "1.8"
         return results
 
     def benchmark_typescript_execution(
-        self, test_cases: List[Tuple[str, str]]
-    ) -> Dict[str, Any]:
+        self, test_cases: list[tuple[str, str]]
+    ) -> dict[str, Any]:
         """Benchmark TypeScript execution with Node.js"""
         print("🚀 Benchmarking TypeScript execution...")
 
@@ -469,7 +469,7 @@ console.log(JSON.stringify({{
 
         return results
 
-    def benchmark_scalability(self) -> Dict[str, Any]:
+    def benchmark_scalability(self) -> dict[str, Any]:
         """Benchmark performance with increasing data sizes"""
         print("📈 Benchmarking scalability...")
 
@@ -508,7 +508,7 @@ console.log(JSON.stringify({{
 
         return results
 
-    def run_full_benchmark(self) -> Dict[str, Any]:
+    def run_full_benchmark(self) -> dict[str, Any]:
         """Run complete benchmark suite"""
         print("🚀 Starting comprehensive benchmark suite...")
 

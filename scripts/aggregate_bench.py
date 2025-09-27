@@ -9,7 +9,7 @@ import pathlib
 import statistics
 import sys
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "bench" / "results"
@@ -17,7 +17,7 @@ PAGES = ROOT / "site"
 SCHEMA_FILE = ROOT / "bench" / "schema.json"
 
 
-def load_schema() -> Dict[str, Any]:
+def load_schema() -> dict[str, Any]:
     """Load benchmark data schema for validation."""
     try:
         with open(SCHEMA_FILE) as f:
@@ -30,7 +30,7 @@ def load_schema() -> Dict[str, Any]:
         }
 
 
-def validate_record(record: Dict[str, Any], schema: Dict[str, Any]) -> List[str]:
+def validate_record(record: dict[str, Any], schema: dict[str, Any]) -> list[str]:
     """Validate a single benchmark record against schema."""
     warnings = []
     required_fields = schema.get("required_fields", [])

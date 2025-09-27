@@ -10,13 +10,13 @@ import pathlib
 import statistics
 import sys
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "bench" / "results"
 
 
-def load_benchmark_data() -> List[Dict[str, Any]]:
+def load_benchmark_data() -> list[dict[str, Any]]:
     """Load all benchmark results from NDJSON files"""
     all_data = []
 
@@ -42,7 +42,7 @@ def load_benchmark_data() -> List[Dict[str, Any]]:
     return all_data
 
 
-def get_rolling_median(data: List[Dict[str, Any]], days: int = 7) -> Dict[str, float]:
+def get_rolling_median(data: list[dict[str, Any]], days: int = 7) -> dict[str, float]:
     """Calculate rolling median performance for each backend/test/mode combination"""
     # Group by backend/test/mode
     groups = {}
@@ -83,8 +83,8 @@ def get_rolling_median(data: List[Dict[str, Any]], days: int = 7) -> Dict[str, f
 
 
 def detect_regressions(
-    data: List[Dict[str, Any]], threshold: float = 0.10
-) -> List[Dict[str, Any]]:
+    data: list[dict[str, Any]], threshold: float = 0.10
+) -> list[dict[str, Any]]:
     """Detect performance regressions > threshold"""
     rolling_medians = get_rolling_median(data)
     regressions = []
@@ -126,7 +126,7 @@ def detect_regressions(
     return regressions
 
 
-def format_regression_comment(regressions: List[Dict[str, Any]]) -> str:
+def format_regression_comment(regressions: list[dict[str, Any]]) -> str:
     """Format regression alert as GitHub comment"""
     if not regressions:
         return "✅ **Performance Check**: No significant regressions detected!"

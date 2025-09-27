@@ -8,7 +8,7 @@ import random
 import statistics
 import sys
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 import aiohttp
 
@@ -25,7 +25,7 @@ class JuliaFocusedTest:
         code: str,
         parallel: bool = False,
         unsafe: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Julia-specific render request"""
         payload = {
             "target": "julia",
@@ -68,7 +68,7 @@ class JuliaFocusedTest:
                 "error": str(e),
             }
 
-    def generate_julia_test_codes(self) -> List[str]:
+    def generate_julia_test_codes(self) -> list[str]:
         """Generate Julia-specific test codes"""
         return [
             # Simple list comprehension
@@ -192,7 +192,7 @@ class JuliaFocusedTest:
         print(f"✅ Julia fallback test completed: {len(valid_results)}/{num_requests}")
         return valid_results
 
-    def analyze_julia_results(self, results: List[Dict[str, Any]]):
+    def analyze_julia_results(self, results: list[dict[str, Any]]):
         """Analyze Julia-specific results"""
         if not results:
             print("❌ No results to analyze")

@@ -1,7 +1,7 @@
 # server_ai_plugins.py - Code Live AI Plugin System
 import random
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,15 +43,15 @@ class AIPluginRequest(BaseModel):
 
 class AIPluginResponse(BaseModel):
     code: str
-    notes: List[str] = []
+    notes: list[str] = []
     degraded: bool = False
-    metrics: Dict[str, Any]
-    warnings: List[str] = []
-    fallbacks: List[str] = []
-    ai_recommendations: Dict[str, Any] = {}
-    ai_predictions: Dict[str, Any] = {}
-    ai_insights: Dict[str, Any] = {}
-    ai_creativity: Dict[str, Any] = {}
+    metrics: dict[str, Any]
+    warnings: list[str] = []
+    fallbacks: list[str] = []
+    ai_recommendations: dict[str, Any] = {}
+    ai_predictions: dict[str, Any] = {}
+    ai_insights: dict[str, Any] = {}
+    ai_creativity: dict[str, Any] = {}
 
 
 # AI Plugin System Implementation
@@ -98,7 +98,7 @@ class AIPluginSystem:
             "go_to_csharp": "Make this Go sound like C# PLINQ Synth",
         }
 
-    def analyze_code_patterns(self, code: str) -> Dict[str, Any]:
+    def analyze_code_patterns(self, code: str) -> dict[str, Any]:
         """Analyze code patterns for AI recommendations"""
         patterns = {
             "data_processing": "range" in code and "for" in code,
@@ -121,7 +121,7 @@ class AIPluginSystem:
 
     def generate_preset_recommendation(
         self, code: str, learning_rate: float, confidence: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate AI preset recommendations"""
         analysis = self.analyze_code_patterns(code)
         detected_patterns = analysis["detected_patterns"]
@@ -154,7 +154,7 @@ class AIPluginSystem:
 
     def generate_adaptive_tuning(
         self, code: str, auto_tune: float, learning_speed: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate adaptive optimization tuning"""
         analysis = self.analyze_code_patterns(code)
 
@@ -184,7 +184,7 @@ class AIPluginSystem:
 
     def generate_ai_patches(
         self, code: str, creativity: float, chaos: float
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Generate AI patch suggestions"""
         patches = []
 
@@ -238,7 +238,7 @@ class AIPluginSystem:
 
     def detect_performance_patterns(
         self, code: str, sensitivity: float, alert_level: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Detect performance patterns and issues"""
         issues = []
         warnings = []
@@ -278,7 +278,7 @@ class AIPluginSystem:
 
     def generate_chaos_enhancements(
         self, code: str, chaos_level: float, glitch_mode: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate creative chaos enhancements"""
         enhancements = []
 
@@ -300,7 +300,7 @@ class AIPluginSystem:
 
     def generate_performance_predictions(
         self, code: str, prediction_window: float, accuracy: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate performance predictions"""
         predictions = []
 
@@ -331,7 +331,7 @@ class AIPluginSystem:
 
     def generate_style_transfer(
         self, code: str, target: str, style_strength: float, creativity: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate code style transfer suggestions"""
         style_transfers = []
 

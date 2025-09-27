@@ -2,7 +2,7 @@
 import random
 import re
 import time
-from typing import Any, Dict, List
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,12 +36,12 @@ class LolcatFXRequest(BaseModel):
 
 class LolcatFXResponse(BaseModel):
     code: str
-    notes: List[str] = []
+    notes: list[str] = []
     degraded: bool = False
-    metrics: Dict[str, Any]
-    warnings: List[str] = []
-    fallbacks: List[str] = []
-    lolcat_effects: Dict[str, Any] = {}
+    metrics: dict[str, Any]
+    warnings: list[str] = []
+    fallbacks: list[str] = []
+    lolcat_effects: dict[str, Any] = {}
 
 
 # Lolcat FX Rack Implementation

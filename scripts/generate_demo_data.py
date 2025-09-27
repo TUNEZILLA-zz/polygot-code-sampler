@@ -15,7 +15,6 @@ import json
 import math
 import pathlib
 import random
-from typing import Dict, List
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "bench" / "results"
@@ -55,7 +54,7 @@ def lognormal_noise(mu=0.0, sigma=0.08):
 
 def synth_row(
     backend, test, base_ns, mode, parallel, n, commit, ts_iso, os_name, cpu
-) -> Dict:
+) -> dict:
     # scale by backend
     ns = base_ns * BACKEND_MULT.get(backend, 1.0)
 
@@ -131,17 +130,17 @@ def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     SITE_DIR.mkdir(parents=True, exist_ok=True)
 
-    all_rows: List[Dict] = []
+    all_rows: list[dict] = []
 
     # Generate from oldest to today
     today = datetime.datetime.utcnow().date()
     for delta in range(args.days - 1, -1, -1):
         day = today - datetime.timedelta(days=delta)
         ts_base = datetime.datetime.combine(
-            day, datetime.time(7, 0), tzinfo=datetime.timezone.utc
+            day, datetime.time(7, 0), tzinfo=datetime.UTC
         )
         ndjson_path = RESULTS_DIR / f"{day.isoformat()}.ndjson"
-        rows: List[Dict] = []
+        rows: list[dict] = []
 
         for backend in backends:
             for test, base_ns in test_map.items():

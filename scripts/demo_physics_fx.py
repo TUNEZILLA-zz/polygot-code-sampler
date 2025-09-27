@@ -7,7 +7,7 @@ Demonstrate the physics FX system with real-time metrics simulation
 import math
 import random
 import time
-from typing import Any, Dict
+from typing import Any
 
 
 class PhysicsFXDemo:
@@ -28,7 +28,7 @@ class PhysicsFXDemo:
             },
         }
 
-    def simulate_metrics(self, scenario: str, elapsed: float) -> Dict[str, Any]:
+    def simulate_metrics(self, scenario: str, elapsed: float) -> dict[str, Any]:
         """Simulate realistic metrics for different scenarios"""
         base_time = time.time()
 
@@ -86,7 +86,7 @@ class PhysicsFXDemo:
             },
         }
 
-    def calculate_physics_params(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def calculate_physics_params(self, metrics: dict[str, Any]) -> dict[str, Any]:
         """Calculate physics parameters from metrics"""
         # Particle count based on QPS
         particle_count = int(80 * metrics["qps"])

@@ -13,7 +13,7 @@ import time
 from collections import defaultdict, deque
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -137,7 +137,7 @@ class RenderRequest(BaseModel):
     )
 
     # Effects rack toggles
-    effects: Dict[str, bool] = Field(
+    effects: dict[str, bool] = Field(
         default_factory=dict, description="Optimization effects"
     )
 
@@ -175,15 +175,15 @@ class RenderResponse(BaseModel):
     ok: bool
     target: str
     code: str
-    meta: Dict[str, Any] = Field(default_factory=dict)
-    timing: Dict[str, float] = Field(default_factory=dict)
+    meta: dict[str, Any] = Field(default_factory=dict)
+    timing: dict[str, float] = Field(default_factory=dict)
 
 
 class BatchRenderRequest(BaseModel):
     """Request model for batch rendering"""
 
     code: str = Field(..., description="Python comprehension code", max_length=5000)
-    targets: List[Literal["rust", "ts", "go", "csharp", "julia", "sql"]] = Field(
+    targets: list[Literal["rust", "ts", "go", "csharp", "julia", "sql"]] = Field(
         ..., description="Target backends"
     )
     parallel: Optional[bool] = Field(None, description="Enable parallel processing")
@@ -192,7 +192,7 @@ class BatchRenderRequest(BaseModel):
     )
     unsafe: Optional[bool] = Field(None, description="Enable unsafe optimizations")
     explain: Optional[bool] = Field(None, description="Include explanatory comments")
-    effects: Dict[str, bool] = Field(
+    effects: dict[str, bool] = Field(
         default_factory=dict, description="Optimization effects"
     )
 
@@ -207,7 +207,7 @@ class HealthResponse(BaseModel):
     commit: str
     uptime_seconds: float
     cache_size: int
-    rate_limit_status: Dict[str, int]
+    rate_limit_status: dict[str, int]
 
 
 # Initialize the parser

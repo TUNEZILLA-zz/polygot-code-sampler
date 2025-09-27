@@ -11,7 +11,7 @@ import json
 import statistics
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 class PerformanceDashboard:
@@ -21,7 +21,7 @@ class PerformanceDashboard:
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(exist_ok=True)
 
-    def load_benchmark_data(self, file_path: str) -> Optional[Dict[str, Any]]:
+    def load_benchmark_data(self, file_path: str) -> Optional[dict[str, Any]]:
         """Load benchmark data from a JSON file"""
         try:
             with open(file_path) as f:
@@ -31,7 +31,7 @@ class PerformanceDashboard:
             print(f"Warning: Could not load {file_path}: {e}")
             return None
 
-    def extract_metrics(self, benchmark_data: Dict[str, Any]) -> Dict[str, float]:
+    def extract_metrics(self, benchmark_data: dict[str, Any]) -> dict[str, float]:
         """Extract key performance metrics from benchmark data"""
         metrics = {}
 
@@ -62,7 +62,7 @@ class PerformanceDashboard:
 
         return metrics
 
-    def analyze_trends(self, metrics_history: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def analyze_trends(self, metrics_history: list[dict[str, Any]]) -> dict[str, Any]:
         """Analyze performance trends over time"""
         if len(metrics_history) < 2:
             return {
@@ -125,7 +125,7 @@ class PerformanceDashboard:
 
         return trends
 
-    def detect_regressions(self, trends: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def detect_regressions(self, trends: dict[str, Any]) -> list[dict[str, Any]]:
         """Detect significant performance regressions"""
         regressions = []
 
@@ -145,7 +145,7 @@ class PerformanceDashboard:
 
         return regressions
 
-    def generate_dashboard(self, metrics_history: List[Dict[str, Any]]) -> str:
+    def generate_dashboard(self, metrics_history: list[dict[str, Any]]) -> str:
         """Generate a performance dashboard report"""
         trends = self.analyze_trends(metrics_history)
         regressions = self.detect_regressions(trends)
@@ -244,7 +244,7 @@ class PerformanceDashboard:
         output_file.write_text(dashboard)
         print(f"📊 Dashboard saved to {output_file}")
 
-    def run_analysis(self, benchmark_files: List[str]) -> str:
+    def run_analysis(self, benchmark_files: list[str]) -> str:
         """Run complete performance analysis"""
         print("🔍 Loading benchmark data...")
 

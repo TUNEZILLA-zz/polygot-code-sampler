@@ -6,7 +6,7 @@ Loads bench/policy.yml and provides typed access to configuration
 
 import pathlib
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 import yaml
 
@@ -17,7 +17,7 @@ POLICY_FILE = ROOT / "bench" / "policy.yml"
 @dataclass
 class RegressionConfig:
     default_threshold: float
-    per_backend: Dict[str, float]
+    per_backend: dict[str, float]
     grace_period_days: int
     min_sample_size: int
     max_regression_ratio: float
@@ -41,14 +41,14 @@ class DataQualityConfig:
 @dataclass
 class GovernanceConfig:
     require_approval_threshold: float
-    emergency_override_approvers: List[str]
+    emergency_override_approvers: list[str]
     data_retention_days: int
 
 
 @dataclass
 class RunnerFingerprintingConfig:
     enabled: bool
-    track_fields: List[str]
+    track_fields: list[str]
     suppress_alerts_on_runner_change: bool
 
 
@@ -63,7 +63,7 @@ class WarmupConfig:
 @dataclass
 class DashboardPreset:
     name: str
-    filters: Dict[str, Any]
+    filters: dict[str, Any]
 
 
 @dataclass
@@ -76,7 +76,7 @@ class PolicyConfig:
     governance: GovernanceConfig
     runner_fingerprinting: RunnerFingerprintingConfig
     warmup: WarmupConfig
-    dashboard_presets: List[DashboardPreset]
+    dashboard_presets: list[DashboardPreset]
 
 
 def load_policy() -> PolicyConfig:
@@ -136,7 +136,7 @@ def get_approval_required_threshold(policy: PolicyConfig) -> float:
     return policy.governance.require_approval_threshold
 
 
-def get_dashboard_presets(policy: PolicyConfig) -> List[DashboardPreset]:
+def get_dashboard_presets(policy: PolicyConfig) -> list[DashboardPreset]:
     """Get dashboard preset configurations"""
     return policy.dashboard_presets
 
