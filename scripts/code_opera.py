@@ -12,6 +12,8 @@ import os
 import json
 import subprocess
 import time
+import random
+import hashlib
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
@@ -45,10 +47,15 @@ class VoiceConfig:
 class CodeOpera:
     """Code Opera - Multi-voice creative coding performance"""
     
-    def __init__(self, output_dir: str = "out"):
+    def __init__(self, output_dir: str = "out", seed: Optional[str] = None):
         self.output_dir = Path(output_dir)
+        self.seed = seed
         self.setup_directories()
         self.voices = self._create_voice_choir()
+        
+        # Set deterministic seed if provided
+        if self.seed:
+            self._set_deterministic_seed()
     
     def setup_directories(self):
         """Create output directory structure for code opera"""
@@ -58,6 +65,19 @@ class CodeOpera:
             (self.output_dir / dir_name).mkdir(parents=True, exist_ok=True)
         
         print(f"🎭 Created Code Opera directory structure in {self.output_dir}")
+    
+    def _set_deterministic_seed(self):
+        """Set deterministic seed for reproducible runs"""
+        if self.seed:
+            # Set Python random seed
+            random.seed(self.seed)
+            
+            # Write seed to file for reproducibility
+            seed_file = self.output_dir / "opera" / "SEED.txt"
+            with open(seed_file, "w") as f:
+                f.write(self.seed)
+            
+            print(f"🎭 Set deterministic seed: {self.seed}")
     
     def _create_voice_choir(self) -> Dict[str, VoiceConfig]:
         """Create the voice choir configuration"""
@@ -375,17 +395,91 @@ class CodeOpera:
         
         return html_content
     
+    def _generate_act(self, act_num: int, key: str) -> Dict[str, Any]:
+        """Generate code for a specific act"""
+        act_data = {
+            "act_number": act_num,
+            "key": key,
+            "voices": {},
+            "motifs": []
+        }
+        
+        # Generate motifs for each voice in this act
+        for voice_name, voice_config in self.voices.items():
+            # Generate voice code for this act
+            voice_code = self.generate_voice_code(voice_name, voice_config)
+            
+            # Add act-specific modifications
+            if act_num == 2:  # Act II - Development
+                voice_code = self._add_development_modifications(voice_code, voice_name)
+            elif act_num == 3:  # Act III - Grand Cadence
+                voice_code = self._add_cadence_modifications(voice_code, voice_name)
+            
+            # Save act-specific voice code
+            act_voice_file = self.output_dir / "voices" / f"{voice_name}_act_{act_num}.py"
+            with open(act_voice_file, "w") as f:
+                f.write(f"# {voice_name.upper()} Voice - Act {act_num} in {key} major\n")
+                f.write(f"# {voice_config.texture} texture with {', '.join(voice_config.fx_chain)} FX\n\n")
+                f.write(voice_code)
+            
+            act_data["voices"][voice_name] = {
+                "file": str(act_voice_file),
+                "texture": voice_config.texture,
+                "fx_chain": voice_config.fx_chain,
+                "harmony_note": voice_config.harmony_note
+            }
+            
+            print(f"✅ {voice_name} Act {act_num}: {act_voice_file}")
+        
+        return act_data
+    
+    def _add_development_modifications(self, code: str, voice_name: str) -> str:
+        """Add development modifications for Act II"""
+        # Add more complex patterns for development
+        if "fractal" in code:
+            return code + "\n    # Development: Enhanced fractal patterns\n    for depth in range(2, 5):\n        fractal_process(i, depth)"
+        elif "polyphonic" in code:
+            return code + "\n    # Development: Additional harmonic voices\n    for voice in range(2):\n        process_harmony(i, voice)"
+        else:
+            return code + "\n    # Development: Enhanced complexity\n    process_enhanced(i)"
+    
+    def _add_cadence_modifications(self, code: str, voice_name: str) -> str:
+        """Add cadence modifications for Act III"""
+        # Add grand cadence patterns
+        if voice_name == "rust":
+            return code + "\n    # Grand Cadence: Powerful resolution\n    process_cadence(i, 'fortissimo')"
+        elif voice_name == "python":
+            return code + "\n    # Grand Cadence: Smooth resolution\n    process_cadence(i, 'legato')"
+        else:
+            return code + "\n    # Grand Cadence: Harmonic resolution\n    process_cadence(i, 'harmony')"
+    
     def run_code_opera(self):
-        """Run the complete code opera performance"""
+        """Run the complete code opera performance with 3 acts"""
         print("\n🎭 Code Opera Performance")
         print("=" * 50)
         
         performance_data = {
             "timestamp": time.time(),
+            "seed": self.seed,
+            "acts": {},
             "voices": {},
             "harmony": {},
             "performance_notes": []
         }
+        
+        # Generate 3 acts with key modulation
+        acts = [
+            {"name": "Act I", "key": "C", "description": "Introduction - All voices in C major"},
+            {"name": "Act II", "key": "G", "description": "Development - Key modulation to G major"},
+            {"name": "Act III", "key": "C", "description": "Grand Cadence - Return to C major"}
+        ]
+        
+        for act_num, act in enumerate(acts, 1):
+            print(f"\n🎭 {act['name']} - {act['description']}")
+            print("-" * 40)
+            
+            act_data = self._generate_act(act_num, act["key"])
+            performance_data["acts"][f"act_{act_num}"] = act_data
         
         # Generate code for each voice
         for voice_name, voice_config in self.voices.items():
@@ -498,6 +592,7 @@ Examples:
     )
     
     parser.add_argument("--output-dir", default="out", help="Output directory")
+    parser.add_argument("--seed", help="Deterministic seed for reproducible runs")
     
     args = parser.parse_args()
     
@@ -509,7 +604,7 @@ Examples:
     print()
     
     # Create Code Opera
-    opera = CodeOpera(output_dir=args.output_dir)
+    opera = CodeOpera(output_dir=args.output_dir, seed=args.seed)
     
     # Run the performance
     performance_data = opera.run_code_opera()

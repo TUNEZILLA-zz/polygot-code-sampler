@@ -1,5 +1,212 @@
 {
-  "timestamp": 1758956202.326737,
+  "timestamp": 1758978234.725667,
+  "seed": "opera-1758978234",
+  "acts": {
+    "act_1": {
+      "act_number": 1,
+      "key": "C",
+      "voices": {
+        "rust": {
+          "file": "out/voices/rust_act_1.py",
+          "texture": "dense",
+          "fx_chain": [
+            "reverb",
+            "distortion"
+          ],
+          "harmony_note": "C"
+        },
+        "python": {
+          "file": "out/voices/python_act_1.py",
+          "texture": "smooth",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "E"
+        },
+        "julia": {
+          "file": "out/voices/julia_act_1.py",
+          "texture": "fractal",
+          "fx_chain": [
+            "lfo",
+            "reverb"
+          ],
+          "harmony_note": "G"
+        },
+        "typescript": {
+          "file": "out/voices/typescript_act_1.py",
+          "texture": "polyphonic",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "A"
+        },
+        "go": {
+          "file": "out/voices/go_act_1.py",
+          "texture": "sparse",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "D"
+        },
+        "csharp": {
+          "file": "out/voices/csharp_act_1.py",
+          "texture": "maximal",
+          "fx_chain": [
+            "distortion",
+            "reverb"
+          ],
+          "harmony_note": "F"
+        },
+        "sql": {
+          "file": "out/voices/sql_act_1.py",
+          "texture": "minimal",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "B"
+        }
+      },
+      "motifs": []
+    },
+    "act_2": {
+      "act_number": 2,
+      "key": "G",
+      "voices": {
+        "rust": {
+          "file": "out/voices/rust_act_2.py",
+          "texture": "dense",
+          "fx_chain": [
+            "reverb",
+            "distortion"
+          ],
+          "harmony_note": "C"
+        },
+        "python": {
+          "file": "out/voices/python_act_2.py",
+          "texture": "smooth",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "E"
+        },
+        "julia": {
+          "file": "out/voices/julia_act_2.py",
+          "texture": "fractal",
+          "fx_chain": [
+            "lfo",
+            "reverb"
+          ],
+          "harmony_note": "G"
+        },
+        "typescript": {
+          "file": "out/voices/typescript_act_2.py",
+          "texture": "polyphonic",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "A"
+        },
+        "go": {
+          "file": "out/voices/go_act_2.py",
+          "texture": "sparse",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "D"
+        },
+        "csharp": {
+          "file": "out/voices/csharp_act_2.py",
+          "texture": "maximal",
+          "fx_chain": [
+            "distortion",
+            "reverb"
+          ],
+          "harmony_note": "F"
+        },
+        "sql": {
+          "file": "out/voices/sql_act_2.py",
+          "texture": "minimal",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "B"
+        }
+      },
+      "motifs": []
+    },
+    "act_3": {
+      "act_number": 3,
+      "key": "C",
+      "voices": {
+        "rust": {
+          "file": "out/voices/rust_act_3.py",
+          "texture": "dense",
+          "fx_chain": [
+            "reverb",
+            "distortion"
+          ],
+          "harmony_note": "C"
+        },
+        "python": {
+          "file": "out/voices/python_act_3.py",
+          "texture": "smooth",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "E"
+        },
+        "julia": {
+          "file": "out/voices/julia_act_3.py",
+          "texture": "fractal",
+          "fx_chain": [
+            "lfo",
+            "reverb"
+          ],
+          "harmony_note": "G"
+        },
+        "typescript": {
+          "file": "out/voices/typescript_act_3.py",
+          "texture": "polyphonic",
+          "fx_chain": [
+            "chorus",
+            "delay"
+          ],
+          "harmony_note": "A"
+        },
+        "go": {
+          "file": "out/voices/go_act_3.py",
+          "texture": "sparse",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "D"
+        },
+        "csharp": {
+          "file": "out/voices/csharp_act_3.py",
+          "texture": "maximal",
+          "fx_chain": [
+            "distortion",
+            "reverb"
+          ],
+          "harmony_note": "F"
+        },
+        "sql": {
+          "file": "out/voices/sql_act_3.py",
+          "texture": "minimal",
+          "fx_chain": [
+            "reverb"
+          ],
+          "harmony_note": "B"
+        }
+      },
+      "motifs": []
+    }
+  },
   "voices": {
     "rust": {
       "texture": "dense",

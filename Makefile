@@ -17,6 +17,8 @@ help:
 	@echo "  ab-analysis       Run A/B analysis"
 	@echo "  validation-report Generate validation report"
 	@echo "  code-opera        Multi-voice creative coding performance"
+	@echo "  code-opera-seed   Code Opera with deterministic seed"
+	@echo "  code-opera-live   Live development server (port 8787)"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -107,6 +109,18 @@ code-opera:
 	@echo "🎭 Running Code Opera performance..."
 	python3 scripts/code_opera.py
 	@echo "🎭 Code Opera complete! Check out/opera/ for artifacts"
+
+# Code Opera with deterministic seed
+code-opera-seed:
+	@echo "🎭 Running Code Opera with deterministic seed..."
+	python3 scripts/code_opera.py --seed "opera-$(shell date +%s)"
+	@echo "🎭 Code Opera complete! Check out/opera/ for artifacts"
+
+# Code Opera live development server
+code-opera-live:
+	@echo "🎭 Starting Code Opera live development server..."
+	python3 server.py
+	@echo "🎭 Live server running on http://localhost:8787"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
