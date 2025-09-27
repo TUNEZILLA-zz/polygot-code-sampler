@@ -863,10 +863,7 @@ stage-proof-load:
 	python3 scripts/stage_proof_cli.py --load presets/scenes/tour_opener.json --text "Code Live"
 	@echo "🎛️ Stage-Proof Scene loaded!"
 
-stage-proof-acceptance:
-	@echo "🧪 Running Stage-Proof Acceptance Test..."
-	python3 scripts/stage_proof_cli.py --acceptance-test
-	@echo "🧪 Stage-Proof Acceptance Test complete!"
+# Removed duplicate - see line 1567 for current definition
 
 stage-proof-intensity:
 	@echo "🎛️ Setting Global Intensity..."
@@ -894,10 +891,7 @@ stage-proof-status:
 	@echo "📊 Stage-Proof status displayed!"
 
 # Bulletproof Operator Kit targets
-show-readiness-check:
-	@echo "🎭 Running 5-minute Show Readiness Check..."
-	./scripts/show_readiness_check.sh
-	@echo "🎭 Show readiness check complete!"
+# Removed duplicate - see line 1592 for current definition
 
 scene-validator:
 	@echo "🔍 Validating Scene JSON files..."
@@ -935,13 +929,7 @@ operator-hotkeys:
 	@echo "  Special: F (freeze/unfreeze), T (tap tempo)"
 	@echo "⌨️  Operator hotkeys displayed!"
 
-safety-rails:
-	@echo "🛡️  Safety Rails Status:"
-	@echo "  Strobe Cap: ≤8 Hz, on-time ≥120ms, duty-cycle ≤35% over 10s"
-	@echo "  Frame Budget: 30-frame p95 > 12ms → auto-reduce trails/particles"
-	@echo "  Param Slew: intensity ≤0.6/s, chroma.offset ≤0.3/s"
-	@echo "  Motion Compliance: instant mono fallback on system signal"
-	@echo "🛡️  Safety rails displayed!"
+# Removed duplicate - see line 1581 for current definition
 
 api-one-liners:
 	@echo "🌐 API One-Liners (curl):"
