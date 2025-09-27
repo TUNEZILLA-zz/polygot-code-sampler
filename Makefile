@@ -145,6 +145,12 @@ help:
 	@echo "  operator-hotkeys Display Operator Hotkeys Reference"
 	@echo "  safety-rails Display Safety Rails Status"
 	@echo "  api-one-liners Display API One-Liners (curl)"
+	@echo "  a11y-timing-test Test A11y Timing System"
+	@echo "  a11y-timing-test-fps Test A11y Timing at 59 FPS"
+	@echo "  a11y-timing-test-hard Test A11y Hard Mode"
+	@echo "  timing-harness Run Timing Harness (FPS Sweep)"
+	@echo "  timing-harness-report Run Timing Harness with Report"
+	@echo "  timing-harness-custom Run Custom Timing Harness"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -940,6 +946,37 @@ api-one-liners:
 	@echo "  Morph: curl -X POST :8787/rig/morph -d '{\"curve\":\"EaseInOut\",\"seconds\":2.0}'"
 	@echo "  Param: curl -X POST :8787/rig/param -d '{\"key\":\"chromatic.offset\",\"value\":0.28}'"
 	@echo "🌐 API one-liners displayed!"
+
+# A11y Timing Fix targets
+a11y-timing-test:
+	@echo "🧪 Testing A11y Timing System..."
+	python3 scripts/a11y_timing_fix.py --test
+	@echo "🧪 A11y timing test complete!"
+
+a11y-timing-test-fps:
+	@echo "🧪 Testing A11y Timing at 59 FPS..."
+	python3 scripts/a11y_timing_fix.py --test --fps 59
+	@echo "🧪 A11y timing test complete!"
+
+a11y-timing-test-hard:
+	@echo "🧪 Testing A11y Hard Mode..."
+	python3 scripts/a11y_timing_fix.py --test --hard-mode
+	@echo "🧪 A11y hard mode test complete!"
+
+timing-harness:
+	@echo "🧪 Running Timing Harness (FPS Sweep)..."
+	python3 scripts/timing_harness.py
+	@echo "🧪 Timing harness complete!"
+
+timing-harness-report:
+	@echo "🧪 Running Timing Harness with Report..."
+	python3 scripts/timing_harness.py --save-report
+	@echo "🧪 Timing harness report saved!"
+
+timing-harness-custom:
+	@echo "🧪 Running Custom Timing Harness..."
+	python3 scripts/timing_harness.py --fps 58,59,60,61 --jitter-budget 8.0
+	@echo "🧪 Custom timing harness complete!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
