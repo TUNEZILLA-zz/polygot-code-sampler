@@ -25,6 +25,9 @@ help:
 	@echo "  opera-snaps       Capture Code Opera performance screenshots"
 	@echo "  opera-test        Run Code Opera sanity tests"
 	@echo "  opera-showflow    Complete Code Opera showflow (demo)"
+	@echo "  tunezilla-opera   TuneZilla Opera performance"
+	@echo "  tunezilla-opera-seed  TuneZilla Opera with deterministic seed"
+	@echo "  tunezilla-poster  TuneZilla Opera poster visualization"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -180,6 +183,23 @@ opera-showflow:
 	@echo "7. Opening MIDI file..."
 	@open out/opera/opera.mid || echo "Open manually: out/opera/opera.mid"
 	@echo "🎉 Code Opera showflow complete!"
+
+# TuneZilla Opera - Brand-integrated Code Opera
+tunezilla-opera:
+	@echo "🎭 Running TuneZilla Opera performance..."
+	python3 scripts/tunezilla_opera.py
+	@echo "🎭 TuneZilla Opera complete! Check out/tunezilla_opera/ for artifacts"
+
+# TuneZilla Opera with deterministic seed
+tunezilla-opera-seed:
+	@echo "🎭 Running TuneZilla Opera with deterministic seed..."
+	python3 scripts/tunezilla_opera.py --seed "tunezilla-$(shell date +%s)"
+	@echo "🎭 TuneZilla Opera complete! Check out/tunezilla_opera/ for artifacts"
+
+# TuneZilla Opera poster visualization
+tunezilla-poster:
+	@echo "🎭 Opening TuneZilla Opera poster..."
+	@open site/tunezilla-opera-poster.html || echo "Open manually: site/tunezilla-opera-poster.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

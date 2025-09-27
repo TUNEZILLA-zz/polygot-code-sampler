@@ -1,0 +1,25 @@
+🎭 TuneZilla Opera Performance Notes:
+========================================
+
+Brand Elements:
+- Opera Mask Mode: Each voice wears a glitching mask
+- Crow & Lizard Chorus: Percussive layers and fractal formations
+- Gold & Emerald Stage: Visual themes matching TuneZilla brand
+- Glitch Libretto: Poetry fragments as code comments
+- Performance Mode: Live gesture control for particles
+
+Voice Choir:
+- Python Tenor: Smooth, emerald-masked, crow layers
+- Rust Bass: Dense, gold-masked, storm pattern
+- Julia Soprano: Fractal, crow-masked, recursive explosion
+- TypeScript Alto: Polyphonic, lizard-masked, pulse pattern
+- Go Baritone: Sparse, emerald-masked, wave pattern
+- C# Bass: Maximal, gold-masked, storm pattern
+- SQL Foundation: Minimal, crow-masked, pulse pattern
+
+Visual Effects:
+- Each voice has unique mask with glitch patterns
+- Crow layers provide percussive elements
+- Lizard clones create fractal formations
+- Gold and emerald color schemes
+- Real-time performance controls for live coding

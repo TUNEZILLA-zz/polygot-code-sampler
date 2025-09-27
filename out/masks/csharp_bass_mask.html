@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 CSHARP_BASS - TuneZilla Mask</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e);
+            color: #ffd700;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .mask-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffd700, #ffb700);
+            animation: storm 1.8s ease-in-out infinite;
+        }
+        
+        @keyframes fractal {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        
+        @keyframes storm {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(90deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+            75% { transform: scale(1.1) rotate(270deg); }
+        }
+        
+        .mask-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .crow-layers {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 50px;
+            height: 50px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: crowFly 2s ease-in-out infinite;
+        }
+        
+        @keyframes crowFly {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        .lizard-clones {
+            position: absolute;
+            bottom: 10%;
+            left: 10%;
+            width: 40px;
+            height: 40px;
+            background: #ffb700;
+            border-radius: 20px;
+            animation: lizardSplit 3s ease-in-out infinite;
+        }
+        
+        @keyframes lizardSplit {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(45deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="mask-container">
+        <div class="mask-title">
+            CSHARP_BASS<br>
+            <small>Gold Mask</small>
+        </div>
+        <div class="crow-layers"></div>
+        <div class="lizard-clones"></div>
+    </div>
+</body>
+</html>

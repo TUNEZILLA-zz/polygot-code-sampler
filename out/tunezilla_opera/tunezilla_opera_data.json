@@ -1,0 +1,246 @@
+{
+  "timestamp": 1758979006.246212,
+  "seed": "tunezilla-1758979006",
+  "voices": {
+    "python_tenor": {
+      "texture": "smooth",
+      "fx_chain": [
+        "chorus",
+        "delay"
+      ],
+      "tempo": 110.0,
+      "volume": 0.8,
+      "harmony_note": "E",
+      "visual_color": "#00ff88",
+      "particle_behavior": "flowing_arcs",
+      "mask_type": "emerald",
+      "glitch_pattern": "wave",
+      "crow_layers": 2,
+      "lizard_clones": 1,
+      "code_file": "out/tunezilla_opera/python_tenor_voice.py",
+      "mask_file": "out/masks/python_tenor_mask.html"
+    },
+    "rust_bass": {
+      "texture": "dense",
+      "fx_chain": [
+        "reverb",
+        "distortion"
+      ],
+      "tempo": 120.0,
+      "volume": 0.9,
+      "harmony_note": "C",
+      "visual_color": "#ffd700",
+      "particle_behavior": "cluster_clouds",
+      "mask_type": "gold",
+      "glitch_pattern": "storm",
+      "crow_layers": 3,
+      "lizard_clones": 2,
+      "code_file": "out/tunezilla_opera/rust_bass_voice.py",
+      "mask_file": "out/masks/rust_bass_mask.html"
+    },
+    "julia_soprano": {
+      "texture": "fractal",
+      "fx_chain": [
+        "lfo",
+        "reverb"
+      ],
+      "tempo": 140.0,
+      "volume": 0.7,
+      "harmony_note": "G",
+      "visual_color": "#ff6b6b",
+      "particle_behavior": "fractal_explosion",
+      "mask_type": "crow",
+      "glitch_pattern": "fractal",
+      "crow_layers": 4,
+      "lizard_clones": 3,
+      "code_file": "out/tunezilla_opera/julia_soprano_voice.py",
+      "mask_file": "out/masks/julia_soprano_mask.html"
+    },
+    "typescript_alto": {
+      "texture": "polyphonic",
+      "fx_chain": [
+        "chorus",
+        "delay"
+      ],
+      "tempo": 115.0,
+      "volume": 0.8,
+      "harmony_note": "A",
+      "visual_color": "#8b5cf6",
+      "particle_behavior": "polyphonic_layers",
+      "mask_type": "lizard",
+      "glitch_pattern": "pulse",
+      "crow_layers": 2,
+      "lizard_clones": 4,
+      "code_file": "out/tunezilla_opera/typescript_alto_voice.py",
+      "mask_file": "out/masks/typescript_alto_mask.html"
+    },
+    "go_baritone": {
+      "texture": "sparse",
+      "fx_chain": [
+        "reverb"
+      ],
+      "tempo": 100.0,
+      "volume": 0.6,
+      "harmony_note": "D",
+      "visual_color": "#00ff88",
+      "particle_behavior": "isolated_points",
+      "mask_type": "emerald",
+      "glitch_pattern": "wave",
+      "crow_layers": 1,
+      "lizard_clones": 1,
+      "code_file": "out/tunezilla_opera/go_baritone_voice.py",
+      "mask_file": "out/masks/go_baritone_mask.html"
+    },
+    "csharp_bass": {
+      "texture": "maximal",
+      "fx_chain": [
+        "distortion",
+        "reverb"
+      ],
+      "tempo": 105.0,
+      "volume": 0.7,
+      "harmony_note": "F",
+      "visual_color": "#ffd700",
+      "particle_behavior": "maximal_chaos",
+      "mask_type": "gold",
+      "glitch_pattern": "storm",
+      "crow_layers": 2,
+      "lizard_clones": 2,
+      "code_file": "out/tunezilla_opera/csharp_bass_voice.py",
+      "mask_file": "out/masks/csharp_bass_mask.html"
+    },
+    "sql_foundation": {
+      "texture": "minimal",
+      "fx_chain": [
+        "reverb"
+      ],
+      "tempo": 90.0,
+      "volume": 0.5,
+      "harmony_note": "B",
+      "visual_color": "#ff6b6b",
+      "particle_behavior": "minimal_structure",
+      "mask_type": "crow",
+      "glitch_pattern": "pulse",
+      "crow_layers": 1,
+      "lizard_clones": 0,
+      "code_file": "out/tunezilla_opera/sql_foundation_voice.py",
+      "mask_file": "out/masks/sql_foundation_mask.html"
+    }
+  },
+  "masks": {
+    "python_tenor": {
+      "mask_type": "emerald",
+      "glitch_pattern": "wave",
+      "color_primary": "#00ff88",
+      "color_secondary": "#00cc66",
+      "animation_speed": 1.0
+    },
+    "rust_bass": {
+      "mask_type": "gold",
+      "glitch_pattern": "storm",
+      "color_primary": "#ffd700",
+      "color_secondary": "#ffb700",
+      "animation_speed": 1.5
+    },
+    "julia_soprano": {
+      "mask_type": "crow",
+      "glitch_pattern": "fractal",
+      "color_primary": "#ff6b6b",
+      "color_secondary": "#ff4444",
+      "animation_speed": 2.0
+    },
+    "typescript_alto": {
+      "mask_type": "lizard",
+      "glitch_pattern": "pulse",
+      "color_primary": "#8b5cf6",
+      "color_secondary": "#6b46c1",
+      "animation_speed": 1.2
+    },
+    "go_baritone": {
+      "mask_type": "emerald",
+      "glitch_pattern": "wave",
+      "color_primary": "#00ff88",
+      "color_secondary": "#00cc66",
+      "animation_speed": 0.8
+    },
+    "csharp_bass": {
+      "mask_type": "gold",
+      "glitch_pattern": "storm",
+      "color_primary": "#ffd700",
+      "color_secondary": "#ffb700",
+      "animation_speed": 1.8
+    },
+    "sql_foundation": {
+      "mask_type": "crow",
+      "glitch_pattern": "pulse",
+      "color_primary": "#ff6b6b",
+      "color_secondary": "#ff4444",
+      "animation_speed": 0.5
+    }
+  },
+  "libretto": {
+    "python_tenor": [
+      "\u2726 fracture in the loop \u2726",
+      "voices collide at 432hz",
+      "emerald fog rises"
+    ],
+    "rust_bass": [
+      "\u2726 golden glitch storm \u2726",
+      "rust bass + sql foundation",
+      "crows circle the stage"
+    ],
+    "julia_soprano": [
+      "\u2726 recursive explosion \u2726",
+      "julia's soprano fragments",
+      "lizard clones multiply"
+    ],
+    "typescript_alto": [
+      "\u2726 polyphonic layers \u2726",
+      "typescript weaves harmony",
+      "lizard clones dance"
+    ],
+    "go_baritone": [
+      "\u2726 sparse foundation \u2726",
+      "go's steady rhythm",
+      "emerald pulses"
+    ],
+    "csharp_bass": [
+      "\u2726 maximal enterprise \u2726",
+      "csharp's rich foundation",
+      "golden glitch storm"
+    ],
+    "sql_foundation": [
+      "\u2726 minimal structure \u2726",
+      "sql's harmonic foundation",
+      "crow's steady caw"
+    ]
+  },
+  "performance_notes": [
+    "\ud83c\udfad TuneZilla Opera Performance Notes:",
+    "========================================",
+    "",
+    "Brand Elements:",
+    "- Opera Mask Mode: Each voice wears a glitching mask",
+    "- Crow & Lizard Chorus: Percussive layers and fractal formations",
+    "- Gold & Emerald Stage: Visual themes matching TuneZilla brand",
+    "- Glitch Libretto: Poetry fragments as code comments",
+    "- Performance Mode: Live gesture control for particles",
+    "",
+    "Voice Choir:",
+    "- Python Tenor: Smooth, emerald-masked, crow layers",
+    "- Rust Bass: Dense, gold-masked, storm pattern",
+    "- Julia Soprano: Fractal, crow-masked, recursive explosion",
+    "- TypeScript Alto: Polyphonic, lizard-masked, pulse pattern",
+    "- Go Baritone: Sparse, emerald-masked, wave pattern",
+    "- C# Bass: Maximal, gold-masked, storm pattern",
+    "- SQL Foundation: Minimal, crow-masked, pulse pattern",
+    "",
+    "Visual Effects:",
+    "- Each voice has unique mask with glitch patterns",
+    "- Crow layers provide percussive elements",
+    "- Lizard clones create fractal formations",
+    "- Gold and emerald color schemes",
+    "- Real-time performance controls for live coding"
+  ],
+  "opera_html": "out/tunezilla_opera/tunezilla_opera.html"
+}

@@ -1,0 +1,537 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 TuneZilla Opera - Visual Storyboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #00ff88;
+            font-family: 'Orbitron', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .poster-container {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .main-title {
+            position: relative;
+            text-align: center;
+            padding: 2rem 0;
+            z-index: 10;
+        }
+        
+        .title-text {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ff88, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
+            to { text-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .voices-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .voice-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+        
+        .voice-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .glitch-libretto {
+            font-family: 'Space Mono', monospace;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 1rem 0;
+            animation: textGlitch 0.5s infinite;
+        }
+        
+        @keyframes textGlitch {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+        }
+        
+        .voice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .detail-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .tunezilla-mask {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.3), transparent);
+            border-radius: 50%;
+            animation: maskPulse 3s ease-in-out infinite;
+            z-index: 5;
+        }
+        
+        @keyframes maskPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+        }
+        
+        .crow-flock {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,30 Q30,20 40,30 Q50,40 60,30 Q70,20 80,30" stroke="%2300ff88" stroke-width="2" fill="none"/><circle cx="25" cy="25" r="2" fill="%2300ff88"/><circle cx="35" cy="25" r="2" fill="%2300ff88"/><circle cx="45" cy="25" r="2" fill="%2300ff88"/><circle cx="55" cy="25" r="2" fill="%2300ff88"/><circle cx="65" cy="25" r="2" fill="%2300ff88"/><circle cx="75" cy="25" r="2" fill="%2300ff88"/></svg>') no-repeat center;
+            animation: crowFly 4s ease-in-out infinite;
+        }
+        
+        @keyframes crowFly {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .emerald-fractals {
+            position: absolute;
+            bottom: 10%;
+            left: 10%;
+            width: 150px;
+            height: 150px;
+            background: 
+                conic-gradient(from 0deg, transparent, #00ff88, transparent, #00ff88, transparent);
+            border-radius: 50%;
+            animation: fractalSpin 6s linear infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes fractalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .gold-storm {
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 100px;
+            height: 100px;
+            background: 
+                radial-gradient(circle, #ffd700, transparent),
+                conic-gradient(from 45deg, #ffd700, transparent, #ffd700, transparent);
+            animation: goldPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes goldPulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+        }
+        
+        .dollar-signs {
+            position: absolute;
+            top: 30%;
+            right: 30%;
+            font-size: 2rem;
+            color: #ffd700;
+            animation: dollarFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes dollarFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+        
+        .lizard-clones {
+            position: absolute;
+            bottom: 20%;
+            right: 20%;
+            width: 80px;
+            height: 80px;
+            background: 
+                linear-gradient(45deg, #00ff88, #ffd700),
+                conic-gradient(from 0deg, #00ff88, transparent, #ffd700, transparent);
+            border-radius: 20px;
+            animation: lizardSplit 4s ease-in-out infinite;
+        }
+        
+        @keyframes lizardSplit {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(45deg); }
+        }
+        
+        .performance-notes {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 1rem;
+            max-width: 300px;
+            font-size: 0.8rem;
+        }
+        
+        .performance-notes h4 {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .performance-notes p {
+            margin: 0.25rem 0;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 2.5rem;
+            }
+            
+            .voices-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .voice-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        <!-- TuneZilla Elements -->
+        <div class="tunezilla-mask"></div>
+        <div class="crow-flock"></div>
+        <div class="emerald-fractals"></div>
+        <div class="gold-storm"></div>
+        <div class="dollar-signs">$$$</div>
+        <div class="lizard-clones"></div>
+        
+        <!-- Main Title -->
+        <div class="main-title">
+            <h1 class="title-text">🎭 THE TUNEZILLA OPERA</h1>
+            <p class="subtitle">A Surreal Musical-Tech Performance</p>
+        </div>
+        
+        <!-- Voices -->
+        <div class="voices-container">
+
+            <div class="voice-card" style="border-color: #00ff88;">
+                <h2 class="voice-title" style="color: #00ff88;">
+                    PYTHON_TENOR
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ fracture in the loop ✦<br>voices collide at 432hz<br>emerald fog rises
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Smooth
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>chorus, delay
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Emerald
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Wave
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>2
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>1
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #ffd700;">
+                <h2 class="voice-title" style="color: #ffd700;">
+                    RUST_BASS
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ golden glitch storm ✦<br>rust bass + sql foundation<br>crows circle the stage
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Dense
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>reverb, distortion
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Gold
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Storm
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>3
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>2
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #ff6b6b;">
+                <h2 class="voice-title" style="color: #ff6b6b;">
+                    JULIA_SOPRANO
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ recursive explosion ✦<br>julia's soprano fragments<br>lizard clones multiply
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Fractal
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>lfo, reverb
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Crow
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Fractal
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>4
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>3
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #8b5cf6;">
+                <h2 class="voice-title" style="color: #8b5cf6;">
+                    TYPESCRIPT_ALTO
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ polyphonic layers ✦<br>typescript weaves harmony<br>lizard clones dance
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Polyphonic
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>chorus, delay
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Lizard
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Pulse
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>2
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>4
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #00ff88;">
+                <h2 class="voice-title" style="color: #00ff88;">
+                    GO_BARITONE
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ sparse foundation ✦<br>go's steady rhythm<br>emerald pulses
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Sparse
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>reverb
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Emerald
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Wave
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>1
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>1
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #ffd700;">
+                <h2 class="voice-title" style="color: #ffd700;">
+                    CSHARP_BASS
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ maximal enterprise ✦<br>csharp's rich foundation<br>golden glitch storm
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Maximal
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>distortion, reverb
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Gold
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Storm
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>2
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>2
+                    </div>
+                </div>
+            </div>
+
+            <div class="voice-card" style="border-color: #ff6b6b;">
+                <h2 class="voice-title" style="color: #ff6b6b;">
+                    SQL_FOUNDATION
+                </h2>
+                <div class="glitch-libretto">
+                    ✦ minimal structure ✦<br>sql's harmonic foundation<br>crow's steady caw
+                </div>
+                <div class="voice-details">
+                    <div class="detail-item">
+                        <strong>Texture:</strong><br>Minimal
+                    </div>
+                    <div class="detail-item">
+                        <strong>FX:</strong><br>reverb
+                    </div>
+                    <div class="detail-item">
+                        <strong>Mask:</strong><br>Crow
+                    </div>
+                    <div class="detail-item">
+                        <strong>Pattern:</strong><br>Pulse
+                    </div>
+                    <div class="detail-item">
+                        <strong>Crows:</strong><br>1
+                    </div>
+                    <div class="detail-item">
+                        <strong>Lizards:</strong><br>0
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Performance Notes -->
+        <div class="performance-notes">
+            <h4>🎭 Performance Mode</h4>
+            <p>• TuneZilla conducts with gestures</p>
+            <p>• Particles + code voices shift textures</p>
+            <p>• Live projector in music video sets</p>
+            <p>• Real-time BPM + key modulation</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('mousemove', (e) => {
+            const mask = document.querySelector('.tunezilla-mask');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            mask.style.transform = `translate(${-50 + x * 20}%, ${-50 + y * 20}%)`;
+        });
+        
+        // Add keyboard controls for live performance
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                // Spacebar triggers glitch effect
+                document.body.style.animation = 'glitch 0.1s infinite';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 1000);
+            }
+        });
+        
+        // Add performance mode toggle
+        let performanceMode = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'p' || e.key === 'P') {
+                performanceMode = !performanceMode;
+                if (performanceMode) {
+                    document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #ffd700, #00ff88)';
+                    console.log('🎭 Performance Mode Activated!');
+                } else {
+                    document.body.style.background = 'linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e)';
+                    console.log('🎭 Performance Mode Deactivated');
+                }
+            }
+        });
+        
+        console.log('🎭 The TuneZilla Opera - Visual Storyboard Loaded');
+        console.log('🎭 Press SPACE for glitch effect, P for performance mode');
+    </script>
+</body>
+</html>

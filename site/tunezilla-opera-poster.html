@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 The TuneZilla Opera - Visual Storyboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #00ff88;
+            font-family: 'Orbitron', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .poster-container {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(45deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        
+        .glitch-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 136, 0.03) 2px,
+                    rgba(0, 255, 136, 0.03) 4px
+                );
+            animation: glitch 0.1s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+        }
+        
+        .main-title {
+            position: relative;
+            text-align: center;
+            padding: 2rem 0;
+            z-index: 10;
+        }
+        
+        .title-text {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ff88, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 30px rgba(0, 255, 136, 0.5); }
+            to { text-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-top: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .acts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .act-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .act-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+        
+        .act-i {
+            border-color: #00ff88;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), transparent);
+        }
+        
+        .act-ii {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), transparent);
+        }
+        
+        .act-iii {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent);
+        }
+        
+        .act-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .act-i .act-title { color: #00ff88; }
+        .act-ii .act-title { color: #ff6b6b; }
+        .act-iii .act-title { color: #ffd700; }
+        
+        .voice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .voice-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .voice-name {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .voice-role {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        
+        .tunezilla-mask {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.3), transparent);
+            border-radius: 50%;
+            animation: maskPulse 3s ease-in-out infinite;
+            z-index: 5;
+        }
+        
+        @keyframes maskPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+        }
+        
+        .crow-flock {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,30 Q30,20 40,30 Q50,40 60,30 Q70,20 80,30" stroke="%2300ff88" stroke-width="2" fill="none"/><circle cx="25" cy="25" r="2" fill="%2300ff88"/><circle cx="35" cy="25" r="2" fill="%2300ff88"/><circle cx="45" cy="25" r="2" fill="%2300ff88"/><circle cx="55" cy="25" r="2" fill="%2300ff88"/><circle cx="65" cy="25" r="2" fill="%2300ff88"/><circle cx="75" cy="25" r="2" fill="%2300ff88"/></svg>') no-repeat center;
+            animation: crowFly 4s ease-in-out infinite;
+        }
+        
+        @keyframes crowFly {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .emerald-fractals {
+            position: absolute;
+            bottom: 10%;
+            left: 10%;
+            width: 150px;
+            height: 150px;
+            background: 
+                conic-gradient(from 0deg, transparent, #00ff88, transparent, #00ff88, transparent);
+            border-radius: 50%;
+            animation: fractalSpin 6s linear infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes fractalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .gold-storm {
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 100px;
+            height: 100px;
+            background: 
+                radial-gradient(circle, #ffd700, transparent),
+                conic-gradient(from 45deg, #ffd700, transparent, #ffd700, transparent);
+            animation: goldPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes goldPulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+        }
+        
+        .glitch-text {
+            font-family: 'Space Mono', monospace;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 1rem 0;
+            animation: textGlitch 0.5s infinite;
+        }
+        
+        @keyframes textGlitch {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+        }
+        
+        .performance-notes {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 1rem;
+            max-width: 300px;
+            font-size: 0.8rem;
+        }
+        
+        .performance-notes h4 {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .performance-notes p {
+            margin: 0.25rem 0;
+            opacity: 0.8;
+        }
+        
+        .dollar-signs {
+            position: absolute;
+            top: 30%;
+            right: 30%;
+            font-size: 2rem;
+            color: #ffd700;
+            animation: dollarFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes dollarFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+        
+        .lizard-clones {
+            position: absolute;
+            bottom: 20%;
+            right: 20%;
+            width: 80px;
+            height: 80px;
+            background: 
+                linear-gradient(45deg, #00ff88, #ffd700),
+                conic-gradient(from 0deg, #00ff88, transparent, #ffd700, transparent);
+            border-radius: 20px;
+            animation: lizardSplit 4s ease-in-out infinite;
+        }
+        
+        @keyframes lizardSplit {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2) rotate(45deg); }
+        }
+        
+        .stage-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            animation: stageLights 5s ease-in-out infinite;
+        }
+        
+        @keyframes stageLights {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        .code-voices {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: 
+                conic-gradient(from 0deg, #00ff88, #ff6b6b, #ffd700, #00ff88);
+            border-radius: 50%;
+            animation: codeRotate 8s linear infinite;
+            opacity: 0.2;
+        }
+        
+        @keyframes codeRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .glitch-libretto {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 1rem;
+            max-width: 300px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+        }
+        
+        .glitch-libretto h4 {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .glitch-libretto p {
+            margin: 0.25rem 0;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 2.5rem;
+            }
+            
+            .acts-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .act-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        <!-- Background Effects -->
+        <div class="glitch-bg"></div>
+        <div class="stage-lights"></div>
+        <div class="code-voices"></div>
+        
+        <!-- TuneZilla Elements -->
+        <div class="tunezilla-mask"></div>
+        <div class="crow-flock"></div>
+        <div class="emerald-fractals"></div>
+        <div class="gold-storm"></div>
+        <div class="dollar-signs">$$$</div>
+        <div class="lizard-clones"></div>
+        
+        <!-- Main Title -->
+        <div class="main-title">
+            <h1 class="title-text">🎭 THE TUNEZILLA OPERA</h1>
+            <p class="subtitle">A Surreal Musical-Tech Performance</p>
+        </div>
+        
+        <!-- Acts -->
+        <div class="acts-container">
+            <!-- Act I: Emerald Awakening -->
+            <div class="act-card act-i">
+                <h2 class="act-title">ACT I: EMERALD AWAKENING</h2>
+                <div class="glitch-text">
+                    ✦ fracture in the loop ✦<br>
+                    voices collide at 432hz<br>
+                    emerald fog rises
+                </div>
+                <div class="voice-grid">
+                    <div class="voice-item">
+                        <div class="voice-name">PYTHON</div>
+                        <div class="voice-role">Smooth Tenor</div>
+                    </div>
+                    <div class="voice-item">
+                        <div class="voice-name">GO</div>
+                        <div class="voice-role">Sparse Bass</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Act II: Fractal Madness -->
+            <div class="act-card act-ii">
+                <h2 class="act-title">ACT II: FRACTAL MADNESS</h2>
+                <div class="glitch-text">
+                    ✦ recursive explosion ✦<br>
+                    julia's soprano fragments<br>
+                    lizard clones multiply
+                </div>
+                <div class="voice-grid">
+                    <div class="voice-item">
+                        <div class="voice-name">JULIA</div>
+                        <div class="voice-role">Fractal Soprano</div>
+                    </div>
+                    <div class="voice-item">
+                        <div class="voice-name">TYPESCRIPT</div>
+                        <div class="voice-role">Polyphonic Alto</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Act III: Gold Cadence -->
+            <div class="act-card act-iii">
+                <h2 class="act-title">ACT III: GOLD CADENCE</h2>
+                <div class="glitch-text">
+                    ✦ golden glitch storm ✦<br>
+                    rust bass + sql foundation<br>
+                    crows circle the stage
+                </div>
+                <div class="voice-grid">
+                    <div class="voice-item">
+                        <div class="voice-name">RUST</div>
+                        <div class="voice-role">Dense Bass</div>
+                    </div>
+                    <div class="voice-item">
+                        <div class="voice-name">SQL</div>
+                        <div class="voice-role">Minimal Foundation</div>
+                    </div>
+                    <div class="voice-item">
+                        <div class="voice-name">C#</div>
+                        <div class="voice-role">Maximal Bass</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Notes -->
+        <div class="performance-notes">
+            <h4>🎭 Performance Mode</h4>
+            <p>• TuneZilla conducts with gestures</p>
+            <p>• Particles + code voices shift textures</p>
+            <p>• Live projector in music video sets</p>
+            <p>• Real-time BPM + key modulation</p>
+        </div>
+        
+        <!-- Glitch Libretto -->
+        <div class="glitch-libretto">
+            <h4>📜 Glitch Libretto</h4>
+            <p># ✦ fracture in the loop ✦</p>
+            <p># voices collide at 432hz</p>
+            <p># emerald fog rises</p>
+            <p># recursive explosion</p>
+            <p># golden glitch storm</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('mousemove', (e) => {
+            const mask = document.querySelector('.tunezilla-mask');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            mask.style.transform = `translate(${-50 + x * 20}%, ${-50 + y * 20}%)`;
+        });
+        
+        // Add keyboard controls for live performance
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                // Spacebar triggers glitch effect
+                document.body.style.animation = 'glitch 0.1s infinite';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 1000);
+            }
+        });
+        
+        // Add performance mode toggle
+        let performanceMode = false;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'p' || e.key === 'P') {
+                performanceMode = !performanceMode;
+                if (performanceMode) {
+                    document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #ffd700, #00ff88)';
+                    console.log('🎭 Performance Mode Activated!');
+                } else {
+                    document.body.style.background = 'linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e)';
+                    console.log('🎭 Performance Mode Deactivated');
+                }
+            }
+        });
+        
+        // Add crow cawing sound effect (visual)
+        setInterval(() => {
+            const crow = document.querySelector('.crow-flock');
+            crow.style.animation = 'crowFly 0.5s ease-in-out';
+            setTimeout(() => {
+                crow.style.animation = 'crowFly 4s ease-in-out infinite';
+            }, 500);
+        }, 3000);
+        
+        // Add fractal explosion effect
+        setInterval(() => {
+            const fractals = document.querySelector('.emerald-fractals');
+            fractals.style.animation = 'fractalSpin 1s linear infinite';
+            setTimeout(() => {
+                fractals.style.animation = 'fractalSpin 6s linear infinite';
+            }, 1000);
+        }, 5000);
+        
+        console.log('🎭 The TuneZilla Opera - Visual Storyboard Loaded');
+        console.log('🎭 Press SPACE for glitch effect, P for performance mode');
+    </script>
+</body>
+</html>
