@@ -127,6 +127,8 @@ ignore = [
 "pcs/vintage_profiles.py" = ["W293", "W291"]
 "audio_fx_cli.py" = ["W293", "W291", "no-untyped-def"]
 "pcs/audio_fx.py" = ["W293", "W291", "no-untyped-def", "assignment", "arg-type", "return-value"]
+"pi_mode_cli.py" = ["W293", "W291", "no-untyped-def"]
+"pcs/pi_mode.py" = ["W293", "W291", "no-untyped-def", "assignment", "arg-type", "return-value"]
 
 [tool.mypy]
 python_version = "3.11"
@@ -140,7 +142,7 @@ no_implicit_optional = true
 warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
-module = ["creative_performance_art", "stress_test_art", "vintage_cli", "pcs.vintage_profiles", "audio_fx_cli", "pcs.audio_fx"]
+module = ["creative_performance_art", "stress_test_art", "vintage_cli", "pcs.vintage_profiles", "audio_fx_cli", "pcs.audio_fx", "pi_mode_cli", "pcs.pi_mode"]
 ignore_errors = true
 warn_unused_ignores = true
 warn_no_return = true
