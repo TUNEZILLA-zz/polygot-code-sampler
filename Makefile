@@ -136,6 +136,15 @@ help:
 	@echo "  stage-proof-white-bloom Toggle White Bloom"
 	@echo "  stage-proof-lightning-flash Toggle Lightning Flash"
 	@echo "  stage-proof-status Show Stage-Proof Status"
+	@echo "  show-readiness-check 5-minute Show Readiness Check"
+	@echo "  scene-validator Validate Scene JSON files"
+	@echo "  scene-validator-strict Validate Scene JSON files (strict mode)"
+	@echo "  snapshot-kit Generate Snapshot Kit for all scenes"
+	@echo "  snapshot-kit-scene Generate Snapshot Kit for single scene"
+	@echo "  foh-runbook Display FOH Runbook"
+	@echo "  operator-hotkeys Display Operator Hotkeys Reference"
+	@echo "  safety-rails Display Safety Rails Status"
+	@echo "  api-one-liners Display API One-Liners (curl)"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -870,6 +879,67 @@ stage-proof-status:
 	@echo "📊 Showing Stage-Proof Status..."
 	python3 scripts/stage_proof_cli.py --status
 	@echo "📊 Stage-Proof status displayed!"
+
+# Bulletproof Operator Kit targets
+show-readiness-check:
+	@echo "🎭 Running 5-minute Show Readiness Check..."
+	./scripts/show_readiness_check.sh
+	@echo "🎭 Show readiness check complete!"
+
+scene-validator:
+	@echo "🔍 Validating Scene JSON files..."
+	python3 scripts/scene_validator.py --dir presets/scenes
+	@echo "🔍 Scene validation complete!"
+
+scene-validator-strict:
+	@echo "🔍 Validating Scene JSON files (strict mode)..."
+	python3 scripts/scene_validator.py --dir presets/scenes --strict
+	@echo "🔍 Scene validation complete!"
+
+snapshot-kit:
+	@echo "📸 Generating Snapshot Kit..."
+	python3 scripts/snapshot_kit.py --all-scenes
+	@echo "📸 Snapshot kit generation complete!"
+
+snapshot-kit-scene:
+	@echo "📸 Generating Snapshot Kit for scene..."
+	python3 scripts/snapshot_kit.py --scene tour_opener --text "Code Live"
+	@echo "📸 Snapshot kit generation complete!"
+
+foh-runbook:
+	@echo "📖 Opening FOH Runbook..."
+	@echo "📖 FOH Runbook: docs/FOH_RUNBOOK.md"
+	@echo "📖 Contains: Startup checklist, Go Live flow, Emergencies, API one-liners, Hotkeys, Safety rails"
+	@echo "📖 FOH Runbook displayed!"
+
+operator-hotkeys:
+	@echo "⌨️  Operator Hotkeys Reference:"
+	@echo "  Scene Control: 1-9 (jump to scene), 0 (previous), Space (pause/resume), G (goto +10s)"
+	@echo "  Intensity: I (up), K (down)"
+	@echo "  Metrics: M (toggle), , (decrease), . (increase)"
+	@echo "  Momentary: B (blackout), F (flash), W (white bloom)"
+	@echo "  Undo/Redo: U (undo), R (redo)"
+	@echo "  Special: F (freeze/unfreeze), T (tap tempo)"
+	@echo "⌨️  Operator hotkeys displayed!"
+
+safety-rails:
+	@echo "🛡️  Safety Rails Status:"
+	@echo "  Strobe Cap: ≤8 Hz, on-time ≥120ms, duty-cycle ≤35% over 10s"
+	@echo "  Frame Budget: 30-frame p95 > 12ms → auto-reduce trails/particles"
+	@echo "  Param Slew: intensity ≤0.6/s, chroma.offset ≤0.3/s"
+	@echo "  Motion Compliance: instant mono fallback on system signal"
+	@echo "🛡️  Safety rails displayed!"
+
+api-one-liners:
+	@echo "🌐 API One-Liners (curl):"
+	@echo "  Intensity: curl -X POST :8787/rig/intensity -d '{\"value\":0.82}'"
+	@echo "  Blackout: curl -X POST :8787/rig/blackout -d '{\"state\":true}'"
+	@echo "  Flash: curl -X POST :8787/rig/flash -d '{\"latch_ms\":800}'"
+	@echo "  Bloom: curl -X POST :8787/rig/bloom -d '{\"latch_ms\":1200}'"
+	@echo "  Metrics: curl -X POST :8787/rig/metrics-link -d '{\"strength\":0.75}'"
+	@echo "  Morph: curl -X POST :8787/rig/morph -d '{\"curve\":\"EaseInOut\",\"seconds\":2.0}'"
+	@echo "  Param: curl -X POST :8787/rig/param -d '{\"key\":\"chromatic.offset\",\"value\":0.28}'"
+	@echo "🌐 API one-liners displayed!"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

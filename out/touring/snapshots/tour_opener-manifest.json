@@ -1,0 +1,41 @@
+{
+  "scene_id": "tour_opener",
+  "timestamp": "2025-09-27 10:32:43",
+  "snapshots": {
+    "low": {
+      "file": "tour_opener-low.html",
+      "config": {
+        "intensity": 0.4,
+        "metrics": 0.2,
+        "bloom": false,
+        "description": "Low intensity, subtle reactive motion"
+      },
+      "generated": "2025-09-27 10:32:43"
+    },
+    "mid": {
+      "file": "tour_opener-mid.html",
+      "config": {
+        "intensity": 0.7,
+        "metrics": 0.5,
+        "bloom": false,
+        "description": "Medium intensity, balanced reactive motion"
+      },
+      "generated": "2025-09-27 10:32:43"
+    },
+    "peak": {
+      "file": "tour_opener-peak.html",
+      "config": {
+        "intensity": 0.95,
+        "metrics": 0.8,
+        "bloom": false,
+        "description": "Peak intensity, maximum reactive motion"
+      },
+      "generated": "2025-09-27 10:32:43"
+    }
+  },
+  "metadata": {
+    "generator": "SnapshotKit",
+    "version": "1.0.0",
+    "total_snapshots": 3
+  }
+}
