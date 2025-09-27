@@ -15,10 +15,10 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from string_fx.cosmic_dust import (
-    CosmicDustEngine, 
-    CosmicDustType, 
+    CosmicDustEngine,
+    CosmicDustType,
     CosmicDustParams,
-    create_cosmic_dust_presets
+    create_cosmic_dust_presets,
 )
 
 
@@ -26,10 +26,10 @@ def list_cosmic_dust_types():
     """List all cosmic dust types"""
     print("🌌 Cosmic Dust Types:")
     print("=" * 30)
-    
+
     for dust_type in CosmicDustType:
         print(f"✨ {dust_type.value}")
-    
+
     print("\n🎛️  Parameters:")
     print("  density: 0.0 to 1.0 (dust particle density)")
     print("  intensity: 0.0 to 1.0 (effect strength)")
@@ -49,55 +49,49 @@ def apply_cosmic_dust(text: str, dust_type: str, **kwargs):
         print(f"❌ Error: Unknown dust type '{dust_type}'")
         print("Available types:", [t.value for t in CosmicDustType])
         return
-    
+
     # Create parameters
     params = CosmicDustParams(
-        density=kwargs.get('density', 0.3),
-        intensity=kwargs.get('intensity', 0.7),
-        spread=kwargs.get('spread', 0.5),
-        fade_depth=kwargs.get('fade_depth', 0.8),
-        spectrum_shimmer=kwargs.get('spectrum_shimmer', 0.6),
-        polarity_shift=kwargs.get('polarity_shift', 0.0),
-        saturation=kwargs.get('saturation', 0.8),
-        grid_size=kwargs.get('grid_size', 3)
+        density=kwargs.get("density", 0.3),
+        intensity=kwargs.get("intensity", 0.7),
+        spread=kwargs.get("spread", 0.5),
+        fade_depth=kwargs.get("fade_depth", 0.8),
+        spectrum_shimmer=kwargs.get("spectrum_shimmer", 0.6),
+        polarity_shift=kwargs.get("polarity_shift", 0.0),
+        saturation=kwargs.get("saturation", 0.8),
+        grid_size=kwargs.get("grid_size", 3),
     )
-    
+
     # Apply effect
     engine = CosmicDustEngine()
     result = engine.apply_cosmic_dust(text, dust_type_enum, params)
-    
+
     print(f"🌌 {dust_type}: {result}")
 
 
 def demo_cosmic_dust():
     """Demo cosmic dust effects"""
-    test_texts = [
-        "TuneZilla",
-        "Rawtunez",
-        "Code Live",
-        "Cosmic Dust",
-        "Infinite Space"
-    ]
-    
+    test_texts = ["TuneZilla", "Rawtunez", "Code Live", "Cosmic Dust", "Infinite Space"]
+
     print("🌌 COSMIC DUST FX - INFINITE SPACE VIBE")
     print("=" * 50)
-    
+
     engine = CosmicDustEngine()
-    
+
     for text in test_texts:
         print(f"\n📝 Original: {text}")
-        
+
         # Test all dust types
         for dust_type in CosmicDustType:
             params = CosmicDustParams()
             result = engine.apply_cosmic_dust(text, dust_type, params)
             print(f"✨ {dust_type.value}: {result}")
-        
+
         # Test spectrum dust
         params = CosmicDustParams(spectrum_shimmer=0.8, polarity_shift=0.3)
         spectrum_result = engine.apply_spectrum_dust(text, params)
         print(f"🌈 Spectrum: {spectrum_result}")
-        
+
         # Test grid dust
         params = CosmicDustParams(grid_size=3, density=0.4)
         grid_result = engine.apply_grid_dust(text, params)
@@ -107,37 +101,31 @@ def demo_cosmic_dust():
 def generate_presets():
     """Generate cosmic dust presets"""
     presets = create_cosmic_dust_presets()
-    
+
     print("🌌 Cosmic Dust Presets:")
     print("=" * 30)
-    
+
     for preset in presets:
         print(f"\n✨ {preset['name']}")
         print(f"   Type: {preset['type']}")
         print(f"   Params: {preset['params']}")
-    
+
     # Save to JSON
     output_file = "out/cosmic_dust_presets.json"
     Path("out").mkdir(exist_ok=True)
-    
-    with open(output_file, 'w') as f:
+
+    with open(output_file, "w") as f:
         json.dump(presets, f, indent=2)
-    
+
     print(f"\n💾 Presets saved to: {output_file}")
 
 
 def create_cosmic_dust_html():
     """Create HTML gallery for cosmic dust effects"""
     engine = CosmicDustEngine()
-    
-    test_texts = [
-        "TuneZilla",
-        "Rawtunez",
-        "Code Live",
-        "Cosmic Dust",
-        "Infinite Space"
-    ]
-    
+
+    test_texts = ["TuneZilla", "Rawtunez", "Code Live", "Cosmic Dust", "Infinite Space"]
+
     html_content = """
 <!DOCTYPE html>
 <html lang="en">
@@ -235,14 +223,14 @@ def create_cosmic_dust_html():
         
         <div class="effect-grid">
 """
-    
+
     # Add effect cards
     for dust_type in CosmicDustType:
         html_content += f"""
             <div class="effect-card">
                 <div class="effect-title">✨ {dust_type.value.replace('_', ' ').title()}</div>
 """
-        
+
         for text in test_texts:
             params = CosmicDustParams()
             result = engine.apply_cosmic_dust(text, dust_type, params)
@@ -252,17 +240,17 @@ def create_cosmic_dust_html():
                     <div class="cosmic">Cosmic: {result}</div>
                 </div>
 """
-        
+
         html_content += """
             </div>
 """
-    
+
     # Add spectrum and grid effects
     html_content += """
             <div class="effect-card">
                 <div class="effect-title">🌈 Spectrum Dust</div>
 """
-    
+
     for text in test_texts:
         params = CosmicDustParams(spectrum_shimmer=0.8, polarity_shift=0.3)
         spectrum_result = engine.apply_spectrum_dust(text, params)
@@ -272,14 +260,14 @@ def create_cosmic_dust_html():
                     <div class="spectrum">Spectrum: {spectrum_result}</div>
                 </div>
 """
-    
+
     html_content += """
             </div>
             
             <div class="effect-card">
                 <div class="effect-title">🔲 Grid Dust</div>
 """
-    
+
     for text in test_texts:
         params = CosmicDustParams(grid_size=3, density=0.4)
         grid_result = engine.apply_grid_dust(text, params)
@@ -289,7 +277,7 @@ def create_cosmic_dust_html():
                     <div class="grid">Grid: {grid_result}</div>
                 </div>
 """
-    
+
     html_content += """
             </div>
         </div>
@@ -311,52 +299,70 @@ def create_cosmic_dust_html():
 </body>
 </html>
 """
-    
+
     # Save HTML
     output_file = "out/cosmic_dust_gallery.html"
     Path("out").mkdir(exist_ok=True)
-    
-    with open(output_file, 'w') as f:
+
+    with open(output_file, "w") as f:
         f.write(html_content)
-    
+
     print(f"🌌 HTML gallery created: {output_file}")
 
 
 def main():
     """Main CLI function"""
     parser = argparse.ArgumentParser(description="Cosmic Dust FX - Infinite Space Vibe")
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
     # List command
-    subparsers.add_parser('list', help='List cosmic dust types and parameters')
-    
+    subparsers.add_parser("list", help="List cosmic dust types and parameters")
+
     # Apply command
-    apply_parser = subparsers.add_parser('apply', help='Apply cosmic dust effect to text')
-    apply_parser.add_argument('text', help='Text to apply effect to')
-    apply_parser.add_argument('--type', required=True, help='Dust type')
-    apply_parser.add_argument('--density', type=float, default=0.3, help='Dust density (0.0-1.0)')
-    apply_parser.add_argument('--intensity', type=float, default=0.7, help='Effect intensity (0.0-1.0)')
-    apply_parser.add_argument('--spread', type=float, default=0.5, help='Particle spread (0.0-1.0)')
-    apply_parser.add_argument('--fade-depth', type=float, default=0.8, help='Fade depth (0.0-1.0)')
-    apply_parser.add_argument('--spectrum-shimmer', type=float, default=0.6, help='RGB shimmer (0.0-1.0)')
-    apply_parser.add_argument('--polarity-shift', type=float, default=0.0, help='Polarity shift (-1.0 to 1.0)')
-    apply_parser.add_argument('--saturation', type=float, default=0.8, help='Color saturation (0.0-1.0)')
-    apply_parser.add_argument('--grid-size', type=int, default=3, help='Grid size (1-10)')
-    
+    apply_parser = subparsers.add_parser(
+        "apply", help="Apply cosmic dust effect to text"
+    )
+    apply_parser.add_argument("text", help="Text to apply effect to")
+    apply_parser.add_argument("--type", required=True, help="Dust type")
+    apply_parser.add_argument(
+        "--density", type=float, default=0.3, help="Dust density (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--intensity", type=float, default=0.7, help="Effect intensity (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--spread", type=float, default=0.5, help="Particle spread (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--fade-depth", type=float, default=0.8, help="Fade depth (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--spectrum-shimmer", type=float, default=0.6, help="RGB shimmer (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--polarity-shift", type=float, default=0.0, help="Polarity shift (-1.0 to 1.0)"
+    )
+    apply_parser.add_argument(
+        "--saturation", type=float, default=0.8, help="Color saturation (0.0-1.0)"
+    )
+    apply_parser.add_argument(
+        "--grid-size", type=int, default=3, help="Grid size (1-10)"
+    )
+
     # Demo command
-    subparsers.add_parser('demo', help='Demo cosmic dust effects')
-    
+    subparsers.add_parser("demo", help="Demo cosmic dust effects")
+
     # Presets command
-    subparsers.add_parser('presets', help='Generate cosmic dust presets')
-    
+    subparsers.add_parser("presets", help="Generate cosmic dust presets")
+
     # HTML command
-    subparsers.add_parser('html', help='Create HTML gallery')
-    
+    subparsers.add_parser("html", help="Create HTML gallery")
+
     args = parser.parse_args()
-    
-    if args.command == 'list':
+
+    if args.command == "list":
         list_cosmic_dust_types()
-    elif args.command == 'apply':
+    elif args.command == "apply":
         apply_cosmic_dust(
             args.text,
             args.type,
@@ -367,13 +373,13 @@ def main():
             spectrum_shimmer=args.spectrum_shimmer,
             polarity_shift=args.polarity_shift,
             saturation=args.saturation,
-            grid_size=args.grid_size
+            grid_size=args.grid_size,
         )
-    elif args.command == 'demo':
+    elif args.command == "demo":
         demo_cosmic_dust()
-    elif args.command == 'presets':
+    elif args.command == "presets":
         generate_presets()
-    elif args.command == 'html':
+    elif args.command == "html":
         create_cosmic_dust_html()
     else:
         parser.print_help()

@@ -547,3 +547,4 @@ export function initPhysicsFX(options = {}) {
 // Export for use
 export { PhysicsFXProduction, MetricsAdapter };
 export default initPhysicsFX;
+

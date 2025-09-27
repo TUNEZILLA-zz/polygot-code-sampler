@@ -15,6 +15,7 @@ from pathlib import Path
 
 class FX(BaseModel):
     """Audio effects for a voice"""
+
     reverb: float = 0.2
     chorus: float = 0.0
     distortion: float = 0.0
@@ -24,6 +25,7 @@ class FX(BaseModel):
 
 class Voice(BaseModel):
     """Individual voice configuration"""
+
     gain: float = 0.8
     fx: FX = FX()
     muted: bool = False
@@ -32,12 +34,13 @@ class Voice(BaseModel):
 
 class Conductor(BaseModel):
     """Conductor state for Code Opera"""
+
     bpm: int = 96
     key: str = "C"
     mode: str = "ionian"
     seed: Optional[str] = None
     act: int = 1  # Current act (I, II, III)
-    
+
     voices: Dict[str, Voice] = {
         "rust": Voice(gain=0.8, fx=FX(reverb=0.3, distortion=0.2)),
         "python": Voice(gain=0.9, fx=FX(chorus=0.4, delay=0.3)),
@@ -45,14 +48,14 @@ class Conductor(BaseModel):
         "typescript": Voice(gain=0.8, fx=FX(chorus=0.3, delay=0.2)),
         "go": Voice(gain=0.6, fx=FX(reverb=0.4)),
         "csharp": Voice(gain=0.7, fx=FX(distortion=0.3, reverb=0.2)),
-        "sql": Voice(gain=0.5, fx=FX(reverb=0.3))
+        "sql": Voice(gain=0.5, fx=FX(reverb=0.3)),
     }
-    
+
     # Performance metrics
     p95_latency: float = 0.0  # Maps to dynamics (forte)
-    error_rate: float = 0.0   # Maps to staccato (shorter motifs)
-    qps: float = 0.0          # Maps to tempo bump
-    
+    error_rate: float = 0.0  # Maps to staccato (shorter motifs)
+    qps: float = 0.0  # Maps to tempo bump
+
     def get_dynamics(self) -> str:
         """Get dynamics based on p95 latency"""
         if self.p95_latency > 200:
@@ -63,7 +66,7 @@ class Conductor(BaseModel):
             return "mezzo-forte"
         else:
             return "piano"
-    
+
     def get_tempo_modifier(self) -> float:
         """Get tempo modifier based on QPS"""
         if self.qps > 100:
@@ -72,7 +75,7 @@ class Conductor(BaseModel):
             return 1.1  # 10% faster
         else:
             return 1.0  # Normal tempo
-    
+
     def get_motif_length(self) -> int:
         """Get motif length based on error rate"""
         if self.error_rate > 0.1:
@@ -106,7 +109,7 @@ def load_state(file_path: str = "out/opera/state.json") -> Conductor:
 def update_state(update_data: dict) -> Conductor:
     """Update conductor state"""
     global state
-    
+
     # Update top-level fields
     for key, value in update_data.items():
         if key == "voices":
@@ -119,12 +122,14 @@ def update_state(update_data: dict) -> Conductor:
                             if field == "fx" and isinstance(field_value, dict):
                                 # Update FX fields
                                 for fx_field, fx_value in field_value.items():
-                                    setattr(state.voices[voice_name].fx, fx_field, fx_value)
+                                    setattr(
+                                        state.voices[voice_name].fx, fx_field, fx_value
+                                    )
                             else:
                                 setattr(state.voices[voice_name], field, field_value)
         else:
             setattr(state, key, value)
-    
+
     # Save updated state
     save_state()
     return state
@@ -139,13 +144,13 @@ def set_seed(seed: str) -> None:
     """Set deterministic seed"""
     global state
     state.seed = seed
-    
+
     # Write seed to file for reproducibility
     seed_file = Path("out/opera/SEED.txt")
     seed_file.parent.mkdir(parents=True, exist_ok=True)
     with open(seed_file, "w") as f:
         f.write(seed)
-    
+
     save_state()
 
 
@@ -158,14 +163,14 @@ def advance_act() -> int:
     """Advance to next act"""
     global state
     state.act = min(3, state.act + 1)
-    
+
     # Key modulation in Act II (C -> G)
     if state.act == 2:
         state.key = "G"
     # Grand cadence in Act III
     elif state.act == 3:
         state.key = "C"  # Return to home key
-    
+
     save_state()
     return state.act
 
@@ -194,32 +199,30 @@ if __name__ == "__main__":
     # Test the state management
     print("🎭 Code Opera State Management")
     print("=" * 50)
-    
+
     # Create initial state
     initial_state = Conductor()
     print(f"Initial BPM: {initial_state.bpm}")
     print(f"Initial Key: {initial_state.key}")
     print(f"Voice count: {len(initial_state.voices)}")
-    
+
     # Test state update
     update_data = {
         "bpm": 120,
         "key": "G",
-        "voices": {
-            "rust": {"gain": 0.9, "fx": {"reverb": 0.5}}
-        }
+        "voices": {"rust": {"gain": 0.9, "fx": {"reverb": 0.5}}},
     }
-    
+
     updated_state = update_state(update_data)
     print(f"\nUpdated BPM: {updated_state.bpm}")
     print(f"Updated Key: {updated_state.key}")
     print(f"Rust gain: {updated_state.voices['rust'].gain}")
     print(f"Rust reverb: {updated_state.voices['rust'].fx.reverb}")
-    
+
     # Test metrics
     update_metrics(150.0, 0.05, 75.0)
     print(f"\nDynamics: {updated_state.get_dynamics()}")
     print(f"Tempo modifier: {updated_state.get_tempo_modifier()}")
     print(f"Motif length: {updated_state.get_motif_length()}")
-    
+
     print("\n✅ State management working!")

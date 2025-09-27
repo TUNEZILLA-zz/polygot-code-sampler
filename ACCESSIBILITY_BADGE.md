@@ -43,3 +43,4 @@
 ```markdown
 **♿ Respects prefers-reduced-motion • Mono mode available • Strobe-capped ≤8Hz**
 ```
+

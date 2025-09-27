@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROMO KIT VISUALS - Touring Rig v0.5 → v1.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 60px #00ffff;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff, 0 0 70px #00ffff;
+            }
+        }
+        
+        .subtitle {
+            font-size: 2rem;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .badge {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 50, 100, 0.3));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.5),
+                0 0 60px rgba(255, 0, 255, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #00ffff;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .screenshot {
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            color: #00ffff;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .screenshot:hover {
+            background: linear-gradient(45deg, #2a2a3e, #26213e);
+            transform: scale(1.05);
+        }
+        
+        .screenshot-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .screenshot-label {
+            font-size: 0.9rem;
+            color: #cccccc;
+        }
+        
+        .feature-list {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .feature-list li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-left: 3px solid #00ffff;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-list li:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .feature-list li::before {
+            content: '🎯';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .capture-section {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 255, 0, 0.1));
+            border: 3px solid #ff4444;
+        }
+        
+        .capture-section .card-title {
+            color: #ff4444;
+            text-shadow: 0 0 15px #ff4444;
+        }
+        
+        .capture-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid #ff4444;
+        }
+        
+        .timeline-point {
+            text-align: center;
+            color: #ff4444;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .timeline-time {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        .timeline-arrow {
+            color: #ff4444;
+            font-size: 1.5rem;
+        }
+        
+        .venue-profiles {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 255, 0.1));
+            border: 3px solid #00ff00;
+        }
+        
+        .venue-profiles .card-title {
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+        }
+        
+        .venue-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .venue-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .venue-card:hover {
+            background: rgba(0, 255, 0, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .venue-name {
+            font-size: 1.2rem;
+            color: #00ff00;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .venue-specs {
+            font-size: 0.8rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .accessibility-section {
+            background: linear-gradient(45deg, rgba(255, 255, 0, 0.1), rgba(255, 165, 0, 0.1));
+            border: 3px solid #ffaa00;
+        }
+        
+        .accessibility-section .card-title {
+            color: #ffaa00;
+            text-shadow: 0 0 15px #ffaa00;
+        }
+        
+        .a11y-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffaa00, #ff6600);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+            margin: 15px 0;
+        }
+        
+        .slo-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .slo-metric {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ffaa00;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .slo-value {
+            font-size: 1.3rem;
+            color: #ffaa00;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .slo-desc {
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 50, 100, 0.3));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .footer-title {
+            font-size: 2.5rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffff;
+        }
+        
+        .deployment-flow {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .flow-step {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+        }
+        
+        .flow-step-number {
+            font-size: 2.5rem;
+            color: #ff00ff;
+            font-weight: 900;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .flow-step-title {
+            font-size: 1.1rem;
+            color: #00ffff;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .flow-step-desc {
+            font-size: 0.8rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .flow-arrow {
+            color: #ff00ff;
+            font-size: 1.5rem;
+            margin: 0 5px;
+            animation: arrowPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes arrowPulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .grid-layout {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .deployment-flow {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            .deployment-flow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">PROMO KIT VISUALS</h1>
+            <h2 class="subtitle">Touring Rig v0.5 → v1.0</h2>
+            <div class="badge-container">
+                <div class="badge">30s Capture Ready</div>
+                <div class="badge">3 Snapshots</div>
+                <div class="badge">Operator Pocket Card</div>
+            </div>
+        </div>
+        
+        <div class="grid-layout">
+            <!-- Screenshots Section -->
+            <div class="card">
+                <h3 class="card-title">📸 SCREENSHOTS (Low/Mid/Peak)</h3>
+                <div class="card-content">
+                    <div class="screenshot-grid">
+                        <div class="screenshot">
+                            <div class="screenshot-icon">🌅</div>
+                            <div class="screenshot-label">Low Intensity<br>Warm-up Scene</div>
+                        </div>
+                        <div class="screenshot">
+                            <div class="screenshot-icon">⚡</div>
+                            <div class="screenshot-label">Mid Intensity<br>Build Energy</div>
+                        </div>
+                        <div class="screenshot">
+                            <div class="screenshot-icon">💥</div>
+                            <div class="screenshot-label">Peak Intensity<br>Impact Moment</div>
+                        </div>
+                        <div class="screenshot">
+                            <div class="screenshot-icon">🌙</div>
+                            <div class="screenshot-label">Cool-down<br>Hologram Scene</div>
+                        </div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Tour Opener HTML ready</li>
+                        <li>Glass Cathedral preset</li>
+                        <li>Data Storm visualization</li>
+                        <li>Crystalline Bloom effects</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 30s Capture Section -->
+            <div class="card capture-section">
+                <h3 class="card-title">🎬 30s CAPTURE TIMELINE</h3>
+                <div class="card-content">
+                    <div class="capture-timeline">
+                        <div class="timeline-point">
+                            <div class="timeline-time">0-5s</div>
+                            <div class="timeline-desc">Cinemascope<br>Warm-up</div>
+                        </div>
+                        <div class="timeline-arrow">→</div>
+                        <div class="timeline-point">
+                            <div class="timeline-time">5-15s</div>
+                            <div class="timeline-desc">Neon Bloom<br>Build Energy</div>
+                        </div>
+                        <div class="timeline-arrow">→</div>
+                        <div class="timeline-point">
+                            <div class="timeline-time">15-25s</div>
+                            <div class="timeline-desc">Prism Burst<br>Impact Moment</div>
+                        </div>
+                        <div class="timeline-arrow">→</div>
+                        <div class="timeline-point">
+                            <div class="timeline-time">25-30s</div>
+                            <div class="timeline-desc">Hologram<br>Cool-down</div>
+                        </div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>MP4 export ready</li>
+                        <li>Social media optimized</li>
+                        <li>Demo reel quality</li>
+                        <li>One-click generation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Venue Profiles Section -->
+            <div class="card venue-profiles">
+                <h3 class="card-title">🏟️ VENUE PROFILES + EMBEDS</h3>
+                <div class="card-content">
+                    <div class="venue-grid">
+                        <div class="venue-card">
+                            <div class="venue-name">Arena</div>
+                            <div class="venue-specs">High intensity<br>Full spectrum<br>Stadium scale</div>
+                        </div>
+                        <div class="venue-card">
+                            <div class="venue-name">Club</div>
+                            <div class="venue-specs">Intimate setting<br>Focused beams<br>Close quarters</div>
+                        </div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Audience polish ready</li>
+                        <li>Embed snippets generated</li>
+                        <li>Website integration</li>
+                        <li>README compatibility</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Accessibility Section -->
+            <div class="card accessibility-section">
+                <h3 class="card-title">♿ ACCESSIBILITY BADGE + SLOs</h3>
+                <div class="card-content">
+                    <div class="a11y-badge">STAGE SAFETY CERTIFIED</div>
+                    <div class="slo-metrics">
+                        <div class="slo-metric">
+                            <div class="slo-value">≤10ms</div>
+                            <div class="slo-desc">Frame p95<br>(guard at 12ms)</div>
+                        </div>
+                        <div class="slo-metric">
+                            <div class="slo-value">≤8Hz</div>
+                            <div class="slo-desc">Strobe cap<br>(≥120ms on-time)</div>
+                        </div>
+                        <div class="slo-metric">
+                            <div class="slo-value">490±20ms</div>
+                            <div class="slo-desc">A11y fades<br>(reduced motion)</div>
+                        </div>
+                        <div class="slo-metric">
+                            <div class="slo-value">≤1%</div>
+                            <div class="slo-desc">Error rate<br>(metrics link)</div>
+                        </div>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Respects prefers-reduced-motion</li>
+                        <li>Mono mode available</li>
+                        <li>Strobe-capped ≤8Hz</li>
+                        <li>Service Level Objectives</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3 class="footer-title">🚀 ONE-KEY DEPLOYMENT FOR SHOWTIME SMOOTHNESS</h3>
+            <div class="deployment-flow">
+                <div class="flow-step">
+                    <div class="flow-step-number">1</div>
+                    <div class="flow-step-title">Cut RC</div>
+                    <div class="flow-step-desc">Artifact Bundle<br>Snapshot Kit</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">2</div>
+                    <div class="flow-step-title">Lock Acceptance</div>
+                    <div class="flow-step-desc">Stage-Proof<br>Validation</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">3</div>
+                    <div class="flow-step-title">Dress Rehearsal</div>
+                    <div class="flow-step-desc">15 min Script<br>Touring Rig</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">4</div>
+                    <div class="flow-step-title">Safety Rails</div>
+                    <div class="flow-step-desc">Trip Test<br>2 min</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">5</div>
+                    <div class="flow-step-title">Observability</div>
+                    <div class="flow-step-desc">Grafana Green<br>Pin Status</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">6</div>
+                    <div class="flow-step-title">Publish Kit</div>
+                    <div class="flow-step-desc">30s Capture<br>Show Ready</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effects to cards
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(0) scale(1)';
+                    }, 300);
+                });
+            });
+            
+            // Add hover effects to flow steps
+            const flowSteps = document.querySelectorAll('.flow-step');
+            flowSteps.forEach(step => {
+                step.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.05)';
+                });
+                step.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Add glow effect to title on click
+            const title = document.querySelector('.main-title');
+            title.addEventListener('click', function() {
+                this.classList.toggle('glow-animation');
+            });
+            
+            // Add pulse effect to badges
+            const badges = document.querySelectorAll('.badge');
+            badges.forEach(badge => {
+                badge.addEventListener('click', function() {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = 'badgePulse 2s ease-in-out infinite';
+                    }, 100);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

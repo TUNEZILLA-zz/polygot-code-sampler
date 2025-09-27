@@ -17,27 +17,34 @@ import json
 from pathlib import Path
 
 from server.opera_state import (
-    Conductor, Voice, FX, 
-    get_state, update_state, 
-    set_seed, get_seed, 
-    advance_act, reset_performance, 
-    update_metrics
+    Conductor,
+    Voice,
+    FX,
+    get_state,
+    update_state,
+    set_seed,
+    get_seed,
+    advance_act,
+    reset_performance,
+    update_metrics,
 )
 
 # FastAPI app
 app = FastAPI(
     title="🎭 Code Opera - Conductor Panel",
     description="Multi-voice creative coding performance with real-time controls",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # CORS middleware
-app.middleware("cors")(CORSMiddleware(
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-))
+app.middleware("cors")(
+    CORSMiddleware(
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+)
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="out"), name="static")
@@ -45,6 +52,7 @@ app.mount("/static", StaticFiles(directory="out"), name="static")
 
 class StateUpdate(BaseModel):
     """Model for state updates"""
+
     bpm: Optional[int] = None
     key: Optional[str] = None
     mode: Optional[str] = None
@@ -58,6 +66,7 @@ class StateUpdate(BaseModel):
 
 class MetricsUpdate(BaseModel):
     """Model for metrics updates"""
+
     p95_latency: float
     error_rate: float
     qps: float
@@ -70,7 +79,8 @@ async def root():
     if harmony_file.exists():
         return FileResponse(harmony_file)
     else:
-        return HTMLResponse("""
+        return HTMLResponse(
+            """
         <html>
             <head><title>🎭 Code Opera</title></head>
             <body>
@@ -79,7 +89,8 @@ async def root():
                 <p><a href="/docs">API Documentation</a></p>
             </body>
         </html>
-        """)
+        """
+        )
 
 
 @app.get("/opera/state")
@@ -95,10 +106,10 @@ async def set_opera_state(update: StateUpdate):
     try:
         # Convert to dict, excluding None values
         update_data = update.dict(exclude_unset=True)
-        
+
         # Update state
         updated_state = update_state(update_data)
-        
+
         return updated_state.dict()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -145,11 +156,7 @@ async def reset_opera_performance():
 async def update_opera_metrics(metrics: MetricsUpdate):
     """Update performance metrics"""
     try:
-        update_metrics(
-            metrics.p95_latency,
-            metrics.error_rate,
-            metrics.qps
-        )
+        update_metrics(metrics.p95_latency, metrics.error_rate, metrics.qps)
         return {"message": "Metrics updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -163,7 +170,7 @@ async def get_opera_voices():
         "voices": {name: voice.dict() for name, voice in state.voices.items()},
         "dynamics": state.get_dynamics(),
         "tempo_modifier": state.get_tempo_modifier(),
-        "motif_length": state.get_motif_length()
+        "motif_length": state.get_motif_length(),
     }
 
 
@@ -181,17 +188,17 @@ async def get_opera_performance():
         "metrics": {
             "p95_latency": state.p95_latency,
             "error_rate": state.error_rate,
-            "qps": state.qps
+            "qps": state.qps,
         },
         "voices": {
             name: {
                 "gain": voice.gain,
                 "muted": voice.muted,
                 "solo": voice.solo,
-                "fx": voice.fx.dict()
+                "fx": voice.fx.dict(),
             }
             for name, voice in state.voices.items()
-        }
+        },
     }
 
 
@@ -201,10 +208,11 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "Code Opera Conductor Panel",
-        "version": "1.0.0"
+        "version": "1.0.0",
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8787)

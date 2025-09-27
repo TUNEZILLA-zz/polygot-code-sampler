@@ -180,3 +180,4 @@ capabilities:
     modern: ["window_functions", "cte", "json_functions", "lateral_joins"]
     mpc60: ["subqueries", "manual_joins"]
     sp1200: ["manual_joins", "basic_aggregates"]
+

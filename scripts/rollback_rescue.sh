@@ -154,3 +154,4 @@ echo "  ./scripts/rollback_rescue.sh status     # Show current status"
 echo "  ./scripts/rollback_rescue.sh            # Full rollback sequence"
 echo ""
 echo "🚀 Rig is now in safe state!"
+

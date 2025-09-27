@@ -1041,6 +1041,68 @@ code-tarot:
 	@echo "🔮 Code Tarot mode coming soon..."
 	@echo "🎴 Random texture/FX cards for creative coding"
 
+# Moonlight Sonata Text-FX Performance
+moonlight-sonata:
+	@echo "🌙 Running Moonlight Sonata Text-FX Performance..."
+	python3 moonlight_sonata_showflow.py
+	@echo "🌙 Moonlight Sonata performance complete! Check out/moonlight_sonata_performance.json"
+
+moonlight-sonata-interactive:
+	@echo "🎹 Starting Moonlight Sonata Interactive Jam Mode..."
+	@echo "🎹 Map macro knobs to text FX parameters:"
+	@echo "🎹 Color = Chromatic offset (key changes)"
+	@echo "🎹 Space = Reverb/trails length (pedal sustain)"
+	@echo "🎹 Motion = Vibrato & tremolo intensity"
+	@echo "🎹 Crunch = Feedback + distortion (storm intensity)"
+	@echo "🎹 Interactive jam mode ready!"
+
+moonlight-sonata-log:
+	@echo "📊 Showing Moonlight Sonata Performance Log..."
+	@if [ -f out/moonlight_sonata_performance.json ]; then \
+		echo "📊 Last performance log:"; \
+		cat out/moonlight_sonata_performance.json | head -20; \
+	else \
+		echo "📊 No performance log found. Run 'make moonlight-sonata' first."; \
+	fi
+
+moonlight-sonata-hotkeys:
+	@echo "⌨️ Moonlight Sonata Operator Hotkeys..."
+	@echo "⌨️ 1/2/3/4: jump to movements I/II/III/Outro"
+	@echo "⌨️ I / K: intensity up/down (slew-limited)"
+	@echo "⌨️ M: toggle metrics link (use 0.5 during Allegretto)"
+	@echo "⌨️ W: White Bloom hit (≤1.2s) on III accents"
+	@echo "⌨️ B: Blackout (final beat)"
+	@echo "⌨️ U / R: undo / redo (in case of over-crunch)"
+	@echo "⌨️ , / .: metrics link strength − / +"
+
+moonlight-sonata-rehearsal:
+	@echo "🎭 Moonlight Sonata Rehearsal Tweaks..."
+	@echo "🎭 Tempo feel: set jam BPM to ~56 (Adagio), 76 (Allegretto), 168 (Presto)"
+	@echo "🎭 A11y pass: ensure reduced-motion flag forces mono + trails.length ≤0.25"
+	@echo "🎭 Seeded take: run with a seed for shot-for-shot repeatability"
+	@echo "🎭 Venue profiles: small room → dust=0.12, trails=0.35; arena → dust=0.22, trails=0.6"
+	@echo "🎭 Safety rails: strobe ≤ 8 Hz, duty ≤ 35% / 10s, on-time ≥ 120 ms"
+
+moonlight-sonata-pro-tips:
+	@echo "💡 Moonlight Sonata Pro Tips..."
+	@echo "💡 Soft glass feel in I: lower chromatic to ~0.08, increase fringe 0.15, dust 0.18"
+	@echo "💡 Storm articulation in III: map sidechain to Crunch from QPS so busy sections 'growl' more—keep link ≤0.8"
+	@echo "💡 Grand cadence: morph back to Glass Cathedral over 6–8 s while pulling intensity to 0.45, then B"
+	@echo "💡 Cosmic dust overlay: add moonlight shimmer particles for drifting effect"
+	@echo "💡 Capture checklist: 30s highlight capture (III focus), snapshot grid (low/mid/peak)"
+
+moonlight-sonata-capture:
+	@echo "📸 Moonlight Sonata Capture..."
+	@echo "📸 30s highlight capture (III focus)"
+	@echo "📸 Snapshot grid (low/mid/peak)"
+	@echo "📸 Capture checklist ready!"
+
+moonlight-sonata-seeded:
+	@echo "🌙 Running Moonlight Sonata with Seed..."
+	@echo "🌙 Seeded take for shot-for-shot repeatability..."
+	python3 moonlight_sonata_showflow.py --seed $(SEED)
+	@echo "🌙 Seeded Moonlight Sonata performance complete!"
+
 # All-in-one demo
 demo: clean creative-demo generate-snippets show-output
 	@echo "🎉 Complete demo ready!"

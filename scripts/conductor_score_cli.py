@@ -47,56 +47,78 @@ Examples:
 
   # Create score
   python3 scripts/conductor_score_cli.py --create-score --text "TuneZilla" --technique "violin_solo" --dynamics "ff"
-        """
+        """,
     )
-    
+
     parser.add_argument("--score", "-s", help="Conductor score DSL string")
     parser.add_argument("--text", "-t", help="Input text to transform")
     parser.add_argument("--ensemble", action="store_true", help="Create ensemble score")
-    parser.add_argument("--crescendo", action="store_true", help="Create crescendo score")
-    parser.add_argument("--create-score", action="store_true", help="Create a conductor score")
-    parser.add_argument("--technique", help="Technique for create-score (tremolo, vibrato, violin_solo, etc.)")
-    parser.add_argument("--dynamics", help="Dynamics for create-score (pp, p, mp, mf, f, ff, fff)")
-    parser.add_argument("--section", help="Section for create-score (violins, violas, cellos, basses)")
-    parser.add_argument("--hybrid-fx", help="Hybrid FX for create-score (neon, glitch, rainbow, stutter, scramble)")
-    parser.add_argument("--intensity", "-i", type=float, default=0.75, help="Intensity knob (0.0-1.0)")
+    parser.add_argument(
+        "--crescendo", action="store_true", help="Create crescendo score"
+    )
+    parser.add_argument(
+        "--create-score", action="store_true", help="Create a conductor score"
+    )
+    parser.add_argument(
+        "--technique",
+        help="Technique for create-score (tremolo, vibrato, violin_solo, etc.)",
+    )
+    parser.add_argument(
+        "--dynamics", help="Dynamics for create-score (pp, p, mp, mf, f, ff, fff)"
+    )
+    parser.add_argument(
+        "--section", help="Section for create-score (violins, violas, cellos, basses)"
+    )
+    parser.add_argument(
+        "--hybrid-fx",
+        help="Hybrid FX for create-score (neon, glitch, rainbow, stutter, scramble)",
+    )
+    parser.add_argument(
+        "--intensity", "-i", type=float, default=0.75, help="Intensity knob (0.0-1.0)"
+    )
     parser.add_argument("--seed", type=int, help="Seed for deterministic effects")
-    parser.add_argument("--mode", "-m", choices=["raw", "ansi", "html"], default="ansi", help="Output mode")
+    parser.add_argument(
+        "--mode",
+        "-m",
+        choices=["raw", "ansi", "html"],
+        default="ansi",
+        help="Output mode",
+    )
     parser.add_argument("--output", "-o", help="Output file (for HTML mode)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-    
+
     args = parser.parse_args()
-    
+
     # Create FX config
     config = FXConfig(
         intensity=args.intensity,
         seed=args.seed,
         mode=OutputMode(args.mode),
         max_length=8000,
-        budget_ms=100
+        budget_ms=100,
     )
-    
+
     renderer = ConductorScoreRenderer()
     composer = ConductorScoreComposer()
-    
+
     if args.create_score:
         # Create a conductor score
         if not args.text or not args.technique:
             print("❌ Must specify --text and --technique for create-score")
             return
-        
+
         score = composer.create_score(
-            args.text, 
-            args.technique, 
+            args.text,
+            args.technique,
             args.dynamics or "mf",
             args.section,
             False,  # crescendo
             False,  # decrescendo
-            args.hybrid_fx
+            args.hybrid_fx,
         )
-        
+
         print(f"🎼 Created Score: {score}")
-        
+
         if args.verbose:
             print(f"📝 Text: {args.text}")
             print(f"🎵 Technique: {args.technique}")
@@ -106,47 +128,47 @@ Examples:
             if args.hybrid_fx:
                 print(f"🎨 Hybrid FX: {args.hybrid_fx}")
             print()
-        
+
         # Render the score
         result = renderer.render(score, config)
         print(f"🎼 Result: {result}")
-        
+
     elif args.ensemble:
         # Create ensemble score
         if not args.text:
             print("❌ Must specify --text for ensemble")
             return
-        
+
         score = composer.create_ensemble_score(args.text)
         print(f"🎼 Ensemble Score: {score}")
-        
+
         if args.verbose:
             print(f"📝 Text: {args.text}")
             print(f"🎻 Ensemble: violins, violas, cellos, basses")
             print()
-        
+
         # Render the score
         result = renderer.render(score, config)
         print(f"🎼 Ensemble Result: {result}")
-        
+
     elif args.crescendo:
         # Create crescendo score
         if not args.text:
             print("❌ Must specify --text for crescendo")
             return
-        
+
         score = composer.create_crescendo_score(args.text)
         print(f"🎼 Crescendo Score: {score}")
-        
+
         if args.verbose:
             print(f"📝 Text: {args.text}")
             print(f"📈 Crescendo: p → mp → mf → f → ff")
             print()
-        
+
         # Render the score
         result = renderer.render(score, config)
         print(f"🎼 Crescendo Result: {result}")
-        
+
     elif args.score:
         # Render existing score
         if args.verbose:
@@ -158,21 +180,21 @@ Examples:
                 print(f"🎲 Seed: {args.seed}")
             print(f"📱 Mode: {args.mode}")
             print()
-        
+
         result = renderer.render(args.score, config)
-        
+
         if args.output and args.mode == "html":
             # Create HTML output
             html_content = create_html_output(result, args.score, config)
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 f.write(html_content)
             print(f"🌐 HTML output saved to: {args.output}")
         else:
             print(result)
-        
+
         if args.verbose:
             print(f"🎼 Conductor Score complete!")
-            
+
     else:
         print("❌ Must specify --score, --ensemble, --crescendo, or --create-score")
         return
@@ -324,7 +346,7 @@ def create_html_output(result: str, score: str, config: FXConfig) -> str:
 </body>
 </html>
     """
-    
+
     return html
 
 

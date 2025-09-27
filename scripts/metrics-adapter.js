@@ -72,3 +72,4 @@ class MetricsAdapter {
 }
 
 export default MetricsAdapter;
+

@@ -93,3 +93,4 @@ echo ""
 echo "💡 To stop the server: kill $SERVER_PID"
 echo "💡 To run show readiness check: make show-readiness-check"
 echo "💡 To run acceptance test: make stage-proof-acceptance"
+

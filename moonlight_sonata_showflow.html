@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonlight Sonata Text-FX Showflow</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 60px #00ffff;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff, 0 0 70px #00ffff;
+            }
+        }
+        
+        .subtitle {
+            font-size: 2rem;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+        
+        .performance-info {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 50, 100, 0.3));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .info-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+        }
+        
+        .info-value {
+            font-size: 2rem;
+            color: #00ffff;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            font-size: 1rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .movements-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .movement {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 50, 100, 0.3));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .movement::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .movement:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+        }
+        
+        .movement-i {
+            border-color: #ffaa00;
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.3);
+        }
+        
+        .movement-ii {
+            border-color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .movement-iii {
+            border-color: #ff4444;
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.3);
+        }
+        
+        .movement-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .movement-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .movement-i .movement-title {
+            color: #ffaa00;
+            text-shadow: 0 0 15px #ffaa00;
+        }
+        
+        .movement-ii .movement-title {
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+        }
+        
+        .movement-iii .movement-title {
+            color: #ff4444;
+            text-shadow: 0 0 15px #ff4444;
+        }
+        
+        .movement-subtitle {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 15px;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .movement-timing {
+            font-size: 1rem;
+            color: #00ffff;
+            font-weight: 700;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .movement-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .fx-chain {
+            margin-bottom: 20px;
+        }
+        
+        .fx-title {
+            font-size: 1.1rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .fx-list {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .fx-list li {
+            margin: 8px 0;
+            padding: 8px 0;
+            border-left: 3px solid #00ffff;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .fx-list li:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .fx-list li::before {
+            content: '🎵';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .lighting-chain {
+            margin-bottom: 20px;
+        }
+        
+        .lighting-title {
+            font-size: 1.1rem;
+            color: #ff00ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        .lighting-list {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .lighting-list li {
+            margin: 8px 0;
+            padding: 8px 0;
+            border-left: 3px solid #ff00ff;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .lighting-list li:hover {
+            background: rgba(255, 0, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .lighting-list li::before {
+            content: '🌟';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .intensity-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .intensity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            transition: width 0.3s ease;
+        }
+        
+        .movement-i .intensity-fill {
+            width: 30%;
+            background: linear-gradient(90deg, #ffaa00, #ff6600);
+        }
+        
+        .movement-ii .intensity-fill {
+            width: 60%;
+            background: linear-gradient(90deg, #00ff00, #00ffaa);
+        }
+        
+        .movement-iii .intensity-fill {
+            width: 90%;
+            background: linear-gradient(90deg, #ff4444, #ff0000);
+        }
+        
+        .interactive-section {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 3px solid #ff00ff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        .interactive-title {
+            font-size: 2rem;
+            color: #ff00ff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+        
+        .knob-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .knob-item {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .knob-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .knob-name {
+            font-size: 1.3rem;
+            color: #ff00ff;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .knob-desc {
+            font-size: 1rem;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+        
+        .knob-mapping {
+            font-size: 0.9rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.8), rgba(0, 50, 100, 0.3));
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .footer-title {
+            font-size: 2rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #00ffff;
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .command {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .command:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+        }
+        
+        .command-title {
+            font-size: 1.2rem;
+            color: #ff00ff;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .command-desc {
+            font-size: 0.9rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        @media (max-width: 1200px) {
+            .movements-container {
+                grid-template-columns: 1fr;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .knob-grid {
+                grid-template-columns: 1fr;
+            }
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">MOONLIGHT SONATA</h1>
+            <h2 class="subtitle">Text-FX Performance Showflow</h2>
+        </div>
+        
+        <div class="performance-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-value">90s</div>
+                    <div class="info-label">Total Runtime</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value">3</div>
+                    <div class="info-label">Movements</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value">12</div>
+                    <div class="info-label">FX Chains</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="movements-container">
+            <!-- Movement I -->
+            <div class="movement movement-i">
+                <div class="movement-header">
+                    <h3 class="movement-title">MOVEMENT I</h3>
+                    <div class="movement-subtitle">Adagio sostenuto</div>
+                    <div class="movement-timing">0-30s</div>
+                </div>
+                <div class="movement-content">
+                    <div class="fx-chain">
+                        <div class="fx-title">🎵 String FX Chain</div>
+                        <ul class="fx-list">
+                            <li>Pizzicato Strings (soft entry)</li>
+                            <li>Chromatic Trails (ghostly sustain)</li>
+                            <li>Feedback Sustain (candlelight)</li>
+                        </ul>
+                    </div>
+                    <div class="lighting-chain">
+                        <div class="lighting-title">🌟 Lighting Chain</div>
+                        <ul class="lighting-list">
+                            <li>Cinemascope (candlelight effect)</li>
+                            <li>Low intensity (0.2-0.3)</li>
+                            <li>Monochrome fade</li>
+                        </ul>
+                    </div>
+                    <div class="intensity-bar">
+                        <div class="intensity-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Movement II -->
+            <div class="movement movement-ii">
+                <div class="movement-header">
+                    <h3 class="movement-title">MOVEMENT II</h3>
+                    <div class="movement-subtitle">Allegretto</div>
+                    <div class="movement-timing">30-60s</div>
+                </div>
+                <div class="movement-content">
+                    <div class="fx-chain">
+                        <div class="fx-title">🎵 String FX Chain</div>
+                        <ul class="fx-list">
+                            <li>Arpeggio Harp (warm interlude)</li>
+                            <li>Violin Solo (melodic lines)</li>
+                            <li>String Orchestra (ensemble)</li>
+                        </ul>
+                    </div>
+                    <div class="lighting-chain">
+                        <div class="lighting-title">🌟 Lighting Chain</div>
+                        <ul class="lighting-list">
+                            <li>Neon Bloom (warm colors)</li>
+                            <li>Medium intensity (0.6)</li>
+                            <li>Warm bloom accents</li>
+                        </ul>
+                    </div>
+                    <div class="intensity-bar">
+                        <div class="intensity-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Movement III -->
+            <div class="movement movement-iii">
+                <div class="movement-header">
+                    <h3 class="movement-title">MOVEMENT III</h3>
+                    <div class="movement-subtitle">Presto agitato</div>
+                    <div class="movement-timing">60-90s</div>
+                </div>
+                <div class="movement-content">
+                    <div class="fx-chain">
+                        <div class="fx-title">🎵 String FX Chain</div>
+                        <ul class="fx-list">
+                            <li>Guitar Lead (storm begins)</li>
+                            <li>Tremolo FX (strobing bends)</li>
+                            <li>Feedback Sustain (thunderous)</li>
+                        </ul>
+                    </div>
+                    <div class="lighting-chain">
+                        <div class="lighting-title">🌟 Lighting Chain</div>
+                        <ul class="lighting-list">
+                            <li>Prism Burst (peak intensity)</li>
+                            <li>Lightning FX (storm drama)</li>
+                            <li>Rack morph: Glass → Data Storm</li>
+                        </ul>
+                    </div>
+                    <div class="intensity-bar">
+                        <div class="intensity-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h3 class="interactive-title">🎹 INTERACTIVE JAM MODE</h3>
+            <p style="text-align: center; color: #cccccc; margin-bottom: 20px;">
+                Map macro knobs to text FX parameters for live performance
+            </p>
+            <div class="knob-grid">
+                <div class="knob-item">
+                    <div class="knob-name">Color</div>
+                    <div class="knob-desc">Chromatic Offset</div>
+                    <div class="knob-mapping">Mimics key changes</div>
+                </div>
+                <div class="knob-item">
+                    <div class="knob-name">Space</div>
+                    <div class="knob-desc">Reverb/Trails Length</div>
+                    <div class="knob-mapping">Like pedal sustain</div>
+                </div>
+                <div class="knob-item">
+                    <div class="knob-name">Motion</div>
+                    <div class="knob-desc">Vibrato & Tremolo</div>
+                    <div class="knob-mapping">Intensity control</div>
+                </div>
+                <div class="knob-item">
+                    <div class="knob-name">Crunch</div>
+                    <div class="knob-desc">Feedback + Distortion</div>
+                    <div class="knob-mapping">Storm intensity</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3 class="footer-title">🚀 PERFORMANCE COMMANDS</h3>
+            <div class="commands-grid">
+                <div class="command">
+                    <div class="command-title">make moonlight-sonata</div>
+                    <div class="command-desc">Run full 90s performance</div>
+                </div>
+                <div class="command">
+                    <div class="command-title">make moonlight-sonata-interactive</div>
+                    <div class="command-desc">Interactive jam mode</div>
+                </div>
+                <div class="command">
+                    <div class="command-title">make moonlight-sonata-log</div>
+                    <div class="command-desc">Show performance log</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effects to movements
+            const movements = document.querySelectorAll('.movement');
+            movements.forEach(movement => {
+                movement.addEventListener('click', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(0) scale(1)';
+                    }, 300);
+                });
+            });
+            
+            // Add hover effects to knob items
+            const knobItems = document.querySelectorAll('.knob-item');
+            knobItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add glow effect to title on click
+            const title = document.querySelector('.title');
+            title.addEventListener('click', function() {
+                this.classList.toggle('titleGlow');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -25,15 +25,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "string_fx"))
 
 from runtime import (
-    apply_chain, FXConfig, OutputMode, 
-    create_preset, get_preset_pack, export_preset
+    apply_chain,
+    FXConfig,
+    OutputMode,
+    create_preset,
+    get_preset_pack,
+    export_preset,
 )
 
 
 app = FastAPI(
     title="🎭 String FX Server",
     description="Mind-Bending String Effects with FX Graph Runtime",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 
@@ -41,44 +45,60 @@ app = FastAPI(
 # PYDANTIC MODELS
 # ============================================================================
 
+
 class FXStep(BaseModel):
     """Single effect step in a chain"""
+
     name: str = Field(..., description="Effect name")
-    params: Dict[str, Any] = Field(default_factory=dict, description="Effect parameters")
+    params: Dict[str, Any] = Field(
+        default_factory=dict, description="Effect parameters"
+    )
 
 
 class FXRequest(BaseModel):
     """Request for string effects"""
+
     text: str = Field(..., description="Input text to transform")
     chain: List[FXStep] = Field(..., description="Effect chain")
     seed: Optional[int] = Field(None, description="Seed for deterministic effects")
-    intensity: float = Field(0.75, ge=0.0, le=1.0, description="Intensity knob (0.0-1.0)")
+    intensity: float = Field(
+        0.75, ge=0.0, le=1.0, description="Intensity knob (0.0-1.0)"
+    )
     mode: str = Field("ansi", description="Output mode (raw/ansi/html)")
     max_length: int = Field(8000, ge=1, le=50000, description="Maximum output length")
-    budget_ms: int = Field(100, ge=10, le=1000, description="Processing budget in milliseconds")
+    budget_ms: int = Field(
+        100, ge=10, le=1000, description="Processing budget in milliseconds"
+    )
 
 
 class FXResponse(BaseModel):
     """Response from string effects"""
+
     output: str = Field(..., description="Transformed text")
     seed: Optional[int] = Field(None, description="Seed used")
     intensity: float = Field(..., description="Intensity used")
     mode: str = Field(..., description="Output mode")
-    processing_time_ms: float = Field(..., description="Processing time in milliseconds")
+    processing_time_ms: float = Field(
+        ..., description="Processing time in milliseconds"
+    )
     chain: List[FXStep] = Field(..., description="Effect chain used")
 
 
 class PresetRequest(BaseModel):
     """Request for preset-based effects"""
+
     text: str = Field(..., description="Input text to transform")
     preset: str = Field(..., description="Preset name")
     seed: Optional[int] = Field(None, description="Seed for deterministic effects")
-    intensity: float = Field(0.75, ge=0.0, le=1.0, description="Intensity knob (0.0-1.0)")
+    intensity: float = Field(
+        0.75, ge=0.0, le=1.0, description="Intensity knob (0.0-1.0)"
+    )
     mode: str = Field("ansi", description="Output mode (raw/ansi/html)")
 
 
 class PresetInfo(BaseModel):
     """Preset information"""
+
     name: str = Field(..., description="Preset name")
     description: str = Field(..., description="Preset description")
     chain: List[FXStep] = Field(..., description="Effect chain")
@@ -86,12 +106,14 @@ class PresetInfo(BaseModel):
 
 class PresetListResponse(BaseModel):
     """List of available presets"""
+
     presets: List[PresetInfo] = Field(..., description="Available presets")
 
 
 # ============================================================================
 # API ENDPOINTS
 # ============================================================================
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -159,38 +181,35 @@ async def run_fx(request: FXRequest):
     """Apply string effects with custom chain"""
     try:
         start_time = time.time()
-        
+
         # Create FX config
         config = FXConfig(
             intensity=request.intensity,
             seed=request.seed,
             mode=OutputMode(request.mode),
             max_length=request.max_length,
-            budget_ms=request.budget_ms
+            budget_ms=request.budget_ms,
         )
-        
+
         # Convert chain to runtime format
         chain = []
         for step in request.chain:
-            chain.append({
-                "name": step.name,
-                "params": step.params
-            })
-        
+            chain.append({"name": step.name, "params": step.params})
+
         # Apply effects
         result = apply_chain(request.text, chain, config)
-        
+
         processing_time = (time.time() - start_time) * 1000
-        
+
         return FXResponse(
             output=result,
             seed=request.seed,
             intensity=request.intensity,
             mode=request.mode,
             processing_time_ms=processing_time,
-            chain=request.chain
+            chain=request.chain,
         )
-        
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error applying effects: {str(e)}")
 
@@ -200,40 +219,45 @@ async def run_preset(request: PresetRequest):
     """Apply string effects using a preset"""
     try:
         start_time = time.time()
-        
+
         # Get preset
         presets = get_preset_pack()
         if request.preset not in presets:
-            raise HTTPException(status_code=404, detail=f"Preset '{request.preset}' not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Preset '{request.preset}' not found"
+            )
+
         preset = presets[request.preset]
-        
+
         # Create FX config
         config = FXConfig(
             intensity=request.intensity,
             seed=request.seed,
             mode=OutputMode(request.mode),
             max_length=8000,
-            budget_ms=100
+            budget_ms=100,
         )
-        
+
         # Apply effects
         result = apply_chain(request.text, preset["chain"], config)
-        
+
         processing_time = (time.time() - start_time) * 1000
-        
+
         # Convert chain to response format
-        chain = [FXStep(name=step["name"], params=step.get("params", {})) for step in preset["chain"]]
-        
+        chain = [
+            FXStep(name=step["name"], params=step.get("params", {}))
+            for step in preset["chain"]
+        ]
+
         return FXResponse(
             output=result,
             seed=request.seed,
             intensity=request.intensity,
             mode=request.mode,
             processing_time_ms=processing_time,
-            chain=chain
+            chain=chain,
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -244,16 +268,17 @@ async def run_preset(request: PresetRequest):
 async def list_presets():
     """List all available presets"""
     presets = get_preset_pack()
-    
+
     preset_list = []
     for name, preset in presets.items():
-        chain = [FXStep(name=step["name"], params=step.get("params", {})) for step in preset["chain"]]
-        preset_list.append(PresetInfo(
-            name=name,
-            description=preset["description"],
-            chain=chain
-        ))
-    
+        chain = [
+            FXStep(name=step["name"], params=step.get("params", {}))
+            for step in preset["chain"]
+        ]
+        preset_list.append(
+            PresetInfo(name=name, description=preset["description"], chain=chain)
+        )
+
     return PresetListResponse(presets=preset_list)
 
 
@@ -264,7 +289,7 @@ async def health_check():
         "status": "healthy",
         "service": "String FX Server",
         "version": "1.0.0",
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
 
@@ -272,8 +297,10 @@ async def health_check():
 # MIDI/HOTKEY INTEGRATION
 # ============================================================================
 
+
 class MIDIControl(BaseModel):
     """MIDI control mapping"""
+
     cc_number: int = Field(..., ge=0, le=127, description="MIDI CC number")
     parameter: str = Field(..., description="Parameter to control")
     min_value: float = Field(0.0, description="Minimum value")
@@ -287,7 +314,7 @@ async def set_midi_control(control: MIDIControl):
     # and handle MIDI input to control parameters
     return {
         "message": f"MIDI CC {control.cc_number} mapped to {control.parameter}",
-        "range": f"{control.min_value} - {control.max_value}"
+        "range": f"{control.min_value} - {control.max_value}",
     }
 
 
@@ -295,36 +322,29 @@ async def set_midi_control(control: MIDIControl):
 # EXPORT FUNCTIONALITY
 # ============================================================================
 
+
 @app.post("/fx/export")
 async def export_preset_data(
-    name: str,
-    chain: List[FXStep],
-    description: str = "",
-    seed: Optional[int] = None
+    name: str, chain: List[FXStep], description: str = "", seed: Optional[int] = None
 ):
     """Export a preset as JSON"""
     try:
         # Convert chain to runtime format
         runtime_chain = []
         for step in chain:
-            runtime_chain.append({
-                "name": step.name,
-                "params": step.params
-            })
-        
+            runtime_chain.append({"name": step.name, "params": step.params})
+
         # Create and export preset
         preset_data = create_preset(name, runtime_chain, description)
         export_data = export_preset(preset_data, seed)
-        
-        return {
-            "preset": export_data,
-            "download_url": f"/fx/download/{name}.json"
-        }
-        
+
+        return {"preset": export_data, "download_url": f"/fx/download/{name}.json"}
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error exporting preset: {str(e)}")
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -84,3 +84,4 @@ foh-pocket-card:
 	@echo "📋 Undo/Redo: U / R • T Tap tempo"
 	@echo "📋 Freeze: F (toggle) • G +10s"
 	@echo "📋 FOH pocket card ready!"
+

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPERATOR POCKET CARD - Touring Rig v0.5</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pocket-card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(45deg, #000428 0%, #004e92 100%);
+            border: 3px solid #00ffff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 
+                0 0 30px #00ffff,
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+            position: relative;
+            transform: rotate(-2deg);
+            transition: all 0.3s ease;
+        }
+        
+        .pocket-card:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 
+                0 0 40px #00ffff,
+                0 0 60px rgba(255, 0, 255, 0.3);
+        }
+        
+        .pocket-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+            border-radius: 17px;
+            pointer-events: none;
+        }
+        
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        
+        .card-subtitle {
+            font-size: 1rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .hotkeys-section {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00ffff;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 8px;
+        }
+        
+        .hotkeys-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .hotkey {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hotkey::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .hotkey:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        
+        .key {
+            color: #ff00ff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .action {
+            color: #00ffff;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .special-keys {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff4444;
+        }
+        
+        .special-keys .key {
+            color: #ff4444;
+        }
+        
+        .special-keys .action {
+            color: #ff6666;
+        }
+        
+        .metrics-section {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .metric {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .metric:hover {
+            background: rgba(0, 255, 0, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .metric-value {
+            color: #00ff00;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        
+        .metric-desc {
+            color: #cccccc;
+            font-size: 0.7rem;
+        }
+        
+        .safety-section {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 255, 0, 0.1));
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .safety-title {
+            font-size: 1.1rem;
+            color: #ff4444;
+            text-align: center;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px #ff4444;
+            border-bottom: 2px solid #ff4444;
+            padding-bottom: 6px;
+        }
+        
+        .safety-list {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+        }
+        
+        .safety-list li {
+            margin: 6px 0;
+            padding: 4px 0;
+            border-left: 2px solid #ff4444;
+            padding-left: 10px;
+            color: #ff6666;
+        }
+        
+        .safety-list li::before {
+            content: '🛡️';
+            margin-right: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer-title {
+            font-size: 1.1rem;
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .deployment-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .step {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 1px solid #ff00ff;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .step-number {
+            font-size: 1.2rem;
+            color: #ff00ff;
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+        
+        .step-title {
+            font-size: 0.7rem;
+            color: #00ffff;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .step-desc {
+            font-size: 0.6rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .glow-animation {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff;
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @media print {
+            body {
+                background: #000;
+                padding: 0;
+            }
+            .pocket-card {
+                transform: none;
+                box-shadow: none;
+                border: 2px solid #000;
+                max-width: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pocket-card">
+        <div class="card-header">
+            <h1 class="card-title glow-animation">FOH POCKET CARD</h1>
+            <h2 class="card-subtitle">Touring Rig v0.5</h2>
+            <div class="version-badge pulse-animation">OPERATOR READY</div>
+        </div>
+        
+        <div class="hotkeys-section">
+            <h3 class="section-title">⌨️ SCENE CONTROL</h3>
+            <div class="hotkeys-grid">
+                <div class="hotkey">
+                    <div class="key">1-9</div>
+                    <div class="action">Jump to Scene</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">0</div>
+                    <div class="action">Previous</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">Space</div>
+                    <div class="action">Pause/Resume</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">G</div>
+                    <div class="action">+10s Goto</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hotkeys-section">
+            <h3 class="section-title">🎛️ INTENSITY & METRICS</h3>
+            <div class="hotkeys-grid">
+                <div class="hotkey">
+                    <div class="key">I</div>
+                    <div class="action">Intensity Up</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">K</div>
+                    <div class="action">Intensity Down</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">M</div>
+                    <div class="action">Metrics Toggle</div>
+                </div>
+                <div class="hotkey">
+                    <div class="key">, / .</div>
+                    <div class="action">Metrics ±</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hotkeys-section">
+            <h3 class="section-title">⚡ MOMENTARY CONTROLS</h3>
+            <div class="hotkeys-grid">
+                <div class="hotkey special-keys">
+                    <div class="key">B</div>
+                    <div class="action">Blackout</div>
+                </div>
+                <div class="hotkey special-keys">
+                    <div class="key">F</div>
+                    <div class="action">Flash</div>
+                </div>
+                <div class="hotkey special-keys">
+                    <div class="key">W</div>
+                    <div class="action">White Bloom</div>
+                </div>
+                <div class="hotkey special-keys">
+                    <div class="key">T</div>
+                    <div class="action">Tap Tempo</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metrics-section">
+            <h3 class="section-title">📊 LIVE METRICS</h3>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">≤10ms</div>
+                    <div class="metric-desc">Frame p95</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">≤8Hz</div>
+                    <div class="metric-desc">Strobe Cap</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">≤1%</div>
+                    <div class="metric-desc">Error Rate</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">490ms</div>
+                    <div class="metric-desc">A11y Fades</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="safety-section">
+            <h3 class="section-title">🛡️ SAFETY RAILS</h3>
+            <ul class="safety-list">
+                <li>Strobe ≤8Hz, ≥120ms on-time</li>
+                <li>Duty-cycle ≤35% over 10s</li>
+                <li>Frame p95 > 12ms → auto-reduce</li>
+                <li>Param slew: intensity ≤0.6/s</li>
+                <li>Motion compliance: instant mono</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <h3 class="footer-title">🚀 ONE-KEY DEPLOYMENT</h3>
+            <div class="deployment-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Cut RC</div>
+                    <div class="step-desc">Bundle</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Lock</div>
+                    <div class="step-desc">Acceptance</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Dress</div>
+                    <div class="step-desc">Rehearsal</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Safety</div>
+                    <div class="step-desc">Trip Test</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Observe</div>
+                    <div class="step-desc">Pin</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Publish</div>
+                    <div class="step-desc">Kit</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effects to hotkeys
+            const hotkeys = document.querySelectorAll('.hotkey');
+            hotkeys.forEach(hotkey => {
+                hotkey.addEventListener('click', function() {
+                    this.style.background = 'rgba(0, 255, 255, 0.3)';
+                    setTimeout(() => {
+                        this.style.background = 'rgba(0, 255, 255, 0.1)';
+                    }, 200);
+                });
+            });
+            
+            // Add hover effects to steps
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => {
+                step.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                step.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add glow effect to title on click
+            const title = document.querySelector('.card-title');
+            title.addEventListener('click', function() {
+                this.classList.toggle('glow-animation');
+            });
+            
+            // Add pulse effect to badge on click
+            const badge = document.querySelector('.version-badge');
+            badge.addEventListener('click', function() {
+                this.classList.toggle('pulse-animation');
+            });
+        });
+    </script>
+</body>
+</html>

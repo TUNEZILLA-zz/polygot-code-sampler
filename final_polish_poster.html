@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINAL POLISH POSTER - Touring Rig v0.5 → v1.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .poster {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(45deg, #000428 0%, #004e92 100%);
+            border: 3px solid #00ffff;
+            box-shadow: 
+                0 0 30px #00ffff,
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .poster::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00ffff;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 10px;
+        }
+        
+        .checklist {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .checklist li {
+            margin: 8px 0;
+            padding: 5px 0;
+            border-left: 3px solid #00ffff;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .checklist li:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .checklist li::before {
+            content: '✅';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .hotkeys-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .hotkey {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .hotkey:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .key {
+            color: #ff00ff;
+            font-weight: 700;
+        }
+        
+        .action {
+            color: #00ffff;
+        }
+        
+        .safety-rails {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 255, 0, 0.1));
+            border: 2px solid #ff4444;
+        }
+        
+        .safety-rails .section-title {
+            color: #ff4444;
+            text-shadow: 0 0 10px #ff4444;
+        }
+        
+        .safety-rails .checklist li::before {
+            content: '🛡️';
+        }
+        
+        .api-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid #00ff00;
+        }
+        
+        .api-section .section-title {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .api-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .api-command {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: #00ff00;
+            word-break: break-all;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .deployment-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .step {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 1px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .step-number {
+            font-size: 2rem;
+            color: #ff00ff;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+        
+        .step-title {
+            font-size: 1rem;
+            color: #00ffff;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            font-size: 0.8rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .glow-animation {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @media print {
+            body {
+                background: #000;
+            }
+            .poster {
+                box-shadow: none;
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="header">
+            <h1 class="title glow-animation">FINAL POLISH POSTER</h1>
+            <h2 class="subtitle">Touring Rig v0.5 → v1.0</h2>
+            <div class="version-badge pulse-animation">CHAOS DRILL CONFIDENCE</div>
+        </div>
+        
+        <div class="grid-container">
+            <!-- Safety Rails Section -->
+            <div class="section safety-rails">
+                <h3 class="section-title">🛡️ SAFETY RAILS LOCKED TIGHT</h3>
+                <ul class="checklist">
+                    <li>Strobe Cap: ≤8 Hz, on-time ≥120ms</li>
+                    <li>Duty-cycle ≤35% over 10s</li>
+                    <li>Frame p95 > 12ms → auto-reduce</li>
+                    <li>Param Slew: intensity ≤0.6/s</li>
+                    <li>Motion Compliance: instant mono fallback</li>
+                    <li>Chroma offset ≤0.3/s</li>
+                </ul>
+            </div>
+            
+            <!-- FOH Hotkeys Section -->
+            <div class="section">
+                <h3 class="section-title">⌨️ FOH LAMINATED CHECKLIST</h3>
+                <div class="hotkeys-grid">
+                    <div class="hotkey">
+                        <div class="key">1-9</div>
+                        <div class="action">Jump to Scene</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">0</div>
+                        <div class="action">Previous</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">Space</div>
+                        <div class="action">Pause/Resume</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">I/K</div>
+                        <div class="action">Intensity ±</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">M</div>
+                        <div class="action">Metrics Toggle</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">B/F/W</div>
+                        <div class="action">Blackout/Flash/Bloom</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">U/R</div>
+                        <div class="action">Undo/Redo</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">G</div>
+                        <div class="action">+10s Goto</div>
+                    </div>
+                    <div class="hotkey">
+                        <div class="key">T</div>
+                        <div class="action">Tap Tempo</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API One-Liners Section -->
+            <div class="section api-section">
+                <h3 class="section-title">🌐 API ONE-LINERS (curl)</h3>
+                <div class="api-grid">
+                    <div class="api-command">
+                        <strong>Intensity:</strong><br>
+                        curl -X POST :8787/rig/intensity -d '{"value":0.82}'
+                    </div>
+                    <div class="api-command">
+                        <strong>Blackout:</strong><br>
+                        curl -X POST :8787/rig/blackout -d '{"state":true}'
+                    </div>
+                    <div class="api-command">
+                        <strong>Flash:</strong><br>
+                        curl -X POST :8787/rig/flash -d '{"latch_ms":800}'
+                    </div>
+                    <div class="api-command">
+                        <strong>Bloom:</strong><br>
+                        curl -X POST :8787/rig/bloom -d '{"latch_ms":1200}'
+                    </div>
+                    <div class="api-command">
+                        <strong>Metrics Link:</strong><br>
+                        curl -X POST :8787/rig/metrics-link -d '{"strength":0.75}'
+                    </div>
+                    <div class="api-command">
+                        <strong>Morph:</strong><br>
+                        curl -X POST :8787/rig/morph -d '{"curve":"EaseInOut","seconds":2.0}'
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3 class="footer-title">🚀 ONE-KEY DEPLOYMENT FOR SHOWTIME SMOOTHNESS</h3>
+            <div class="deployment-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Cut RC + Artifact Bundle</div>
+                    <div class="step-desc">git tag v0.5.0-rc1<br>make snapshot-kit</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Lock Acceptance</div>
+                    <div class="step-desc">make stage-proof-acceptance</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Dress Rehearsal</div>
+                    <div class="step-desc">15 min script<br>touring-rig-play</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Safety Rails Trip</div>
+                    <div class="step-desc">2 min test<br>safety_rails_trip_test.sh</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Observability Pin</div>
+                    <div class="step-desc">Grafana panels green<br>observability_pin.sh</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Publish Show Kit</div>
+                    <div class="step-desc">30s capture<br>rack-show-create-demo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effects to hotkeys
+            const hotkeys = document.querySelectorAll('.hotkey');
+            hotkeys.forEach(hotkey => {
+                hotkey.addEventListener('click', function() {
+                    this.style.background = 'rgba(0, 255, 255, 0.3)';
+                    setTimeout(() => {
+                        this.style.background = 'rgba(0, 255, 255, 0.1)';
+                    }, 200);
+                });
+            });
+            
+            // Add hover effects to steps
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => {
+                step.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                step.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add glow effect to title on click
+            const title = document.querySelector('.title');
+            title.addEventListener('click', function() {
+                this.classList.toggle('glow-animation');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -37,26 +37,39 @@ Examples:
 
   # Show rack status
   python3 scripts/effect_rack_cli.py --rack-status
-        """
+        """,
     )
-    
+
     parser.add_argument("--text", "-t", help="Input text to process")
     parser.add_argument("--preset", "-p", help="Load a preset configuration")
-    parser.add_argument("--effects", "-e", help="Comma-separated list of effects to apply")
-    parser.add_argument("--mode", "-m", default="raw", choices=["raw", "ansi", "html"], 
-                       help="Output mode")
-    parser.add_argument("--seed", "-s", type=int, help="Random seed for deterministic results")
+    parser.add_argument(
+        "--effects", "-e", help="Comma-separated list of effects to apply"
+    )
+    parser.add_argument(
+        "--mode",
+        "-m",
+        default="raw",
+        choices=["raw", "ansi", "html"],
+        help="Output mode",
+    )
+    parser.add_argument(
+        "--seed", "-s", type=int, help="Random seed for deterministic results"
+    )
     parser.add_argument("--save", help="Save current configuration to file")
     parser.add_argument("--load", help="Load configuration from file")
-    parser.add_argument("--list-presets", action="store_true", help="List available presets")
-    parser.add_argument("--rack-status", action="store_true", help="Show current rack status")
+    parser.add_argument(
+        "--list-presets", action="store_true", help="List available presets"
+    )
+    parser.add_argument(
+        "--rack-status", action="store_true", help="Show current rack status"
+    )
     parser.add_argument("--output", "-o", help="Output file for HTML mode")
-    
+
     args = parser.parse_args()
-    
+
     # Create effect rack
     rack = EffectRack()
-    
+
     # Handle list presets
     if args.list_presets:
         presets = rack.create_soundtoys_presets()
@@ -65,9 +78,11 @@ Examples:
         for name, config in presets.items():
             print(f"• {name}: {config.name}")
             for slot, slot_config in config.slots.items():
-                print(f"  - {slot.value}: {slot_config.effect_name} (mix: {slot_config.wet_dry_mix})")
+                print(
+                    f"  - {slot.value}: {slot_config.effect_name} (mix: {slot_config.wet_dry_mix})"
+                )
         return
-    
+
     # Handle rack status
     if args.rack_status:
         status = rack.get_rack_status()
@@ -75,7 +90,7 @@ Examples:
         print("=" * 30)
         print(json.dumps(status, indent=2))
         return
-    
+
     # Load preset if specified
     if args.preset:
         presets = rack.create_soundtoys_presets()
@@ -86,7 +101,7 @@ Examples:
             return
         rack.config = presets[args.preset]
         print(f"🎛️ Loaded preset: {rack.config.name}")
-    
+
     # Load configuration from file if specified
     if args.load:
         try:
@@ -95,7 +110,7 @@ Examples:
         except Exception as e:
             print(f"❌ Error loading configuration: {e}")
             return
-    
+
     # Apply effects if specified
     if args.effects:
         effect_names = [e.strip() for e in args.effects.split(",")]
@@ -103,12 +118,12 @@ Examples:
             slot = list(EffectSlot)[i]
             rack.add_effect(slot, effect_name, enabled=True, wet_dry_mix=1.0)
         print(f"🎛️ Applied effects: {', '.join(effect_names)}")
-    
+
     # Process text if provided
     if args.text:
         try:
             result = rack.process_text(args.text, mode=args.mode, seed=args.seed)
-            
+
             if args.mode == "html" and args.output:
                 # Create HTML output
                 html_content = f"""
@@ -148,16 +163,16 @@ Examples:
 </body>
 </html>
                 """
-                with open(args.output, 'w') as f:
+                with open(args.output, "w") as f:
                     f.write(html_content)
                 print(f"🌐 HTML output saved to: {args.output}")
             else:
                 print(f"🎛️ Effect Rack Output: {result}")
-                
+
         except Exception as e:
             print(f"❌ Error processing text: {e}")
             return
-    
+
     # Save configuration if specified
     if args.save:
         try:
