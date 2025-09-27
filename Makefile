@@ -41,6 +41,13 @@ help:
 	@echo "  tremolo-fx-wave  Tremolo Wave FX (wave + color)"
 	@echo "  tremolo-fx-preset Tremolo Rave Preset"
 	@echo "  tremolo-fx-html  Tremolo FX HTML output"
+	@echo "  string-orchestra String Orchestra Mode (vibrato + harmonics)"
+	@echo "  violin-solo     Violin Solo (vibrato + glissando)"
+	@echo "  guitar-lead     Guitar Lead (string bends + feedback)"
+	@echo "  pizzicato-strings Pizzicato Strings (palm mute + trill)"
+	@echo "  arpeggio-harp   Arpeggio Harp (spread + harmonics)"
+	@echo "  feedback-sustain Feedback Sustain (tremolo + harmonics)"
+	@echo "  string-orchestra-html String Orchestra HTML Gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -285,6 +292,45 @@ tremolo-fx-html:
 	@echo "🎵 Creating Tremolo FX HTML..."
 	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain tremolo:type=repetition:rate=8.0,neon_fx --mode html --output out/tremolo_fx.html --intensity 0.9 --seed 42
 	@echo "🎵 Tremolo FX HTML complete! Check out/tremolo_fx.html"
+
+# String Orchestra Mode targets
+string-orchestra:
+	@echo "🎻 Running String Orchestra Mode..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset string_orchestra --intensity 0.8 --seed 42
+	@echo "🎻 String Orchestra Mode complete!"
+
+violin-solo:
+	@echo "🎻 Running Violin Solo..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset violin_solo --intensity 0.9 --seed 42
+	@echo "🎻 Violin Solo complete!"
+
+guitar-lead:
+	@echo "🎸 Running Guitar Lead..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset guitar_lead --intensity 0.9 --seed 42
+	@echo "🎸 Guitar Lead complete!"
+
+pizzicato-strings:
+	@echo "🎻 Running Pizzicato Strings..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset pizzicato_strings --intensity 0.8 --seed 42
+	@echo "🎻 Pizzicato Strings complete!"
+
+arpeggio-harp:
+	@echo "🎵 Running Arpeggio Harp..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset arpeggio_harp --intensity 0.9 --seed 42
+	@echo "🎵 Arpeggio Harp complete!"
+
+feedback-sustain:
+	@echo "🎸 Running Feedback Sustain..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset feedback_sustain --intensity 0.9 --seed 42
+	@echo "🎸 Feedback Sustain complete!"
+
+# String Orchestra HTML Gallery
+string-orchestra-html:
+	@echo "🎻 Creating String Orchestra HTML Gallery..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset string_orchestra --mode html --output out/string_orchestra.html --intensity 0.8 --seed 42
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset violin_solo --mode html --output out/violin_solo.html --intensity 0.9 --seed 42
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset guitar_lead --mode html --output out/guitar_lead.html --intensity 0.9 --seed 42
+	@echo "🎻 String Orchestra HTML Gallery complete! Check out/string_orchestra.html, out/violin_solo.html, out/guitar_lead.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

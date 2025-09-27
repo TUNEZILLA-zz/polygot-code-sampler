@@ -378,6 +378,239 @@ def tremolo(text: str, params: Dict[str, Any]) -> str:
         return text
 
 
+@fx("vibrato")
+def vibrato(text: str, params: Dict[str, Any]) -> str:
+    """Vibrato effect - pitch wobble with accent marks"""
+    intensity = params.get("intensity", 0.75)
+    rate = params.get("rate", 7.0)  # vibrato rate
+    depth = params.get("depth", 0.5)  # vibrato depth
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate vibrato phase
+        phase = (i * rate * 0.1) % (2 * math.pi)
+        vibrato_strength = intensity * depth
+        
+        # Apply vibrato modulation
+        if math.sin(phase) > vibrato_strength:
+            # "Sharp" - add accent marks
+            if params.get("mode") == "html":
+                result += f'<span style="text-decoration: overline">{char}</span>'
+            else:
+                result += f'{char}͟'  # combining overline
+        else:
+            # "Flat" - add tildes
+            if params.get("mode") == "html":
+                result += f'<span style="text-decoration: underline">{char}</span>'
+            else:
+                result += f'{char}̴'  # combining tilde overlay
+    
+    return result
+
+
+@fx("glissando")
+def glissando(text: str, params: Dict[str, Any]) -> str:
+    """Glissando effect - characters sliding into each other"""
+    intensity = params.get("intensity", 0.75)
+    slide_speed = params.get("slide_speed", 1.0) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate slide spacing
+        slide_offset = int(math.sin(i * slide_speed * 0.3) * intensity * 3)
+        spacing = "-" * max(1, slide_offset)
+        result += char + spacing
+    
+    return result
+
+
+@fx("arpeggio")
+def arpeggio(text: str, params: Dict[str, Any]) -> str:
+    """Arpeggio effect - spread letters like staggered notes"""
+    intensity = params.get("intensity", 0.75)
+    spread = params.get("spread", 2) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate arpeggio spacing
+        arpeggio_offset = int(i * spread)
+        spacing = " " * arpeggio_offset
+        result += spacing + char + "\n"
+    
+    return result.strip()
+
+
+@fx("harmonics")
+def harmonics(text: str, params: Dict[str, Any]) -> str:
+    """Harmonics effect - ghostly echo letters"""
+    intensity = params.get("intensity", 0.75)
+    harmonic_count = params.get("harmonic_count", 2) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add harmonic echoes
+        result += char
+        for h in range(int(harmonic_count)):
+            if params.get("mode") == "html":
+                result += f'<span style="opacity: 0.3; font-size: 0.7em">{char}</span>'
+            else:
+                result += f'{char}ᴰ'  # combining superscript
+    
+    return result
+
+
+@fx("palm_mute")
+def palm_mute(text: str, params: Dict[str, Any]) -> str:
+    """Palm mute effect - muted placeholders"""
+    intensity = params.get("intensity", 0.75)
+    mute_chars = params.get("mute_chars", "·x—")
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Apply palm mute
+        if random.random() < intensity * 0.6:
+            mute_char = random.choice(mute_chars)
+            result += mute_char
+        else:
+            result += char
+    
+    return result
+
+
+@fx("double_stops")
+def double_stops(text: str, params: Dict[str, Any]) -> str:
+    """Double stops effect - duplicate letters in parallel"""
+    intensity = params.get("intensity", 0.75)
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add parallel harmony
+        if random.random() < intensity * 0.7:
+            if params.get("mode") == "html":
+                result += f'<span style="position: relative; top: -2px">{char}</span>'
+            else:
+                result += f'{char} {char}'
+        else:
+            result += char
+    
+    return result
+
+
+@fx("string_bends")
+def string_bends(text: str, params: Dict[str, Any]) -> str:
+    """String bends effect - warp characters up/down"""
+    intensity = params.get("intensity", 0.75)
+    bend_strength = params.get("bend_strength", 0.5) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate bend offset
+        bend_offset = int(math.sin(i * 0.5) * bend_strength * 3)
+        
+        if params.get("mode") == "html":
+            result += f'<span style="position: relative; top: {bend_offset}px">{char}</span>'
+        else:
+            result += f'{char}͡'  # combining double breve
+    
+    return result
+
+
+@fx("trill")
+def trill(text: str, params: Dict[str, Any]) -> str:
+    """Trill effect - rapid alternation between characters"""
+    intensity = params.get("intensity", 0.75)
+    trill_chars = params.get("trill_chars", "AB")
+    trill_rate = params.get("trill_rate", 0.3) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Apply trill
+        if random.random() < trill_rate:
+            trill_char = random.choice(trill_chars)
+            result += f'{char}{trill_char}'
+        else:
+            result += char
+    
+    return result
+
+
+@fx("pizzicato")
+def pizzicato(text: str, params: Dict[str, Any]) -> str:
+    """Pizzicato effect - sharp staccato accents"""
+    intensity = params.get("intensity", 0.75)
+    accent_chars = params.get("accent_chars", "!?.")
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add pizzicato accents
+        if random.random() < intensity * 0.5:
+            accent = random.choice(accent_chars)
+            result += f'{char}{accent}'
+        else:
+            result += char
+    
+    return result
+
+
+@fx("feedback")
+def feedback(text: str, params: Dict[str, Any]) -> str:
+    """Feedback effect - letters ring out and trail"""
+    intensity = params.get("intensity", 0.75)
+    feedback_length = params.get("feedback_length", 5) * intensity
+    
+    result = ""
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add feedback trail
+        result += char
+        for f in range(int(feedback_length)):
+            if params.get("mode") == "html":
+                result += f'<span style="opacity: {0.8 - f * 0.1}">{char}</span>'
+            else:
+                result += f'{char}~'
+    
+    return result
+
+
 def _tremolo_amplitude(text: str, intensity: float, rate: float, params: Dict[str, Any]) -> str:
     """Amplitude tremolo - volume-like pulses"""
     result = ""
@@ -633,6 +866,60 @@ def get_preset_pack() -> Dict[str, Dict[str, Any]]:
                 {"name": "scramble", "params": {"scramble_factor": 0.4}}
             ],
             "Tremolo with glitch effects"
+        ),
+        "string_orchestra": create_preset(
+            "String Orchestra",
+            [
+                {"name": "vibrato", "params": {"rate": 6.0, "depth": 0.6}},
+                {"name": "harmonics", "params": {"harmonic_count": 2}},
+                {"name": "double_stops", "params": {"intensity": 0.5}}
+            ],
+            "Full string orchestra with vibrato, harmonics, and double stops"
+        ),
+        "violin_solo": create_preset(
+            "Violin Solo",
+            [
+                {"name": "vibrato", "params": {"rate": 8.0, "depth": 0.8}},
+                {"name": "glissando", "params": {"slide_speed": 1.2}},
+                {"name": "harmonics", "params": {"harmonic_count": 1}}
+            ],
+            "Violin solo with vibrato, glissando, and harmonics"
+        ),
+        "guitar_lead": create_preset(
+            "Guitar Lead",
+            [
+                {"name": "string_bends", "params": {"bend_strength": 0.7}},
+                {"name": "vibrato", "params": {"rate": 7.0, "depth": 0.5}},
+                {"name": "feedback", "params": {"feedback_length": 3}}
+            ],
+            "Guitar lead with string bends, vibrato, and feedback"
+        ),
+        "pizzicato_strings": create_preset(
+            "Pizzicato Strings",
+            [
+                {"name": "pizzicato", "params": {"accent_chars": "!?."}},
+                {"name": "palm_mute", "params": {"mute_chars": "·x—"}},
+                {"name": "trill", "params": {"trill_chars": "AB", "trill_rate": 0.4}}
+            ],
+            "Pizzicato strings with palm mute and trill"
+        ),
+        "arpeggio_harp": create_preset(
+            "Arpeggio Harp",
+            [
+                {"name": "arpeggio", "params": {"spread": 3}},
+                {"name": "harmonics", "params": {"harmonic_count": 3}},
+                {"name": "glissando", "params": {"slide_speed": 0.8}}
+            ],
+            "Harp-like arpeggio with harmonics and glissando"
+        ),
+        "feedback_sustain": create_preset(
+            "Feedback Sustain",
+            [
+                {"name": "feedback", "params": {"feedback_length": 8}},
+                {"name": "tremolo", "params": {"type": "amplitude", "rate": 4.0}},
+                {"name": "harmonics", "params": {"harmonic_count": 2}}
+            ],
+            "Feedback sustain with tremolo and harmonics"
         )
     }
 
