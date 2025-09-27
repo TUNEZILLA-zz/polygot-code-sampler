@@ -16,6 +16,9 @@ help:
 	@echo "  432-easter        Run 432 Hz easter preset"
 	@echo "  ab-analysis       Run A/B analysis"
 	@echo "  validation-report Generate validation report"
+	@echo "  code-opera        Multi-voice creative coding performance"
+	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
+	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
 	@echo ""
 	@echo "Examples:"
@@ -98,6 +101,22 @@ generate-snippets:
 		echo "- $$(basename $$file): $$(head -1 $$file)"; \
 	done >> out/snippets/README.md
 	@echo "✅ README snippets generated in out/snippets/"
+
+# Code Opera - Multi-voice creative coding performance
+code-opera:
+	@echo "🎭 Running Code Opera performance..."
+	python3 scripts/code_opera.py
+	@echo "🎭 Code Opera complete! Check out/opera/ for artifacts"
+
+# Code Hero - Guitar Hero for Loops (placeholder)
+code-hero:
+	@echo "🎮 Code Hero mode coming soon..."
+	@echo "🎸 Guitar Hero for code loops with FX timing"
+
+# Code Tarot - Divination system for creative coding
+code-tarot:
+	@echo "🔮 Code Tarot mode coming soon..."
+	@echo "🎴 Random texture/FX cards for creative coding"
 
 # All-in-one demo
 demo: clean creative-demo generate-snippets show-output

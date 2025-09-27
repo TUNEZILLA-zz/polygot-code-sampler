@@ -1,0 +1,26 @@
+🎭 Code Opera Performance Notes:
+========================================
+
+Voice Choir:
+- Rust: Deep, powerful bass (dense texture, reverb+distortion)
+- Python: Smooth, expressive tenor (smooth texture, chorus+delay)
+- Julia: Mathematical, precise soprano (fractal texture, lfo+reverb)
+- TypeScript: Modern, versatile alto (polyphonic texture, chorus+delay)
+- Go: Steady, reliable baritone (sparse texture, reverb)
+- C#: Rich, enterprise bass (maximal texture, distortion+reverb)
+- SQL: Structured, harmonic foundation (minimal texture, reverb)
+
+Harmony Structure:
+- C (Rust) - Root note, powerful foundation
+- E (Python) - Major third, smooth expression
+- G (Julia) - Perfect fifth, mathematical precision
+- A (TypeScript) - Major sixth, modern versatility
+- D (Go) - Perfect fourth, steady reliability
+- F (C#) - Major second, enterprise richness
+- B (SQL) - Major seventh, harmonic foundation
+
+Visual Effects:
+- Each voice has unique particle behavior and color
+- Particles 'sing' in sync with code loops
+- Harmony visualization shows combined effects
+- Real-time performance controls for live coding

@@ -1,0 +1,38 @@
+{
+  "dense-reverb": {
+    "success": true,
+    "output_file": "out/matrix/dense-reverb.py",
+    "texture": "dense",
+    "fx": "reverb"
+  },
+  "smooth-delay": {
+    "success": true,
+    "output_file": "out/matrix/smooth-delay.py",
+    "texture": "smooth",
+    "fx": "delay"
+  },
+  "grainy-reverse": {
+    "success": true,
+    "output_file": "out/matrix/grainy-reverse.py",
+    "texture": "grainy",
+    "fx": "reverse"
+  },
+  "polyphonic-chorus": {
+    "success": true,
+    "output_file": "out/matrix/polyphonic-chorus.py",
+    "texture": "polyphonic",
+    "fx": "chorus"
+  },
+  "fractal-distortion": {
+    "success": true,
+    "output_file": "out/matrix/fractal-distortion.py",
+    "texture": "fractal",
+    "fx": "distortion"
+  },
+  "minimal-lfo": {
+    "success": true,
+    "output_file": "out/matrix/minimal-lfo.py",
+    "texture": "minimal",
+    "fx": "lfo"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "sp1200": {
+    "success": true,
+    "output_file": "out/retro/loop_dense_sp1200.py",
+    "mode": "sp1200"
+  },
+  "mpc60": {
+    "success": true,
+    "output_file": "out/retro/loop_dense_mpc60.py",
+    "mode": "mpc60"
+  },
+  "vintage-py27": {
+    "success": true,
+    "output_file": "out/retro/loop_dense_vintage-py27.py",
+    "mode": "vintage-py27"
+  },
+  "modern": {
+    "success": true,
+    "output_file": "out/retro/loop_dense_modern.py",
+    "mode": "modern"
+  }
+}

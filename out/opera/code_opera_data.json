@@ -1,0 +1,126 @@
+{
+  "timestamp": 1758956202.326737,
+  "voices": {
+    "rust": {
+      "texture": "dense",
+      "fx_chain": [
+        "reverb",
+        "distortion"
+      ],
+      "tempo": 120.0,
+      "volume": 0.8,
+      "harmony_note": "C",
+      "visual_color": "#dc2626",
+      "particle_behavior": "powerful_bass",
+      "code_file": "out/voices/rust_voice.py"
+    },
+    "python": {
+      "texture": "smooth",
+      "fx_chain": [
+        "chorus",
+        "delay"
+      ],
+      "tempo": 110.0,
+      "volume": 0.9,
+      "harmony_note": "E",
+      "visual_color": "#059669",
+      "particle_behavior": "flowing_tenor",
+      "code_file": "out/voices/python_voice.py"
+    },
+    "julia": {
+      "texture": "fractal",
+      "fx_chain": [
+        "lfo",
+        "reverb"
+      ],
+      "tempo": 140.0,
+      "volume": 0.7,
+      "harmony_note": "G",
+      "visual_color": "#7c3aed",
+      "particle_behavior": "mathematical_soprano",
+      "code_file": "out/voices/julia_voice.py"
+    },
+    "typescript": {
+      "texture": "polyphonic",
+      "fx_chain": [
+        "chorus",
+        "delay"
+      ],
+      "tempo": 115.0,
+      "volume": 0.8,
+      "harmony_note": "A",
+      "visual_color": "#2563eb",
+      "particle_behavior": "versatile_alto",
+      "code_file": "out/voices/typescript_voice.py"
+    },
+    "go": {
+      "texture": "sparse",
+      "fx_chain": [
+        "reverb"
+      ],
+      "tempo": 100.0,
+      "volume": 0.6,
+      "harmony_note": "D",
+      "visual_color": "#0891b2",
+      "particle_behavior": "steady_baritone",
+      "code_file": "out/voices/go_voice.py"
+    },
+    "csharp": {
+      "texture": "maximal",
+      "fx_chain": [
+        "distortion",
+        "reverb"
+      ],
+      "tempo": 105.0,
+      "volume": 0.7,
+      "harmony_note": "F",
+      "visual_color": "#be185d",
+      "particle_behavior": "enterprise_bass",
+      "code_file": "out/voices/csharp_voice.py"
+    },
+    "sql": {
+      "texture": "minimal",
+      "fx_chain": [
+        "reverb"
+      ],
+      "tempo": 90.0,
+      "volume": 0.5,
+      "harmony_note": "B",
+      "visual_color": "#f59e0b",
+      "particle_behavior": "harmonic_foundation",
+      "code_file": "out/voices/sql_voice.py"
+    }
+  },
+  "harmony": {
+    "html_file": "out/opera/code_opera_harmony.html",
+    "notes_file": "out/performance/code_opera_notes.txt"
+  },
+  "performance_notes": [
+    "\ud83c\udfad Code Opera Performance Notes:",
+    "========================================",
+    "",
+    "Voice Choir:",
+    "- Rust: Deep, powerful bass (dense texture, reverb+distortion)",
+    "- Python: Smooth, expressive tenor (smooth texture, chorus+delay)",
+    "- Julia: Mathematical, precise soprano (fractal texture, lfo+reverb)",
+    "- TypeScript: Modern, versatile alto (polyphonic texture, chorus+delay)",
+    "- Go: Steady, reliable baritone (sparse texture, reverb)",
+    "- C#: Rich, enterprise bass (maximal texture, distortion+reverb)",
+    "- SQL: Structured, harmonic foundation (minimal texture, reverb)",
+    "",
+    "Harmony Structure:",
+    "- C (Rust) - Root note, powerful foundation",
+    "- E (Python) - Major third, smooth expression",
+    "- G (Julia) - Perfect fifth, mathematical precision",
+    "- A (TypeScript) - Major sixth, modern versatility",
+    "- D (Go) - Perfect fourth, steady reliability",
+    "- F (C#) - Major second, enterprise richness",
+    "- B (SQL) - Major seventh, harmonic foundation",
+    "",
+    "Visual Effects:",
+    "- Each voice has unique particle behavior and color",
+    "- Particles 'sing' in sync with code loops",
+    "- Harmony visualization shows combined effects",
+    "- Real-time performance controls for live coding"
+  ]
+}

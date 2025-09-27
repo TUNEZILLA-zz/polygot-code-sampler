@@ -1,0 +1,156 @@
+{
+  "timestamp": 1758955885.80266,
+  "demo_version": "1.0.0",
+  "tests_run": [
+    {
+      "name": "texture_bakeoff",
+      "success": true,
+      "result": {
+        "dense": {
+          "success": true,
+          "output_file": "out/loops/loop_dense.py",
+          "code": "\ud83c\udfa8 Applying dense texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: dense\n   Description: Nested loops, comprehensions, stacked transformations\n   Visual: cluster_clouds (#4b6cff)"
+        },
+        "sparse": {
+          "success": true,
+          "output_file": "out/loops/loop_sparse.py",
+          "code": "\ud83c\udfa8 Applying sparse texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: sparse\n   Description: Minimalistic, flat iteration with only essentials\n   Visual: isolated_points (#2dd4bf)"
+        },
+        "smooth": {
+          "success": true,
+          "output_file": "out/loops/loop_smooth.py",
+          "code": "\ud83c\udfa8 Applying smooth texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: smooth\n   Description: Vectorized ops, batch processing, continuous interpolation\n   Visual: flowing_arcs (#8b5cf6)"
+        },
+        "grainy": {
+          "success": true,
+          "output_file": "out/loops/loop_grainy.py",
+          "code": "\ud83c\udfa8 Applying grainy texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: grainy\n   Description: Stepwise, noisy iterations, explicit jitter\n   Visual: jittery_scatter (#f59e0b)"
+        },
+        "polyphonic": {
+          "success": true,
+          "output_file": "out/loops/loop_polyphonic.py",
+          "code": "\ud83c\udfa8 Applying polyphonic texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: polyphonic\n   Description: Multiple concurrent code paths, like musical voices\n   Visual: harmonic_waves (#ec4899)"
+        },
+        "minimal": {
+          "success": true,
+          "output_file": "out/loops/loop_minimal.py",
+          "code": "\ud83c\udfa8 Applying minimal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: minimal\n   Description: Very small, almost haiku-like loops\n   Visual: single_points (#6b7280)"
+        },
+        "maximal": {
+          "success": true,
+          "output_file": "out/loops/loop_maximal.py",
+          "code": "\ud83c\udfa8 Applying maximal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: maximal\n   Description: Overloaded with decorators, abstractions, parallelization\n   Visual: layered_clouds (#dc2626)"
+        },
+        "fractal": {
+          "success": true,
+          "output_file": "out/loops/loop_fractal.py",
+          "code": "\ud83c\udfa8 Applying fractal texture\n==================================================\n\u2705 Texture parameters validated\n\nOriginal code:\n------------------------------\nfor i in range(16): process(i)\n\nTextured code:\n------------------------------\nfor i in range(16):\n    _fractal_depth = 3\n    fractal_process(i, _fractal_depth)\n    process(i)\n\n\ud83c\udfa8 Texture Details:\n   Type: fractal\n   Description: Recursive texture, code 'folds in on itself'\n   Visual: recursive_patterns (#059669)"
+        }
+      }
+    },
+    {
+      "name": "texture_fx_matrix",
+      "success": true,
+      "result": {
+        "dense-reverb": {
+          "success": true,
+          "output_file": "out/matrix/dense-reverb.py",
+          "texture": "dense",
+          "fx": "reverb"
+        },
+        "smooth-delay": {
+          "success": true,
+          "output_file": "out/matrix/smooth-delay.py",
+          "texture": "smooth",
+          "fx": "delay"
+        },
+        "grainy-reverse": {
+          "success": true,
+          "output_file": "out/matrix/grainy-reverse.py",
+          "texture": "grainy",
+          "fx": "reverse"
+        },
+        "polyphonic-chorus": {
+          "success": true,
+          "output_file": "out/matrix/polyphonic-chorus.py",
+          "texture": "polyphonic",
+          "fx": "chorus"
+        },
+        "fractal-distortion": {
+          "success": true,
+          "output_file": "out/matrix/fractal-distortion.py",
+          "texture": "fractal",
+          "fx": "distortion"
+        },
+        "minimal-lfo": {
+          "success": true,
+          "output_file": "out/matrix/minimal-lfo.py",
+          "texture": "minimal",
+          "fx": "lfo"
+        }
+      }
+    },
+    {
+      "name": "retro_modes",
+      "success": true,
+      "result": {
+        "sp1200": {
+          "success": true,
+          "output_file": "out/retro/loop_dense_sp1200.py",
+          "mode": "sp1200"
+        },
+        "mpc60": {
+          "success": true,
+          "output_file": "out/retro/loop_dense_mpc60.py",
+          "mode": "mpc60"
+        },
+        "vintage-py27": {
+          "success": true,
+          "output_file": "out/retro/loop_dense_vintage-py27.py",
+          "mode": "vintage-py27"
+        },
+        "modern": {
+          "success": true,
+          "output_file": "out/retro/loop_dense_modern.py",
+          "mode": "modern"
+        }
+      }
+    },
+    {
+      "name": "432_easter",
+      "success": true,
+      "result": {
+        "success": true,
+        "output_file": "out/easter/loop_432.py"
+      }
+    },
+    {
+      "name": "ab_analysis",
+      "success": true,
+      "result": {
+        "sparse": {
+          "file": "out/loops/loop_sparse.py",
+          "lines": 18,
+          "tokens": 40,
+          "nesting_depth": 2
+        },
+        "dense": {
+          "file": "out/loops/loop_dense.py",
+          "lines": 18,
+          "tokens": 39,
+          "nesting_depth": 2
+        },
+        "deltas": {
+          "lines": 0,
+          "tokens": -1,
+          "nesting_depth": 0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total_tests": 5,
+    "successful_tests": 5,
+    "failed_tests": 0
+  }
+}
