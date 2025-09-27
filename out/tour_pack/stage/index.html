@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Sampler + FX Symphony - Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 50px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            font-size: 1.2rem;
+            color: #4ecdc4;
+            margin-bottom: 20px;
+        }
+        
+        .movements {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .movement {
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .movement-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+        
+        .movement-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .movement-duration {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .movements {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title">🎼 Code Sampler + FX Symphony</div>
+    <div class="subtitle">Live Performance</div>
+    <div class="status">🎭 Ready for Showtime</div>
+    
+    <div class="movements">
+        <div class="movement">
+            <div class="movement-number">I</div>
+            <div class="movement-title">Polyglot Fugue</div>
+            <div class="movement-duration">30s</div>
+        </div>
+        <div class="movement">
+            <div class="movement-number">II</div>
+            <div class="movement-title">FX Rack Morph</div>
+            <div class="movement-duration">30s</div>
+        </div>
+        <div class="movement">
+            <div class="movement-number">III</div>
+            <div class="movement-title">Lunar Interlude</div>
+            <div class="movement-duration">30s</div>
+        </div>
+    </div>
+</body>
+</html>

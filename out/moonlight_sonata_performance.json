@@ -1,0 +1,84 @@
+{
+  "performance": "Moonlight Sonata Text-FX",
+  "timestamp": "2025-09-27T12:42:08.983867",
+  "duration": 90,
+  "movements": [
+    {
+      "name": "Adagio sostenuto",
+      "start": 0,
+      "end": 30
+    },
+    {
+      "name": "Allegretto",
+      "start": 30,
+      "end": 60
+    },
+    {
+      "name": "Presto agitato",
+      "start": 60,
+      "end": 90
+    }
+  ],
+  "actions": [
+    {
+      "timestamp": 0,
+      "action": "PARTICLES",
+      "description": "Cosmic dust overlay - moonlight shimmer"
+    },
+    {
+      "timestamp": 0,
+      "action": "SCENE",
+      "description": "Cinemascope + Pizzicato Strings - start monochrome"
+    },
+    {
+      "timestamp": 10,
+      "action": "FX",
+      "description": "Chromatic Trails (low) - tap tempo slow"
+    },
+    {
+      "timestamp": 20,
+      "action": "LIGHT",
+      "description": "Subtle Vibrato + Fringe - add slight vibrato"
+    },
+    {
+      "timestamp": 30,
+      "action": "TRANSITION",
+      "description": "Prepare for Movement II - Allegretto"
+    },
+    {
+      "timestamp": 30,
+      "action": "SCENE",
+      "description": "Neon Bloom + Arpeggio Harp - enable color macro +10%"
+    },
+    {
+      "timestamp": 45,
+      "action": "FX",
+      "description": "Chorus MicroShift (wide) - keep trails modest (a11y)"
+    },
+    {
+      "timestamp": 60,
+      "action": "TRANSITION",
+      "description": "Prepare for Movement III - Presto agitato"
+    },
+    {
+      "timestamp": 60,
+      "action": "SCENE",
+      "description": "Prism Burst + Guitar Lead - start morph: Glass Cathedral \u2192 Data Storm over 10s"
+    },
+    {
+      "timestamp": 70,
+      "action": "LIGHT",
+      "description": "Lightning FX (guarded) - momentary White Bloom (\u22641.0s) on downbeat"
+    },
+    {
+      "timestamp": 80,
+      "action": "CADENCE",
+      "description": "Broken Spectrum \u2192 Mono - ease metrics-link to 0.2, taper intensity"
+    },
+    {
+      "timestamp": 90,
+      "action": "BLACKOUT",
+      "description": "Motion-safe fade - press Blackout; stop log"
+    }
+  ]
+}

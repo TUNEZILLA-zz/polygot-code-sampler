@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Sampler + FX Symphony - Concert Program</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+            border-radius: 2px;
+        }
+        
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .movements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .movement {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .movement:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .movement::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+        }
+        
+        .movement-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+        
+        .movement-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .movement-description {
+            color: #a0a0a0;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .movement-details {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .detail-value {
+            color: #ffffff;
+        }
+        
+        .movement-mood {
+            font-style: italic;
+            color: #4ecdc4;
+            font-size: 0.9rem;
+        }
+        
+        .timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .timeline-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4ecdc4;
+        }
+        
+        .timeline-bar {
+            height: 8px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 33%, #45b7d1 66%, #96ceb4 100%);
+            border-radius: 4px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            top: -10px;
+            width: 20px;
+            height: 28px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .timeline-marker:nth-child(1) { left: 0%; }
+        .timeline-marker:nth-child(2) { left: 33%; }
+        .timeline-marker:nth-child(3) { left: 66%; }
+        .timeline-marker:nth-child(4) { left: 100%; }
+        
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+        
+        .commands {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .commands-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4ecdc4;
+        }
+        
+        .command-group {
+            margin-bottom: 25px;
+        }
+        
+        .command-group-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .command {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #4ecdc4;
+        }
+        
+        .command-code {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+        
+        .command-desc {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .integration {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .integration-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4ecdc4;
+        }
+        
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .integration-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .integration-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .integration-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .integration-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+        
+        .integration-desc {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+        }
+        
+        .footer-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4ecdc4;
+        }
+        
+        .footer-desc {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .footer-tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .movements {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-marker {
+                font-size: 0.7rem;
+                width: 16px;
+                height: 24px;
+            }
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(78, 205, 196, 0.5); }
+            to { text-shadow: 0 0 30px rgba(78, 205, 196, 0.8); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title glow">Code Sampler + FX Symphony</div>
+            <div class="subtitle">A 3-Movement Performance Timeline</div>
+            <div class="tagline">Polyglot code transformations with FX rack production polish</div>
+        </div>
+        
+        <div class="movements">
+            <div class="movement">
+                <div class="movement-number">I</div>
+                <div class="movement-title">Polyglot Fugue</div>
+                <div class="movement-description">
+                    Code sampler runs sequential transformations (Python → Rust → Go → SQL). 
+                    FX: Glass Cathedral rack adds shimmer and reverb, like a fugue in a cathedral.
+                </div>
+                <div class="movement-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Duration:</span>
+                        <span class="detail-value">30s</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">FX Rack:</span>
+                        <span class="detail-value">Glass Cathedral</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Languages:</span>
+                        <span class="detail-value">Python → Rust → Go → SQL</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Intensity:</span>
+                        <span class="detail-value">0.3</span>
+                    </div>
+                </div>
+                <div class="movement-mood">
+                    Mood: Solemn, mathematical beauty, languages echoing each other like voices in counterpoint.
+                </div>
+            </div>
+            
+            <div class="movement">
+                <div class="movement-number">II</div>
+                <div class="movement-title">FX Rack Morph</div>
+                <div class="movement-description">
+                    The same fugue material is pushed through a rack morph. 
+                    Glass Cathedral → Data Storm (shimmer → glitch storm). 
+                    Intensity rises, chaos builds, like a storm overtaking the piece.
+                </div>
+                <div class="movement-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Duration:</span>
+                        <span class="detail-value">30s</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Morph:</span>
+                        <span class="detail-value">Glass Cathedral → Data Storm</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sidechain:</span>
+                        <span class="detail-value">QPS → tremolo, Error rate → chaos</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Intensity:</span>
+                        <span class="detail-value">0.3 → 0.7</span>
+                    </div>
+                </div>
+                <div class="movement-mood">
+                    Mood: Storm overtaking the piece, chaos building, glitch storm intensity.
+                </div>
+            </div>
+            
+            <div class="movement">
+                <div class="movement-number">III</div>
+                <div class="movement-title">Lunar Interlude</div>
+                <div class="movement-description">
+                    Surprise cut: enter LOLcat++ Cat-Walk preset. 
+                    Playful cat-speak overlays the storm, chaos subsides into comic relief. 
+                    Cosmic dust particles shimmer across the text.
+                </div>
+                <div class="movement-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Duration:</span>
+                        <span class="detail-value">30s</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Preset:</span>
+                        <span class="detail-value">LOLcat++ Cat-Walk</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Elements:</span>
+                        <span class="detail-value">Cosmic dust, shimmer FX</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Intensity:</span>
+                        <span class="detail-value">0.5</span>
+                    </div>
+                </div>
+                <div class="movement-mood">
+                    Mood: Playful cat-speak, comic relief, moonlit cats, soft fade.
+                </div>
+            </div>
+        </div>
+        
+        <div class="timeline">
+            <div class="timeline-title">Performance Timeline</div>
+            <div class="timeline-bar">
+                <div class="timeline-marker">0s</div>
+                <div class="timeline-marker">30s</div>
+                <div class="timeline-marker">60s</div>
+                <div class="timeline-marker">90s</div>
+            </div>
+            <div class="timeline-labels">
+                <span>Polyglot Fugue</span>
+                <span>FX Rack Morph</span>
+                <span>Lunar Interlude</span>
+                <span>Finale</span>
+            </div>
+        </div>
+        
+        <div class="commands">
+            <div class="commands-title">🚀 How to Run It</div>
+            
+            <div class="command-group">
+                <div class="command-group-title">Full Symphony</div>
+                <div class="command">
+                    <div class="command-code">make code-sampler-fx-symphony</div>
+                    <div class="command-desc">Full 90s concert performance</div>
+                </div>
+            </div>
+            
+            <div class="command-group">
+                <div class="command-group-title">Individual Movements</div>
+                <div class="command">
+                    <div class="command-code">make code-sampler-fx-symphony-movement-I</div>
+                    <div class="command-desc">Polyglot Fugue (30s)</div>
+                </div>
+                <div class="command">
+                    <div class="command-code">make code-sampler-fx-symphony-movement-II</div>
+                    <div class="command-desc">FX Rack Morph Storm (30s)</div>
+                </div>
+                <div class="command">
+                    <div class="command-code">make code-sampler-fx-symphony-movement-III</div>
+                    <div class="command-desc">Lunar Cat-Walk (30s)</div>
+                </div>
+            </div>
+            
+            <div class="command-group">
+                <div class="command-group-title">Quick Demo</div>
+                <div class="command">
+                    <div class="command-code">make code-sampler-fx-symphony-quick</div>
+                    <div class="command-desc">Quick command flow demonstration</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="integration">
+            <div class="integration-title">✨ Integration Possibilities</div>
+            <div class="integration-grid">
+                <div class="integration-item">
+                    <div class="integration-icon">🌙</div>
+                    <div class="integration-name">Lunar Recital</div>
+                    <div class="integration-desc">Double-bill: Beethoven/Debussy + Polyglot Fugue</div>
+                </div>
+                <div class="integration-item">
+                    <div class="integration-icon">😺</div>
+                    <div class="integration-name">LOLcat++ Micro-presets</div>
+                    <div class="integration-desc">Stage-Punch, Cat-Walk, Classic-Lite for audience interaction</div>
+                </div>
+                <div class="integration-item">
+                    <div class="integration-icon">🎛️</div>
+                    <div class="integration-name">Touring Rig Hotkeys</div>
+                    <div class="integration-desc">FOH control: Blackout → Impact Beat → Color Ride</div>
+                </div>
+                <div class="integration-item">
+                    <div class="integration-icon">🎼</div>
+                    <div class="integration-name">Concert Program</div>
+                    <div class="integration-desc">Movements, timings, and visuals for promo kit</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-title">🎼 The Result</div>
+            <div class="footer-desc">
+                A polyglot code symphony that starts like Bach in a cathedral, 
+                storms like a modern glitch opera, and closes with playful moonlit cats.
+            </div>
+            <div class="footer-tagline">
+                Code Sampler + FX Symphony = Creative Instrument Perfection! ✨
+            </div>
+        </div>
+    </div>
+</body>
+</html>

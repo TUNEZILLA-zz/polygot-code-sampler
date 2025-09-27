@@ -1,0 +1,12 @@
+{
+  "name": "Small Venue",
+  "description": "Intimate spaces, dust/trails low, 60fps bias",
+  "settings": {
+    "dust": 0.12,
+    "trails": 0.35,
+    "intensity_start": 0.28,
+    "intensity_end": 0.45,
+    "fps_bias": 60,
+    "particle_density": 0.6
+  }
+}

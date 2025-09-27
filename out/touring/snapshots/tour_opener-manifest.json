@@ -1,6 +1,6 @@
 {
   "scene_id": "tour_opener",
-  "timestamp": "2025-09-27 10:39:19",
+  "timestamp": "2025-09-27 14:12:28",
   "snapshots": {
     "low": {
       "file": "tour_opener-low.html",
@@ -10,7 +10,7 @@
         "bloom": false,
         "description": "Low intensity, subtle reactive motion"
       },
-      "generated": "2025-09-27 10:39:19"
+      "generated": "2025-09-27 14:12:28"
     },
     "mid": {
       "file": "tour_opener-mid.html",
@@ -20,7 +20,7 @@
         "bloom": false,
         "description": "Medium intensity, balanced reactive motion"
       },
-      "generated": "2025-09-27 10:39:19"
+      "generated": "2025-09-27 14:12:28"
     },
     "peak": {
       "file": "tour_opener-peak.html",
@@ -30,7 +30,7 @@
         "bloom": false,
         "description": "Peak intensity, maximum reactive motion"
       },
-      "generated": "2025-09-27 10:39:19"
+      "generated": "2025-09-27 14:12:28"
     }
   },
   "metadata": {

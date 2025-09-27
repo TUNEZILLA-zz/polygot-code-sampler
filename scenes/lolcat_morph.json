@@ -1,0 +1,17 @@
+{
+  "from": "Neon Bloom",
+  "to": "LOLcat Neon Parade",
+  "seconds": 6.0,
+  "curve": "EaseInOut",
+  "clamps": {
+    "lolcat_plus.emoji": {"max": 0.18},
+    "lolcat_plus.chaos": {"max": 0.35}
+  },
+  "morph_params": {
+    "lolcat_plus.intensity": {"from": 0.0, "to": 0.6},
+    "lolcat_plus.uwu": {"from": 0.0, "to": 0.45},
+    "lolcat_plus.chaos": {"from": 0.0, "to": 0.2},
+    "lolcat_plus.emoji": {"from": 0.0, "to": 0.12},
+    "lolcat_plus.trail": {"from": 0.0, "to": 0.35}
+  }
+}

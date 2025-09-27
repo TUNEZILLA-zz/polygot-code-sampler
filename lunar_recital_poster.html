@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Recital - Tour Poster</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .poster {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(45deg, #000428 0%, #004e92 100%);
+            border: 4px solid #00ffff;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 
+                0 0 40px #00ffff,
+                inset 0 0 40px rgba(0, 255, 255, 0.1);
+            position: relative;
+            transform: rotate(-1deg);
+            transition: all 0.3s ease;
+        }
+        
+        .poster:hover {
+            transform: rotate(0deg) scale(1.02);
+            box-shadow: 
+                0 0 50px #00ffff,
+                0 0 70px rgba(255, 0, 255, 0.3);
+        }
+        
+        .poster::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 0, 0.05) 0%, transparent 50%);
+            border-radius: 21px;
+            pointer-events: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 60px #00ffff;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 30px #00ffff, 0 0 50px #00ffff, 0 0 70px #00ffff;
+            }
+        }
+        
+        .subtitle {
+            font-size: 2.5rem;
+            color: #ff00ff;
+            text-shadow: 0 0 20px #ff00ff;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+        }
+        
+        .lunar-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 35px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .program {
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .program-title {
+            font-size: 2rem;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px #00ffff;
+            border-bottom: 3px solid #00ffff;
+            padding-bottom: 15px;
+        }
+        
+        .pieces {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .piece {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .piece::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .piece:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+        
+        .piece-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .piece-composer {
+            font-size: 1.2rem;
+            color: #ff00ff;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .piece-duration {
+            font-size: 1rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .piece-description {
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            margin-top: 10px;
+            font-family: 'Roboto Mono', monospace;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tech-specs {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 3px solid #ff00ff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tech-title {
+            font-size: 1.8rem;
+            color: #ff00ff;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .tech-item {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #ff00ff;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .tech-label {
+            font-size: 1rem;
+            color: #ff00ff;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .tech-value {
+            font-size: 0.9rem;
+            color: #00ffff;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .footer {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #00ffff;
+        }
+        
+        .command {
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .command:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .command-text {
+            font-size: 1.2rem;
+            color: #ff00ff;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .command-desc {
+            font-size: 0.9rem;
+            color: #cccccc;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .artifacts {
+            background: linear-gradient(45deg, rgba(255, 170, 0, 0.1), rgba(255, 0, 255, 0.1));
+            border: 3px solid #ffaa00;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .artifacts-title {
+            font-size: 1.8rem;
+            color: #ffaa00;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #ffaa00;
+        }
+        
+        .artifacts-list {
+            list-style: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .artifacts-list li {
+            margin: 10px 0;
+            padding: 8px 0;
+            border-left: 3px solid #ffaa00;
+            padding-left: 15px;
+            color: #ffcc66;
+            transition: all 0.3s ease;
+        }
+        
+        .artifacts-list li:hover {
+            background: rgba(255, 170, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .artifacts-list li::before {
+            content: '📁';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        @media print {
+            body {
+                background: #000;
+                padding: 0;
+            }
+            .poster {
+                transform: none;
+                box-shadow: none;
+                border: 2px solid #000;
+                max-width: none;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="header">
+            <h1 class="main-title">LUNAR RECITAL</h1>
+            <h2 class="subtitle">Text-FX Double Feature</h2>
+            <div class="lunar-badge">SHADOW + SHIMMER</div>
+        </div>
+        
+        <div class="program">
+            <h3 class="program-title">🎭 PROGRAM</h3>
+            <div class="pieces">
+                <div class="piece">
+                    <div class="piece-title">Moonlight Sonata</div>
+                    <div class="piece-composer">Ludwig van Beethoven</div>
+                    <div class="piece-duration">90 seconds</div>
+                    <div class="piece-description">Shadow performance with cosmic dust overlay</div>
+                </div>
+                <div class="piece">
+                    <div class="piece-title">Clair de Lune</div>
+                    <div class="piece-composer">Claude Debussy</div>
+                    <div class="piece-duration">90 seconds</div>
+                    <div class="piece-description">Shimmer performance with glass cathedral FX</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tech-specs">
+            <h3 class="tech-title">🎛️ TECHNICAL SPECIFICATIONS</h3>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-label">Total Runtime</div>
+                    <div class="tech-value">3 minutes</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Movements</div>
+                    <div class="tech-value">6 movements</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">FX Chains</div>
+                    <div class="tech-value">12+ chains</div>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-label">Seeded</div>
+                    <div class="tech-value">Repeatable</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <h3 class="footer-title">🚀 PERFORMANCE COMMAND</h3>
+            <div class="command">
+                <div class="command-text">make lunar-recital</div>
+                <div class="command-desc">Complete 3-minute text-FX double feature</div>
+            </div>
+        </div>
+        
+        <div class="artifacts">
+            <h3 class="artifacts-title">📁 GENERATED ARTIFACTS</h3>
+            <ul class="artifacts-list">
+                <li>Performance logs with timestamps and movement data</li>
+                <li>Snapshot kit (low/mid/peak intensity)</li>
+                <li>Chromatic HTML gallery (enhanced neon bloom/prism/hologram)</li>
+                <li>String orchestra HTML (solo & ensemble passes)</li>
+                <li>Tour opener snapshots with manifest files</li>
+                <li>Visual showflow cards for promo kit</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effects to pieces
+            const pieces = document.querySelectorAll('.piece');
+            pieces.forEach(piece => {
+                piece.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 300);
+                });
+            });
+            
+            // Add hover effects to tech items
+            const techItems = document.querySelectorAll('.tech-item');
+            techItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Add glow effect to title on click
+            const title = document.querySelector('.main-title');
+            title.addEventListener('click', function() {
+                this.classList.toggle('titleGlow');
+            });
+        });
+    </script>
+</body>
+</html>

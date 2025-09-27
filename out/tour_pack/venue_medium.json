@@ -1,0 +1,12 @@
+{
+  "name": "Medium Venue",
+  "description": "Mid-size venues, balanced settings",
+  "settings": {
+    "dust": 0.18,
+    "trails": 0.5,
+    "intensity_start": 0.3,
+    "intensity_end": 0.6,
+    "fps_bias": 45,
+    "particle_density": 0.8
+  }
+}

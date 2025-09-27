@@ -1,0 +1,12 @@
+{
+  "name": "Large Venue",
+  "description": "Arena spaces, bigger particles, longer tails",
+  "settings": {
+    "dust": 0.22,
+    "trails": 0.6,
+    "intensity_start": 0.3,
+    "intensity_end": 0.7,
+    "fps_bias": 30,
+    "particle_density": 1.0
+  }
+}
