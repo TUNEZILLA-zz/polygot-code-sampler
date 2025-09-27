@@ -31,6 +31,10 @@ help:
 	@echo "Quick refresh:"
 	@echo "  bench-refresh   - One-liner: run benchmarks, aggregate, commit & push"
 	@echo ""
+	@echo "Performance canaries:"
+	@echo "  canary          - Run micro canary benchmark (fast regression detection)"
+	@echo "  canary-baseline - Set current performance as baseline"
+	@echo ""
 
 # Test Julia backend
 test-julia:
@@ -213,3 +217,13 @@ demo-clean:
 	rm -f site/benchmarks.json
 	rm -f bench/results/*.ndjson || true
 	@echo "✅ Demo data cleaned!"
+
+# Performance canaries
+canary:
+	@echo "🚀 Running micro canary benchmark..."
+	python3 scripts/canary_bench.py
+
+canary-baseline:
+	@echo "📊 Setting current performance as baseline..."
+	python3 scripts/canary_bench.py
+	@echo "✅ Baseline updated!"

@@ -1,0 +1,28 @@
+# Global owners
+* @TUNEZILLA-zz
+
+# Core renderer API and central infrastructure
+pcs/renderer_api.py @TUNEZILLA-zz
+pcs/__init__.py @TUNEZILLA-zz
+pcs/cli.py @TUNEZILLA-zz
+
+# Backend renderers (require review for changes)
+pcs/renderers/ @TUNEZILLA-zz
+
+# Test infrastructure
+tests/ @TUNEZILLA-zz
+.github/workflows/ @TUNEZILLA-zz
+
+# Performance and benchmarking
+bench/ @TUNEZILLA-zz
+scripts/ @TUNEZILLA-zz
+
+# Documentation
+docs/ @TUNEZILLA-zz
+README.md @TUNEZILLA-zz
+CHANGELOG.md @TUNEZILLA-zz
+
+# Release and packaging
+pyproject.toml @TUNEZILLA-zz
+.github/release-drafter.yml @TUNEZILLA-zz
+.github/workflows/sbom.yml @TUNEZILLA-zz
