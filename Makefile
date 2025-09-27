@@ -48,6 +48,12 @@ help:
 	@echo "  arpeggio-harp   Arpeggio Harp (spread + harmonics)"
 	@echo "  feedback-sustain Feedback Sustain (tremolo + harmonics)"
 	@echo "  string-orchestra-html String Orchestra HTML Gallery"
+	@echo "  conductor-score   Conductor Score DSL (Tremolo forte)"
+	@echo "  conductor-score-crescendo Conductor Score Crescendo"
+	@echo "  conductor-score-hybrid Conductor Score Hybrid (Guitar Lead ff neon)"
+	@echo "  conductor-score-ensemble Conductor Score Ensemble"
+	@echo "  conductor-score-create Create Conductor Score"
+	@echo "  conductor-score-html Conductor Score HTML output"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -331,6 +337,37 @@ string-orchestra-html:
 	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset violin_solo --mode html --output out/violin_solo.html --intensity 0.9 --seed 42
 	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset guitar_lead --mode html --output out/guitar_lead.html --intensity 0.9 --seed 42
 	@echo "🎻 String Orchestra HTML Gallery complete! Check out/string_orchestra.html, out/violin_solo.html, out/guitar_lead.html"
+
+# Conductor Score DSL targets
+conductor-score:
+	@echo "🎼 Running Conductor Score DSL..."
+	python3 scripts/conductor_score_cli.py --score "[Tremolo forte] TuneZilla [/]"
+	@echo "🎼 Conductor Score complete!"
+
+conductor-score-crescendo:
+	@echo "🎼 Running Conductor Score Crescendo..."
+	python3 scripts/conductor_score_cli.py --score "[Violin Solo crescendo] Code Live [/]"
+	@echo "🎼 Conductor Score Crescendo complete!"
+
+conductor-score-hybrid:
+	@echo "🎼 Running Conductor Score Hybrid..."
+	python3 scripts/conductor_score_cli.py --score "[Guitar Lead ff neon] Rawtunez [/]"
+	@echo "🎼 Conductor Score Hybrid complete!"
+
+conductor-score-ensemble:
+	@echo "🎼 Running Conductor Score Ensemble..."
+	python3 scripts/conductor_score_cli.py --text "Code Live TuneZilla Rawtunez" --ensemble
+	@echo "🎼 Conductor Score Ensemble complete!"
+
+conductor-score-create:
+	@echo "🎼 Creating Conductor Score..."
+	python3 scripts/conductor_score_cli.py --create-score --text "TuneZilla" --technique "violin_solo" --dynamics "ff"
+	@echo "🎼 Conductor Score created!"
+
+conductor-score-html:
+	@echo "🎼 Creating Conductor Score HTML..."
+	python3 scripts/conductor_score_cli.py --score "[Tremolo forte] TuneZilla [/]" --mode html --output out/conductor_score.html --intensity 0.8 --seed 42
+	@echo "🎼 Conductor Score HTML complete! Check out/conductor_score.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
