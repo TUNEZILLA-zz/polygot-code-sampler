@@ -129,8 +129,8 @@ ignore = [
 "pcs/audio_fx.py" = ["W293", "W291", "no-untyped-def", "assignment", "arg-type", "return-value"]
 "pi_mode_cli.py" = ["W293", "W291"]
 "pcs/pi_mode.py" = ["W293", "W291", "assignment", "arg-type", "return-value"]
-"scripts/a432.py" = ["W293", "W291", "no-untyped-def"]
-"pcs/a432_api.py" = ["W293", "W291", "no-untyped-def", "assignment", "arg-type", "return-value"]
+"scripts/a432.py" = ["W293", "W291"]
+"pcs/a432_api.py" = ["W293", "W291", "assignment", "arg-type", "return-value"]
 
 [tool.mypy]
 python_version = "3.11"

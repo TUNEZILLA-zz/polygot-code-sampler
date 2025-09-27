@@ -30,17 +30,17 @@ def make_a432_wav(
 ) -> str:
     """Generate a gentle A=432 Hz tone with optional chorus"""
     frames = []
-    
+
     for n in range(int(seconds * sample_rate)):
         t = n / sample_rate
-        
+
         # Base 432 Hz sine wave
         y = math.sin(2 * math.pi * 432 * t)
-        
+
         # Optional gentle chorus (detuned copy)
         if chorus:
             y += 0.6 * math.sin(2 * math.pi * (432 + detune_hz) * t)
-        
+
         # ADSR envelope (avoid clicks, keep quiet)
         a, d, s, r = 0.05, 0.3, 0.6, 0.4
         if t < a:
@@ -51,18 +51,18 @@ def make_a432_wav(
             env = max(0.0, (seconds - t) / r)
         else:
             env = s
-        
+
         # Apply envelope and gain
         z = max(-1.0, min(1.0, y * env * gain))
-        frames.append(struct.pack('<h', int(z * 32767)))
-    
+        frames.append(struct.pack("<h", int(z * 32767)))
+
     # Write WAV file
-    with wave.open(path, 'wb') as w:
+    with wave.open(path, "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)
         w.setframerate(sample_rate)
-        w.writeframes(b''.join(frames))
-    
+        w.writeframes(b"".join(frames))
+
     return path
 
 
@@ -110,7 +110,8 @@ def generate_432_theme_css() -> str:
 
 def generate_432_webaudio_js() -> str:
     """Generate JavaScript for 432 Hz WebAudio easter egg"""
-    return """
+    return (
+        """
 // 🎵 A=432 Hz Fantasy Mode - WebAudio Easter Egg
 (function() {
     'use strict';
@@ -124,7 +125,9 @@ def generate_432_webaudio_js() -> str:
     // Apply 432 Hz theme
     function apply432Theme() {
         const style = document.createElement('style');
-        style.textContent = `""" + generate_432_theme_css().replace('`', '\\`') + """`;
+        style.textContent = `"""
+        + generate_432_theme_css().replace("`", "\\`")
+        + """`;
         document.head.appendChild(style);
         document.body.classList.add('theme-a432');
         
@@ -228,6 +231,7 @@ def generate_432_webaudio_js() -> str:
     }
 })();
 """
+    )
 
 
 def generate_432_cli() -> str:
@@ -252,7 +256,7 @@ python scripts/a432.py --output a432_fantasy.wav --seconds 5 --chorus
 def main():
     """Main CLI entry point for 432 Hz fantasy mode"""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="🎵 A=432 Hz Fantasy Mode - Playful easter egg for creative coding",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -265,7 +269,7 @@ Examples:
   python scripts/a432.py --gain 0.1        # Louder (be careful!)
         """,
     )
-    
+
     parser.add_argument(
         "--output", "-o", default="a432.wav", help="Output WAV file path"
     )
@@ -284,36 +288,34 @@ Examples:
     parser.add_argument(
         "--sample-rate", "-r", type=int, default=48000, help="Sample rate"
     )
-    parser.add_argument(
-        "--theme", action="store_true", help="Generate CSS theme"
-    )
+    parser.add_argument("--theme", action="store_true", help="Generate CSS theme")
     parser.add_argument(
         "--webaudio", action="store_true", help="Generate WebAudio JavaScript"
     )
     parser.add_argument(
         "--cli-help", action="store_true", help="Show CLI integration help"
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.theme:
         print("🎵 A=432 Hz Fantasy Mode CSS Theme:")
         print("=" * 50)
         print(generate_432_theme_css())
         return
-    
+
     if args.webaudio:
         print("🎵 A=432 Hz Fantasy Mode WebAudio JavaScript:")
         print("=" * 50)
         print(generate_432_webaudio_js())
         return
-    
+
     if args.cli_help:
         print("🎵 A=432 Hz Fantasy Mode CLI Integration:")
         print("=" * 50)
         print(generate_432_cli())
         return
-    
+
     # Generate 432 Hz WAV file
     print("🎵 Generating A=432 Hz Fantasy Mode Audio...")
     print(f"   Duration: {args.seconds}s")
@@ -321,7 +323,7 @@ Examples:
     print(f"   Chorus: {'Yes' if not args.no_chorus else 'No'}")
     print(f"   Sample Rate: {args.sample_rate} Hz")
     print()
-    
+
     try:
         output_path = make_a432_wav(
             path=args.output,
@@ -331,13 +333,15 @@ Examples:
             chorus=not args.no_chorus,
             detune_hz=args.detune,
         )
-        
+
         print(f"✅ Generated: {output_path}")
         print()
         print("🎵 A=432 Hz Fantasy Mode - Playful easter egg for creative coding!")
-        print("   This is inspired by 432 Hz lore - use for atmosphere, not as guaranteed medicinal tuning.")
+        print(
+            "   This is inspired by 432 Hz lore - use for atmosphere, not as guaranteed medicinal tuning."
+        )
         print("   Add ?a432=1 to your web interface URL to activate the easter egg!")
-        
+
     except Exception as e:
         print(f"❌ Error generating 432 Hz audio: {e}")
         sys.exit(1)

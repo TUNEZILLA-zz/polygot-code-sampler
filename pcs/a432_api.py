@@ -21,6 +21,7 @@ from pydantic import BaseModel
 
 class A432Request(BaseModel):
     """Request model for 432 Hz audio generation"""
+
     seconds: float = 2.5
     gain: float = 0.05
     chorus: bool = True
@@ -30,6 +31,7 @@ class A432Request(BaseModel):
 
 class A432Response(BaseModel):
     """Response model for 432 Hz audio generation"""
+
     success: bool
     message: str
     audio_url: Optional[str] = None
@@ -38,6 +40,7 @@ class A432Response(BaseModel):
 
 class MicrotuningRequest(BaseModel):
     """Request model for microtuning"""
+
     queue_depth: float = 50.0  # 0-100
     base_frequency: float = 432.0
     cents_range: float = 40.0  # ±40 cents
@@ -45,6 +48,7 @@ class MicrotuningRequest(BaseModel):
 
 class MicrotuningResponse(BaseModel):
     """Response model for microtuning"""
+
     tuned_frequency: float
     cents_offset: float
     queue_depth: float
@@ -54,7 +58,7 @@ class MicrotuningResponse(BaseModel):
 app = FastAPI(
     title="🎵 Code Live - A=432 Hz Fantasy Mode",
     description="A playful easter egg inspired by the 432 Hz lore - use for atmosphere, not as guaranteed medicinal tuning!",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Cache for generated audio files
@@ -75,17 +79,17 @@ def generate_432_audio(
 ) -> bytes:
     """Generate 432 Hz audio as WAV bytes"""
     frames = []
-    
+
     for n in range(int(seconds * sample_rate)):
         t = n / sample_rate
-        
+
         # Base 432 Hz sine wave
         y = math.sin(2 * math.pi * 432 * t)
-        
+
         # Optional gentle chorus (detuned copy)
         if chorus:
             y += 0.6 * math.sin(2 * math.pi * (432 + detune_hz) * t)
-        
+
         # ADSR envelope (avoid clicks, keep quiet)
         a, d, s, r = 0.05, 0.3, 0.6, 0.4
         if t < a:
@@ -96,19 +100,19 @@ def generate_432_audio(
             env = max(0.0, (seconds - t) / r)
         else:
             env = s
-        
+
         # Apply envelope and gain
         z = max(-1.0, min(1.0, y * env * gain))
-        frames.append(struct.pack('<h', int(z * 32767)))
-    
+        frames.append(struct.pack("<h", int(z * 32767)))
+
     # Create WAV file in memory
     wav_buffer = io.BytesIO()
-    with wave.open(wav_buffer, 'wb') as w:
+    with wave.open(wav_buffer, "wb") as w:
         w.setnchannels(1)
         w.setsampwidth(2)
         w.setframerate(sample_rate)
-        w.writeframes(b''.join(frames))
-    
+        w.writeframes(b"".join(frames))
+
     return wav_buffer.getvalue()
 
 
@@ -131,7 +135,8 @@ async def root():
     if html_path.exists():
         return FileResponse(html_path)
     else:
-        return HTMLResponse("""
+        return HTMLResponse(
+            """
         <html>
             <head><title>🎵 A=432 Hz Fantasy Mode</title></head>
             <body>
@@ -140,7 +145,8 @@ async def root():
                 <p><a href="/docs">API Documentation</a></p>
             </body>
         </html>
-        """)
+        """
+        )
 
 
 @app.get("/a432/audio")
@@ -155,7 +161,7 @@ async def get_432_audio(
     try:
         # Create cache key
         cache_key = f"a432_{seconds}_{gain}_{chorus}_{detune_hz}_{sample_rate}"
-        
+
         # Check cache
         if cache_key not in audio_cache:
             audio_cache[cache_key] = generate_432_audio(
@@ -165,16 +171,18 @@ async def get_432_audio(
                 chorus=chorus,
                 detune_hz=detune_hz,
             )
-        
+
         # Return WAV file
         return FileResponse(
             io.BytesIO(audio_cache[cache_key]),
             media_type="audio/wav",
             filename=f"a432_fantasy_{seconds}s.wav",
         )
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating 432 Hz audio: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Error generating 432 Hz audio: {e}"
+        )
 
 
 @app.post("/a432/audio", response_model=A432Response)
@@ -183,7 +191,7 @@ async def generate_432_audio_endpoint(request: A432Request):
     try:
         # Create cache key
         cache_key = f"a432_{request.seconds}_{request.gain}_{request.chorus}_{request.detune_hz}_{request.sample_rate}"
-        
+
         # Check cache
         if cache_key not in audio_cache:
             audio_cache[cache_key] = generate_432_audio(
@@ -193,14 +201,14 @@ async def generate_432_audio_endpoint(request: A432Request):
                 chorus=request.chorus,
                 detune_hz=request.detune_hz,
             )
-        
+
         return A432Response(
             success=True,
             message=f"Generated 432 Hz audio ({request.seconds}s)",
             audio_url=f"/a432/audio?seconds={request.seconds}&gain={request.gain}&chorus={request.chorus}",
             duration=request.seconds,
         )
-        
+
     except Exception as e:
         return A432Response(
             success=False,
@@ -217,15 +225,17 @@ async def calculate_microtuning_endpoint(request: MicrotuningRequest):
             base_frequency=request.base_frequency,
             cents_range=request.cents_range,
         )
-        
+
         return MicrotuningResponse(
             tuned_frequency=tuned_freq,
             cents_offset=cents_offset,
             queue_depth=request.queue_depth,
         )
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error calculating microtuning: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Error calculating microtuning: {e}"
+        )
 
 
 @app.get("/a432/theme")
@@ -269,14 +279,15 @@ async def get_432_theme():
     }
 }
 """
-    
+
     return {"css": theme_css}
 
 
 @app.get("/a432/webaudio")
 async def get_432_webaudio():
     """Get 432 Hz WebAudio JavaScript"""
-    webaudio_js = """
+    webaudio_js = (
+        """
 // 🎵 A=432 Hz Fantasy Mode - WebAudio Easter Egg
 (function() {
     'use strict';
@@ -290,7 +301,9 @@ async def get_432_webaudio():
     // Apply 432 Hz theme
     function apply432Theme() {
         const style = document.createElement('style');
-        style.textContent = `""" + theme_css.replace('`', '\\`') + """`;
+        style.textContent = `"""
+        + theme_css.replace("`", "\\`")
+        + """`;
         document.head.appendChild(style);
         document.body.classList.add('theme-a432');
         
@@ -394,7 +407,8 @@ async def get_432_webaudio():
     }
 })();
 """
-    
+    )
+
     return {"javascript": webaudio_js}
 
 
@@ -411,18 +425,19 @@ async def get_432_info():
             "Microtuning based on queue depth metrics",
             "WebAudio integration with user gesture respect",
             "CSS theme switching",
-            "FastAPI audio generation"
+            "FastAPI audio generation",
         ],
         "activation": [
             "URL parameter: ?a432=1 or ?pitch=432",
             "CLI flag: --egg a432",
             "API endpoint: /a432/audio",
-            "Web interface: /a432/theme"
+            "Web interface: /a432/theme",
         ],
-        "scientific_note": "The 432 Hz claims lack robust scientific evidence. This mode is purely for creative fun and ambient effects."
+        "scientific_note": "The 432 Hz claims lack robust scientific evidence. This mode is purely for creative fun and ambient effects.",
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
