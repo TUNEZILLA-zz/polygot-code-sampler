@@ -87,6 +87,16 @@ help:
 	@echo "  chromatic-storm     Enhanced Storm Lightning Preset"
 	@echo "  chromatic-cinemascope Cinemascope Preset"
 	@echo "  chromatic-enhanced-html Enhanced Chromatic HTML Gallery"
+	@echo "  effect-rack-list    List Effect Rack Presets"
+	@echo "  effect-rack-decapitator Decapitator (Distortion) Effect Rack"
+	@echo "  effect-rack-little-plate Little Plate (Reverb) Effect Rack"
+	@echo "  effect-rack-echo-boy EchoBoy (Delay) Effect Rack"
+	@echo "  effect-rack-crystallizer Crystallizer (Granular) Effect Rack"
+	@echo "  effect-rack-devil-loc Devil-Loc (Compressor) Effect Rack"
+	@echo "  effect-rack-micro-shift MicroShift (Chorus) Effect Rack"
+	@echo "  effect-rack-custom   Custom Effect Rack (Distortion + Neon + Glitch)"
+	@echo "  effect-rack-status  Show Effect Rack Status"
+	@echo "  effect-rack-html    Effect Rack HTML Gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -570,6 +580,57 @@ chromatic-enhanced-html:
 	@echo "🌟 Creating Enhanced Chromatic HTML Gallery..."
 	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset neon_bloom_enhanced --mode html --output out/chromatic_enhanced.html --intensity 0.9 --seed 42
 	@echo "🌟 Enhanced Chromatic HTML complete! Check out/chromatic_enhanced.html"
+
+# Soundtoys-style Effect Rack targets
+effect-rack-list:
+	@echo "🎛️ Listing Effect Rack Presets..."
+	python3 scripts/effect_rack_cli.py --list-presets
+	@echo "🎛️ Effect Rack presets listed!"
+
+effect-rack-decapitator:
+	@echo "🎛️ Running Decapitator (Distortion) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "Code Live" --preset decapitator --seed 42
+	@echo "🎛️ Decapitator Effect Rack complete!"
+
+effect-rack-little-plate:
+	@echo "🎛️ Running Little Plate (Reverb) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "TuneZilla" --preset little_plate --seed 42
+	@echo "🎛️ Little Plate Effect Rack complete!"
+
+effect-rack-echo-boy:
+	@echo "🎛️ Running EchoBoy (Delay) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "Rawtunez" --preset echo_boy --seed 42
+	@echo "🎛️ EchoBoy Effect Rack complete!"
+
+effect-rack-crystallizer:
+	@echo "🎛️ Running Crystallizer (Granular) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "Code Live" --preset crystallizer --seed 42
+	@echo "🎛️ Crystallizer Effect Rack complete!"
+
+effect-rack-devil-loc:
+	@echo "🎛️ Running Devil-Loc (Compressor) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "TuneZilla" --preset devil_loc --seed 42
+	@echo "🎛️ Devil-Loc Effect Rack complete!"
+
+effect-rack-micro-shift:
+	@echo "🎛️ Running MicroShift (Chorus) Effect Rack..."
+	python3 scripts/effect_rack_cli.py --text "Rawtunez" --preset micro_shift --seed 42
+	@echo "🎛️ MicroShift Effect Rack complete!"
+
+effect-rack-custom:
+	@echo "🎛️ Running Custom Effect Rack (Distortion + Neon + Glitch)..."
+	python3 scripts/effect_rack_cli.py --text "Code Live" --effects distortion,neon_fx,glitch_colors --seed 42
+	@echo "🎛️ Custom Effect Rack complete!"
+
+effect-rack-status:
+	@echo "🎛️ Showing Effect Rack Status..."
+	python3 scripts/effect_rack_cli.py --rack-status
+	@echo "🎛️ Effect Rack status displayed!"
+
+effect-rack-html:
+	@echo "🎛️ Creating Effect Rack HTML Gallery..."
+	python3 scripts/effect_rack_cli.py --text "Code Live" --preset decapitator --mode html --output out/effect_rack.html --seed 42
+	@echo "🎛️ Effect Rack HTML complete! Check out/effect_rack.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
