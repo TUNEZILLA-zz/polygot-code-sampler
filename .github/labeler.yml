@@ -12,9 +12,9 @@ pcs:
 
 # Server and API changes
 server:
-  - server*.py
+  - "server*.py"
   - server/**/*
-  - server_*.py
+  - "server_*.py"
   - server_enhanced.py
   - server_mastered.py
   - server_optimized.py
@@ -24,14 +24,14 @@ server:
 frontend:
   - site/**/*
   - mixer-core.ts
-  - *.html
-  - *.css
-  - *.js
+  - "*.html"
+  - "*.css"
+  - "*.js"
 
 # Documentation changes
 docs:
   - docs/**/*
-  - *.md
+  - "*.md"
   - README.md
   - CONTRIBUTING.md
   - TROUBLESHOOTING.md
@@ -43,7 +43,7 @@ infra:
   - .github/CODEOWNERS
   - .github/branch-protection.yml
   - Dockerfile
-  - docker-compose*.yml
+  - "docker-compose*.yml"
   - nginx.conf
   - Caddyfile
   - prometheus.yml
@@ -55,29 +55,29 @@ config:
   - .gitattributes
   - .pre-commit-config.yaml
   - pyproject.toml
-  - requirements*.txt
+  - "requirements*.txt"
   - constraints.txt
   - Makefile
 
 # Testing changes
 tests:
   - tests/**/*
-  - test_*.py
-  - *_test.py
+  - "test_*.py"
+  - "*_test.py"
 
 # Performance and benchmarking
 perf:
   - bench/**/*
-  - scripts/bench_*.py
-  - scripts/stress_*.py
-  - scripts/trend_*.py
-  - performance_*.py
+  - "scripts/bench_*.py"
+  - "scripts/stress_*.py"
+  - "scripts/trend_*.py"
+  - "performance_*.py"
 
 # Physics FX system
 physics-fx:
-  - scripts/physics-fx*.js
+  - "scripts/physics-fx*.js"
   - scripts/metrics-adapter.js
-  - site/code-live-physics-fx*.html
+  - "site/code-live-physics-fx*.html"
   - scripts/fx-physics.js
 
 # Visual effects
@@ -103,7 +103,7 @@ ai-ml:
 # Lolcat features
 lolcat:
   - scripts/lolcat_fx.py
-  - server_lolcat*.py
+  - "server_lolcat*.py"
   - site/code-lolcat-fx.html
   - LOLCAT_FX_RACK_GUIDE.md
 
@@ -123,7 +123,7 @@ security:
   - .gitignore
   - .gitattributes
   - constraints.txt
-  - requirements*.txt
+  - "requirements*.txt"
 
 # Release changes
 release:
