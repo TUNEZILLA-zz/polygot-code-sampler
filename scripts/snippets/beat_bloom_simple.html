@@ -1,0 +1,54 @@
+<!doctype html><meta charset="utf-8"><title>Beat Bloom Simple</title>
+<style>html,body{margin:0;background:#000;color:#9ef;font:12px ui-monospace}
+#s{position:fixed;left:10px;bottom:10px;opacity:.8}
+#bloom{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100vh;background:radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 40%, transparent 80%);pointer-events:none;opacity:0;transition:opacity 0.2s ease-out;}
+#level{position:fixed;left:10px;top:10px;width:200px;height:20px;background:#333;border:1px solid #666;}
+#bar{height:100%;background:linear-gradient(90deg, #0f0, #ff0, #f00);width:0%;transition:width 0.1s ease-out;}
+</style>
+<div id="s">Beat Bloom Simple • mic → visual bloom</div>
+<div id="bloom"></div>
+<div id="level"><div id="bar"></div></div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+let ctx,an,buf,last=0,acc=0,th=RED?0.25:0.18,cool=RED?300:200;
+const bloomEl = document.getElementById('bloom');
+const barEl = document.getElementById('bar');
+
+async function boot(){
+  try {
+    ctx=new (window.AudioContext||webkitAudioContext)();
+    an=ctx.createAnalyser(); an.fftSize=512; buf=new Uint8Array(an.frequencyBinCount);
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    ctx.createMediaStreamSource(s).connect(an);
+    loop();
+    document.getElementById('s').textContent = 'Beat Bloom Simple • mic → visual bloom ✅';
+  } catch(e) {
+    document.getElementById('s').textContent = 'Beat Bloom Simple • mic permission needed ❌';
+  }
+}
+
+function bloom(ms=RED?800:1200){
+  // Visual bloom effect
+  bloomEl.style.opacity = '1';
+  setTimeout(() => {
+    bloomEl.style.opacity = '0';
+  }, ms);
+}
+
+function loop(t=0){requestAnimationFrame(loop); if(!an)return; an.getByteTimeDomainData(buf);
+  // simple onset: normalized energy delta + short cooldown
+  let e=0; for(let i=0;i<buf.length;i++){let v=(buf[i]-128)/128; e+=v*v;} e/=buf.length;
+  acc = acc*0.85 + e*0.15; // smoothed
+  
+  // Update level bar
+  barEl.style.width = (acc * 100) + '%';
+  
+  const now=performance.now();
+  if(acc>th && now-last>cool){ 
+    last=now; 
+    bloom(); 
+    console.log('🎵 Beat detected!', acc.toFixed(3));
+  }
+}
+boot();
+</script>

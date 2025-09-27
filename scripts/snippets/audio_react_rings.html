@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><title>Audio React • Rings</title>
+<style>html,body{margin:0;height:100%;background:#07080e;overflow:hidden}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),g=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+let ctx,an,buf; async function bootMic(){ctx=new (window.AudioContext||webkitAudioContext)(); an=ctx.createAnalyser(); an.fftSize=RED?256:512; buf=new Uint8Array(an.frequencyBinCount);
+const s=await navigator.mediaDevices.getUserMedia({audio:true}); ctx.createMediaStreamSource(s).connect(an);} bootMic();
+function loop(){requestAnimationFrame(loop); g.clearRect(0,0,W,H); if(!an) return; an.getByteFrequencyData(buf);
+const cx=W/2, cy=H/2, rad=Math.min(W,H)*0.28; const N=RED?48:96;
+for(let i=0;i<N;i++){const k=Math.floor(i*buf.length/N), v=buf[k]/255;
+const rr=rad + (RED?40:70)*v + i*1.2; g.lineWidth=1+(v*2); g.strokeStyle=`hsla(${200+ i*1.2},90%,${40+40*v}%,${.35+.35*v})`;
+g.beginPath(); g.arc(cx,cy,rr, i*0.04, i*0.04+Math.PI*1.2); g.stroke();}
+} loop();
+</script>

@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8"><title>Beat Bloom Standalone</title>
+<style>html,body{margin:0;background:#000;color:#9ef;font:12px ui-monospace}
+#s{position:fixed;left:10px;bottom:10px;opacity:.8}
+#bloom{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100vh;background:radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 30%, transparent 70%);pointer-events:none;opacity:0;transition:opacity 0.1s ease-out;}
+</style>
+<div id="s">Beat Bloom Standalone • mic → visual bloom</div>
+<div id="bloom"></div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+let ctx,an,buf,last=0,acc=0,th=RED?0.28:0.22,cool=RED?220:160; // ms cooldown
+const bloomEl = document.getElementById('bloom');
+
+async function boot(){
+  try {
+    ctx=new (window.AudioContext||webkitAudioContext)();
+    an=ctx.createAnalyser(); an.fftSize=512; buf=new Uint8Array(an.frequencyBinCount);
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    ctx.createMediaStreamSource(s).connect(an);
+    loop();
+    document.getElementById('s').textContent = 'Beat Bloom Standalone • mic → visual bloom ✅';
+  } catch(e) {
+    document.getElementById('s').textContent = 'Beat Bloom Standalone • mic permission needed ❌';
+  }
+}
+
+async function bloom(ms=RED?600:900){
+  // Visual bloom effect
+  bloomEl.style.opacity = '1';
+  setTimeout(() => {
+    bloomEl.style.opacity = '0';
+  }, ms);
+  
+  // Try API call (optional)
+  try{ 
+    await fetch('http://localhost:8787/rig/bloom',{method:'POST',
+      headers:{'content-type':'application/json'},body:JSON.stringify({latch_ms:ms})}); 
+  }catch(_){
+    // API not available, just use visual bloom
+  }
+}
+
+function loop(t=0){requestAnimationFrame(loop); if(!an)return; an.getByteTimeDomainData(buf);
+  // simple onset: normalized energy delta + short cooldown
+  let e=0; for(let i=0;i<buf.length;i++){let v=(buf[i]-128)/128; e+=v*v;} e/=buf.length;
+  acc = acc*0.85 + e*0.15; // smoothed
+  const now=performance.now();
+  if(acc>th && now-last>cool){ last=now; bloom(); }
+}
+boot();
+</script>

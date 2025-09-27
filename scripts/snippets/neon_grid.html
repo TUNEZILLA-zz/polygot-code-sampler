@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>Neon Grid</title>
+<style>
+html,body{margin:0;height:100%;background:#03040a;overflow:hidden}
+#wrap{position:fixed;inset:0;background:
+repeating-linear-gradient(0deg,rgba(0,255,220,.08) 0 1px,transparent 1px 6px),
+repeating-linear-gradient(90deg,rgba(0,255,220,.08) 0 1px,transparent 1px 6px),
+radial-gradient(1000px 500px at 50% 120%,rgba(0,255,220,.15),transparent 70%);}
+.scan{position:fixed;inset:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.05) 0 2px,transparent 2px 4px);mix-blend-mode:overlay;animation:sc 6s linear infinite;opacity:.25}
+@keyframes sc{from{transform:translateY(-10%)}to{transform:translateY(10%)}}
+.badge{position:fixed;left:12px;bottom:10px;color:#7ff;font:12px ui-monospace;opacity:.6}
+</style>
+<div id="wrap"></div><div class="scan"></div><div class="badge">Neon Grid • ?reduced=1</div>
+<script>
+const reduced=new URLSearchParams(location.search).get('reduced')==='1';
+if(reduced) document.querySelector('.scan').style.opacity=.12;
+</script>

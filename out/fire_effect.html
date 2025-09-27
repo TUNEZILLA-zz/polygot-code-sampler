@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Fire Effect</title>
+<style>html,body{margin:0;height:100%;background:#1a0a05;overflow:hidden}
+canvas{display:block} .badge{position:fixed;right:12px;bottom:10px;color:#f84;font:12px ui-monospace;opacity:.6}</style>
+<canvas id="c"></canvas><div class="badge">Fire • ?reduced=1</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+const N=RED?60:150;const flames=[...Array(N)].map(()=>({x:Math.random()*W,y:H+Math.random()*50,vx:Math.random()*2-1,vy:Math.random()*-3-1,life:1,size:Math.random()*4+2}));
+function tick(t){x.fillStyle="rgba(26,10,5,.15)";x.fillRect(0,0,W,H);
+for(const f of flames){f.x+=f.vx;f.y+=f.vy;f.life*=0.98;f.size*=0.99;
+if(f.y<0||f.life<0.1||f.size<0.5){f.x=Math.random()*W;f.y=H+Math.random()*50;f.life=1;f.size=Math.random()*4+2;}
+const h=Math.floor(20+f.life*40);x.fillStyle=`hsla(${h},90%,${50+f.life*30}%,${f.life*0.7})`;x.beginPath();x.arc(f.x,f.y,f.size,0,7);x.fill();}
+requestAnimationFrame(tick)}requestAnimationFrame(tick);
+</script>

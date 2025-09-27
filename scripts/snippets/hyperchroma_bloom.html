@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<title>Hyper-Chroma Bloom</title><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+ html,body{margin:0;height:100%;background:#000;overflow:hidden}
+ canvas{display:block;width:100vw;height:100vh;filter:contrast(120%) saturate(125%) brightness(105%);}
+ .hud{position:fixed;right:12px;bottom:10px;color:#0f0;font:12px/1.2 ui-monospace,monospace;opacity:.7;text-align:right}
+</style></head><body><canvas id="c"></canvas><div class="hud" id="hud"></div><script>
+const q=new URLSearchParams(location.search);
+const REDUCED=q.has("reduced");
+const ctx=c.getContext("2d");
+const dpi=()=>window.devicePixelRatio||1; function fit(){let d=dpi(); c.width=innerWidth*d; c.height=innerHeight*d; ctx.setTransform(d,0,0,d,0,0);} addEventListener("resize",fit,{passive:true}); fit();
+
+let t0=performance.now(), hue0=+q.get("h0")||220, hueRate=+q.get("hr")||(REDUCED?30:80), // deg/sec
+    ringN=+q.get("rings")||(REDUCED?32:96), radius=0, bloom=+q.get("bloom")||(REDUCED?0.5:1.0);
+
+function pulse(x){ // soft-knee pulse 0..1
+  const s = Math.sin(x*6.283); return (s*0.5+0.5)**1.6;
+}
+function frame(now){
+  const dt=(now-t0)/1000; t0=now; radius = Math.hypot(c.width,c.height)*0.6;
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle="rgba(0,0,0,0.10)"; ctx.fillRect(0,0,c.width,c.height); // subtle persistence
+  ctx.globalCompositeOperation="lighter"; // additive
+
+  const hue=(hue0 + hueRate*now/1000)%360;
+  const cx=c.width/2, cy=c.height/2;
+  for(let i=0;i<ringN;i++){
+    const p = i/(ringN-1);
+    const rr = p*radius*(0.75+0.25*Math.sin(now*0.0007+i*0.08));
+    const h  = (hue + 180*p + 40*Math.sin(now*0.0015+i*0.11))%360;
+    const sat= 70 + 25*Math.sin(now*0.001 + i*0.12);
+    const lit= 35 + 25*pulse(p + now*0.0006);
+    ctx.strokeStyle=`hsl(${h} ${sat}% ${lit}%)`;
+    ctx.lineWidth = (1+p*8)*(REDUCED?0.7:1.0);
+    ctx.beginPath();
+    const seg = 120;
+    for(let a=0;a<=seg;a++){
+      const ang=a/seg*Math.PI*2;
+      const wob= 1 + 0.03*Math.sin(ang*6 + now*0.003 + i*0.4);
+      const x=cx + Math.cos(ang)*rr*wob;
+      const y=cy + Math.sin(ang)*rr*wob;
+      if(a===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+  // a gentle global bloom flash on a 1.2s cycle (tamed in reduced)
+  const flash = pulse(now*0.0008) * bloom * (REDUCED?0.5:1.0);
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle=`rgba(255,255,255,${flash*0.06})`;
+  ctx.fillRect(0,0,c.width,c.height);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script></body></html>

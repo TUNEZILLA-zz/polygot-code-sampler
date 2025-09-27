@@ -1,0 +1,136 @@
+<!doctype html><meta charset="utf-8"><title>VJ Neofetch Quick Reference</title>
+<style>
+html,body{margin:0;padding:20px;background:#0a0a0a;color:#00ff00;font:14px 'Courier New',monospace;line-height:1.6}
+h1{color:#ff0080;text-shadow:0 0 10px #ff0080;margin-bottom:20px}
+h2{color:#00ffff;margin-top:30px;margin-bottom:15px}
+.code{background:#111;padding:10px;border-radius:5px;margin:10px 0;font-family:monospace}
+.url{color:#ffff00;background:#222;padding:2px 6px;border-radius:3px}
+.key{color:#ff8000;font-weight:bold}
+.green{color:#00ffa6}
+.amber{color:#ffd400}
+.red{color:#ff4d4f}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.card{background:#111;padding:15px;border-radius:8px;border:1px solid #333}
+</style>
+<h1>🎬 VJ NEOFETCH ENHANCED - FOH QUICK REFERENCE</h1>
+
+<div class="grid">
+  <div class="card">
+    <h2>🚀 Quick Launch</h2>
+    <div class="code">
+      make vj-neofetch<br>
+      make vj-neofetch-compact<br>
+      make vj-status-overlay
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📺 URL Parameters</h2>
+    <div class="code">
+      <span class="url">?compact=1</span> - Small corner badge<br>
+      <span class="url">?kiosk=1</span> - Hide UI chrome<br>
+      <span class="url">?theme=mono</span> - Black/white theme<br>
+      <span class="url">?reduced=1</span> - A11y compliance
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎛️ Keyboard Shortcuts</h2>
+    <div class="code">
+      <span class="key">R</span> - Reload page<br>
+      <span class="key">B</span> - Trigger bloom<br>
+      <span class="key">F</span> - Fullscreen mode
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 FPS Color Coding</h2>
+    <div class="code">
+      <span class="green">≥58fps</span> - Excellent<br>
+      <span class="amber">≥45fps</span> - Good<br>
+      <span class="red">&lt;45fps</span> - Needs attention
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚦 Guardrail Lights</h2>
+    <div class="code">
+      <span class="green">STROBE</span> - Capped (safe)<br>
+      <span class="amber">STROBE</span> - Warning<br>
+      <span class="green">MOTION</span> - Normal<br>
+      <span class="red">MOTION</span> - Reduced<br>
+      <span class="green">FRAME</span> - ≤12ms<br>
+      <span class="amber">FRAME</span> - ≤16ms<br>
+      <span class="red">FRAME</span> - >16ms
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎬 FOH Usage</h2>
+    <div class="code">
+      <strong>Preset Check:</strong><br>
+      Open fullscreen → Test showlet<br>
+      <br>
+      <strong>During Show:</strong><br>
+      Side monitor status<br>
+      <br>
+      <strong>Stream Overlay:</strong><br>
+      OBS corner (320×180)
+    </div>
+  </div>
+</div>
+
+<h2>🎛️ FOH Showlet Bundles</h2>
+<div class="code">
+  make foh-impact-intro      # Starfield → Cinemascope<br>
+  make foh-storm-build       # Audio Bars + Morph<br>
+  make foh-chaos-encore      # Matrix Glitch + LOLcat++<br>
+  make foh-graceful-bow      # ASCII Water + Cathedral<br>
+  make foh-30sec-wow         # Rings + Beat Bloom<br>
+  make foh-weather-interlude # Rain → Aurora → Cinema<br>
+  make foh-glitch-resolve    # Matrix → Fireflies + Cathedral
+</div>
+
+<h2>📺 OBS Integration</h2>
+<div class="code">
+  <strong>Browser Source:</strong> 1920×1080<br>
+  <strong>Compact Mode:</strong> ?compact=1&kiosk=1<br>
+  <strong>Corner Overlay:</strong> Crop to 320×180<br>
+  <strong>Stage + Status:</strong> Source A (stage) + Source B (status)
+</div>
+
+<h2>🎨 Theme Modes</h2>
+<div class="code">
+  <strong>Neon Cyberpunk:</strong> Default rainbow colors<br>
+  <strong>Mono:</strong> ?theme=mono (professional)<br>
+  <strong>Compact:</strong> ?compact=1 (minimal overlay)<br>
+  <strong>A11y:</strong> ?reduced=1 (motion-safe)
+</div>
+
+<h2>🔧 Device Persistence</h2>
+<div class="code">
+  <strong>Auto-save:</strong> Chosen device stored in localStorage<br>
+  <strong>Auto-select:</strong> Saved device loads automatically<br>
+  <strong>Seamless FOH:</strong> No re-selection needed
+</div>
+
+<h2>🎵 OSC/MIDI Integration</h2>
+<div class="code">
+  <strong>Press 'B':</strong> Trigger bloom simulation<br>
+  <strong>Status Flash:</strong> "BLOOM TRIGGERED!" (2s)<br>
+  <strong>Operator Feedback:</strong> Visual confirmation<br>
+  <strong>API Ready:</strong> Hooks to touring-rig endpoints
+</div>
+
+<h2>📱 Mobile Preview</h2>
+<div class="code">
+  <strong>QR Code:</strong> Link to stage_combine.html<br>
+  <strong>Quick Access:</strong> Mobile preview of stage<br>
+  <strong>FOH Remote:</strong> Monitor from anywhere
+</div>
+
+<div style="margin-top:40px;padding:20px;background:#111;border-radius:8px;border:1px solid #333">
+  <h2 style="color:#ff0080;margin-top:0">🌙✨ READY FOR SHOWTIME!</h2>
+  <p>Your VJ Neofetch Enhanced is now a complete professional system status display with real-time monitoring, guardrail telemetry, and FOH automation. Perfect for live shows and streaming!</p>
+  <p><strong>Quick Start:</strong> Open <span class="url">out/vj_neofetch_enhanced.html</span> and press <span class="key">F</span> for fullscreen!</p>
+</div>

@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>Laser Sweeps</title>
+<style>
+html,body{margin:0;height:100%;background:#07070b;overflow:hidden}
+#fx{position:fixed;inset:0;mix-blend-mode:screen}
+.badge{position:fixed;left:12px;bottom:10px;color:#7df;font:12px ui-monospace;opacity:.6}
+</style>
+<canvas id="fx"></canvas><div class="badge">Laser Sweeps • ?reduced=1</div>
+<script>
+const R=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('fx'),g=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+const beams=R?5:12;const arr=[...Array(beams)].map(()=>({y:Math.random()*H,w:20+Math.random()*80,s:(1+Math.random()*2)*(R?.6:1),h:180+Math.random()*120}));
+function tick(t){g.clearRect(0,0,W,H);
+for(const b of arr){b.y=(b.y+b.s)%H;const grd=g.createLinearGradient(0,b.y-80,0,b.y+80);
+grd.addColorStop(0,`hsla(${b.h},100%,60%,0)`);grd.addColorStop(.5,`hsla(${b.h},100%,70%,.6)`);grd.addColorStop(1,`hsla(${b.h},100%,60%,0)`);
+g.save();g.translate(W/2,0);g.rotate(-Math.PI/6);g.fillStyle=grd;g.fillRect(-W,b.y-b.w/2,W*2,b.w);g.restore();}
+requestAnimationFrame(tick)}requestAnimationFrame(tick);
+</script>

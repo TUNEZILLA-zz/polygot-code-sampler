@@ -1793,6 +1793,463 @@ foh-operator-card:
 	@echo "🖨️ Print and laminate for stage use!"
 	@echo "🎛️ All hotkeys and flows in one visual reference!"
 
+# Matrix Rain Effect (cmatrix-style motion)
+.PHONY: matrix-rain matrix-rain-html matrix-rain-live
+matrix-rain:
+	@echo "🌧️ MATRIX RAIN EFFECT - CMATRIX STYLE!"
+	@echo "======================================"
+	@echo "🎬 Generating matrix rain HTML..."
+	@python3 scripts/matrix_rain.py --width 80 --height 24 --speed 0.08 --duration 30 --output out/matrix_rain.html
+	@echo "✅ Matrix rain HTML saved: out/matrix_rain.html"
+	@echo "🌧️ Ready for chaos concert visual effects!"
+
+matrix-rain-html:
+	@echo "🌧️ MATRIX RAIN HTML GENERATION"
+	@echo "=============================="
+	@python3 scripts/matrix_rain.py --width 100 --height 30 --speed 0.06 --output out/matrix_rain_fullscreen.html
+	@echo "✅ Fullscreen matrix rain: out/matrix_rain_fullscreen.html"
+	@echo "🌧️ Perfect for stage backdrop!"
+
+matrix-rain-live:
+	@echo "🌧️ MATRIX RAIN LIVE TERMINAL"
+	@echo "============================="
+	@echo "🎬 Running matrix rain in terminal (30s)..."
+	@python3 scripts/matrix_rain.py --width 80 --height 24 --speed 0.1 --duration 30
+	@echo "🌧️ Matrix rain complete!"
+
+# Motion Backdrop Pack (cmatrix-style but on-brand)
+.PHONY: starfield aurora neon-grid motion-pack
+starfield:
+	@echo "🌌 STARFIELD WARP - HYPERSPACE PARTICLES"
+	@echo "========================================"
+	@mkdir -p out && cp scripts/snippets/starfield_warp.html out/starfield_warp.html
+	@echo "✅ Starfield warp: out/starfield_warp.html"
+	@echo "🌌 Perfect for big impact hits and encore opens!"
+
+aurora:
+	@echo "🌅 AURORA RIBBONS - SILKY CHROMA WAVES"
+	@echo "====================================="
+	@mkdir -p out && cp scripts/snippets/aurora_ribbons.html out/aurora_ribbons.html
+	@echo "✅ Aurora ribbons: out/aurora_ribbons.html"
+	@echo "🌅 Perfect for warm builds and Glass Cathedral!"
+
+neon-grid:
+	@echo "🔲 NEON VECTOR GRID - TRON FLOOR + SCANLINES"
+	@echo "============================================="
+	@mkdir -p out && cp scripts/snippets/neon_grid.html out/neon_grid.html
+	@echo "✅ Neon grid: out/neon_grid.html"
+	@echo "🔲 Perfect for FX morph intros and tech beds!"
+
+motion-pack:
+	@echo "🎬 MOTION BACKDROP PACK - ALL EFFECTS"
+	@echo "====================================="
+	@$(MAKE) starfield
+	@$(MAKE) aurora
+	@$(MAKE) neon-grid
+	@echo "🎬 MOTION PACK COMPLETE!"
+	@echo "📁 All motion backdrops ready in out/ directory"
+	@echo "🌌 Starfield Warp - hyperspace particles"
+	@echo "🌅 Aurora Ribbons - silky chroma waves"
+	@echo "🔲 Neon Grid - TRON floor + scanlines"
+	@echo "🎛️ FOH can layer these behind any text FX!"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# Motion Backdrop Pack Plus (4 additional effects)
+.PHONY: fireflies lasers ascii-water spectrum motion-pack-plus
+fireflies:
+	@echo "🪲 FIREFLY SWARM - CALM, ELEGANT DRIFT"
+	@echo "======================================"
+	@mkdir -p out && cp scripts/snippets/firefly_swarm.html out/firefly_swarm.html
+	@echo "✅ Firefly swarm: out/firefly_swarm.html"
+	@echo "🪲 Perfect for Adagio interludes and zen moments!"
+
+lasers:
+	@echo "⚡ LASER SWEEPS - DIAGONAL LIGHT BARS"
+	@echo "===================================="
+	@mkdir -p out && cp scripts/snippets/laser_sweeps.html out/laser_sweeps.html
+	@echo "✅ Laser sweeps: out/laser_sweeps.html"
+	@echo "⚡ Perfect for stingers and transitions!"
+
+ascii-water:
+	@echo "🌊 ASCII WATER RIPPLE - ZEN TEXT WAVES"
+	@echo "====================================="
+	@mkdir -p out && cp scripts/snippets/ascii_water.html out/ascii_water.html
+	@echo "✅ ASCII water: out/ascii_water.html"
+	@echo "🌊 Perfect for palate cleansers and zen moments!"
+
+spectrum:
+	@echo "📊 SPECTRUM BARS - FAKE AUDIO METER"
+	@echo "==================================="
+	@mkdir -p out && cp scripts/snippets/spectrum_bars.html out/spectrum_bars.html
+	@echo "✅ Spectrum bars: out/spectrum_bars.html"
+	@echo "📊 Perfect for Data Storm and techno vibes!"
+
+motion-pack-plus:
+	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"
+	@echo "==========================================="
+	@$(MAKE) fireflies
+	@$(MAKE) lasers
+	@$(MAKE) ascii-water
+	@$(MAKE) spectrum
+	@echo "🎬 MOTION PACK PLUS COMPLETE!"
+	@echo "📁 All additional motion backdrops ready in out/ directory"
+	@echo "🪲 Firefly Swarm - calm, elegant drift"
+	@echo "⚡ Laser Sweeps - diagonal light bars for stingers"
+	@echo "🌊 ASCII Water Ripple - zen text waves"
+	@echo "📊 Spectrum Bars - fake audio meter style"
+	@echo "🎛️ FOH can layer these behind any text FX!"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# Complete Motion Pack (all 7 effects)
+.PHONY: motion-pack-complete
+motion-pack-complete:
+	@echo "🎬 COMPLETE MOTION PACK - ALL 7 EFFECTS"
+	@echo "======================================="
+	@$(MAKE) motion-pack
+	@$(MAKE) motion-pack-plus
+	@echo "🎬 COMPLETE MOTION PACK READY!"
+	@echo "📁 All 7 motion backdrops ready in out/ directory"
+	@echo "🌌 Starfield Warp - hyperspace particles"
+	@echo "🌅 Aurora Ribbons - silky chroma waves"
+	@echo "🔲 Neon Grid - TRON floor + scanlines"
+	@echo "🪲 Firefly Swarm - calm, elegant drift"
+	@echo "⚡ Laser Sweeps - diagonal light bars"
+	@echo "🌊 ASCII Water Ripple - zen text waves"
+	@echo "📊 Spectrum Bars - fake audio meter"
+	@echo "🎛️ Complete cinematic motion system ready for FOH!"
+	@echo "♿ All effects support ?reduced=1 for A11y compliance"
+
+# Audio-Reactive Backdrops (WebAudio)
+.PHONY: audio-bars audio-rings motion-pack-audio
+audio-bars:
+	@echo "🔊 AUDIO REACT BARS - SPECTRUM METERS"
+	@echo "====================================="
+	@mkdir -p out && cp scripts/snippets/audio_react_bars.html out/audio_react_bars.html
+	@echo "✅ Audio react bars: out/audio_react_bars.html"
+	@echo "🔊 Perfect for Data Storm with mic or file input!"
+
+audio-rings:
+	@echo "🎵 AUDIO REACT RINGS - POLAR HALO RINGS"
+	@echo "======================================"
+	@mkdir -p out && cp scripts/snippets/audio_react_rings.html out/audio_react_rings.html
+	@echo "✅ Audio react rings: out/audio_react_rings.html"
+	@echo "🎵 Perfect for Glass Cathedral with elegant halo!"
+
+motion-pack-audio:
+	@echo "🎵 AUDIO-REACTIVE PACK - 2 EFFECTS"
+	@echo "=================================="
+	@$(MAKE) audio-bars
+	@$(MAKE) audio-rings
+	@echo "🎵 AUDIO-REACTIVE PACK COMPLETE!"
+	@echo "📁 Audio-reactive backdrops ready in out/ directory"
+	@echo "🔊 Audio React Bars - spectrum meters (mic or file)"
+	@echo "🎵 Audio React Rings - polar halo rings (beaty, elegant)"
+	@echo "🎛️ FOH can layer these behind any text FX with real audio!"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# Glitchy Matrix & CRT Layers
+.PHONY: matrix-glitch crt-overlay motion-pack-glitch
+matrix-glitch:
+	@echo "🧪 MATRIX GLITCH - CODE-RAIN + TIMED GLITCH BURSTS"
+	@echo "================================================="
+	@mkdir -p out && cp scripts/snippets/matrix_glitch.html out/matrix_glitch.html
+	@echo "✅ Matrix glitch: out/matrix_glitch.html"
+	@echo "🧪 Perfect for Chaos Encore intro with glitch bursts!"
+
+crt-overlay:
+	@echo "📺 CRT OVERLAY - SCANLINES + VIGNETTE"
+	@echo "====================================="
+	@mkdir -p out && cp scripts/snippets/crt_overlay.html out/crt_overlay.html
+	@echo "✅ CRT overlay: out/crt_overlay.html"
+	@echo "📺 Perfect for retro vibe over any stage page!"
+
+motion-pack-glitch:
+	@echo "🧪 GLITCH PACK - 2 EFFECTS"
+	@echo "=========================="
+	@$(MAKE) matrix-glitch
+	@$(MAKE) crt-overlay
+	@echo "🧪 GLITCH PACK COMPLETE!"
+	@echo "📁 Glitchy Matrix & CRT layers ready in out/ directory"
+	@echo "🧪 Matrix Glitch - code-rain + timed glitch bursts"
+	@echo "📺 CRT Overlay - scanlines + vignette overlay"
+	@echo "🎛️ FOH can layer these for retro glitch vibes!"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# Stage Combiner (layer backdrop + stage)
+.PHONY: stage-combine
+stage-combine:
+	@echo "🧷 STAGE COMBINER - LAYER BACKDROP + STAGE"
+	@echo "=========================================="
+	@mkdir -p out && cp scripts/snippets/stage_combine.html out/stage_combine.html
+	@echo "✅ Stage combiner: out/stage_combine.html"
+	@echo "🧷 Perfect for layering any backdrop with any stage!"
+	@echo "🎛️ Usage: ?bg=matrix_glitch.html&stage=cinema.html"
+	@echo "🔧 Debug: add &split=1 for side-by-side view"
+	@echo "♿ Add &reduced=1 for A11y compliance"
+
+# Complete Motion Pack (all effects + audio + glitch + combiner)
+.PHONY: motion-pack-all
+motion-pack-all:
+	@echo "🎬 COMPLETE MOTION PACK - ALL EFFECTS + AUDIO + GLITCH"
+	@echo "======================================================"
+	@$(MAKE) motion-pack-complete
+	@$(MAKE) motion-pack-audio
+	@$(MAKE) motion-pack-glitch
+	@$(MAKE) stage-combine
+	@echo "🎬 COMPLETE MOTION PACK READY!"
+	@echo "📁 All motion backdrops + audio + glitch + combiner ready!"
+	@echo "🌌 Starfield Warp - hyperspace particles"
+	@echo "🌅 Aurora Ribbons - silky chroma waves"
+	@echo "🔲 Neon Grid - TRON floor + scanlines"
+	@echo "🪲 Firefly Swarm - calm, elegant drift"
+	@echo "⚡ Laser Sweeps - diagonal light bars"
+	@echo "🌊 ASCII Water Ripple - zen text waves"
+	@echo "📊 Spectrum Bars - fake audio meter"
+	@echo "🔊 Audio React Bars - spectrum meters (mic or file)"
+	@echo "🎵 Audio React Rings - polar halo rings"
+	@echo "🧪 Matrix Glitch - code-rain + timed glitch bursts"
+	@echo "📺 CRT Overlay - scanlines + vignette overlay"
+	@echo "🧷 Stage Combiner - layer any backdrop with any stage"
+	@echo "🎛️ Complete cinematic motion system ready for FOH!"
+	@echo "♿ All effects support ?reduced=1 for A11y compliance"
+
+# Beat-Reactive Bloom (mic → touring-rig API)
+.PHONY: beat-bloom beat-bloom-standalone beat-bloom-simple
+beat-bloom:
+	@echo "🎵 BEAT-REACTIVE BLOOM - MIC → TOURING-RIG API"
+	@echo "=============================================="
+	@mkdir -p out && cp scripts/snippets/beat_bloom.html out/beat_bloom.html
+	@echo "✅ Beat bloom: out/beat_bloom.html"
+	@echo "🎵 Perfect for driving White Bloom from mic input!"
+	@echo "🎛️ Listens to mic, detects onsets, POSTs to /rig/bloom"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+beat-bloom-standalone:
+	@echo "🎵 BEAT BLOOM STANDALONE - MIC → VISUAL BLOOM"
+	@echo "============================================="
+	@mkdir -p out && cp scripts/snippets/beat_bloom_standalone.html out/beat_bloom_standalone.html
+	@echo "✅ Beat bloom standalone: out/beat_bloom_standalone.html"
+	@echo "🎵 Perfect for visual bloom without API dependency!"
+	@echo "🎛️ Listens to mic, detects onsets, shows visual bloom"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+beat-bloom-simple:
+	@echo "🎵 BEAT BLOOM SIMPLE - MIC → VISUAL BLOOM + LEVEL"
+	@echo "==============================================="
+	@mkdir -p out && cp scripts/snippets/beat_bloom_simple.html out/beat_bloom_simple.html
+	@echo "✅ Beat bloom simple: out/beat_bloom_simple.html"
+	@echo "🎵 Perfect for visual bloom with level meter!"
+	@echo "🎛️ Listens to mic, detects onsets, shows visual bloom + level bar"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# Weather Effects Pack
+.PHONY: rain-effect snow-effect fire-effect explosion-effect weather-pack
+rain-effect:
+	@echo "🌧️ RAIN EFFECT - FALLING DROPS"
+	@echo "=============================="
+	@mkdir -p out && cp scripts/snippets/rain_effect.html out/rain_effect.html
+	@echo "✅ Rain effect: out/rain_effect.html"
+	@echo "🌧️ Perfect for moody interludes and atmosphere!"
+
+snow-effect:
+	@echo "❄️ SNOW EFFECT - FALLING FLAKES"
+	@echo "=============================="
+	@mkdir -p out && cp scripts/snippets/snow_effect.html out/snow_effect.html
+	@echo "✅ Snow effect: out/snow_effect.html"
+	@echo "❄️ Perfect for winter themes and zen moments!"
+
+fire-effect:
+	@echo "🔥 FIRE EFFECT - FLAMING PARTICLES"
+	@echo "=================================="
+	@mkdir -p out && cp scripts/snippets/fire_effect.html out/fire_effect.html
+	@echo "✅ Fire effect: out/fire_effect.html"
+	@echo "🔥 Perfect for intense moments and energy!"
+
+explosion-effect:
+	@echo "💥 EXPLOSION EFFECT - PARTICLE BURSTS"
+	@echo "===================================="
+	@mkdir -p out && cp scripts/snippets/explosion_effect.html out/explosion_effect.html
+	@echo "✅ Explosion effect: out/explosion_effect.html"
+	@echo "💥 Perfect for impact hits and dramatic moments!"
+
+weather-pack:
+	@echo "🌦️ WEATHER EFFECTS PACK - 4 EFFECTS"
+	@echo "==================================="
+	@$(MAKE) rain-effect
+	@$(MAKE) snow-effect
+	@$(MAKE) fire-effect
+	@$(MAKE) explosion-effect
+	@echo "🌦️ WEATHER PACK COMPLETE!"
+	@echo "📁 All weather effects ready in out/ directory"
+	@echo "🌧️ Rain Effect - falling drops"
+	@echo "❄️ Snow Effect - falling flakes"
+	@echo "🔥 Fire Effect - flaming particles"
+	@echo "💥 Explosion Effect - particle bursts"
+	@echo "🎛️ FOH can layer these for atmospheric moments!"
+	@echo "♿ Add ?reduced=1 for A11y compliance"
+
+# FOH Showlet Bundles (ready-to-fire combinations)
+.PHONY: audio-bloom-storm rings-cathedral glitch-encore weather-mood
+audio-bloom-storm:
+	@echo "🎵 AUDIO BLOOM STORM - BARS + BEAT-BLOOM + MORPH"
+	@echo "==============================================="
+	@$(MAKE) audio-bars
+	@$(MAKE) beat-bloom
+	@echo "🎵 AUDIO BLOOM STORM READY!"
+	@echo "📁 Audio bars + beat-bloom overlay + morph ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=audio_react_bars.html&stage=morph.html"
+	@echo "🎵 Perfect for Data Storm with audio-reactive bloom!"
+
+rings-cathedral:
+	@echo "🎵 RINGS CATHEDRAL - RINGS + CINEMASCOPE SCENE"
+	@echo "============================================="
+	@$(MAKE) audio-rings
+	@echo "🎵 RINGS CATHEDRAL READY!"
+	@echo "📁 Audio rings + Cinemascope scene ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=audio_react_rings.html&stage=cinema.html"
+	@echo "🎵 Perfect for Glass Cathedral with elegant halo!"
+
+glitch-encore:
+	@echo "🧪 GLITCH ENCORE - MATRIX GLITCH + LOLCAT++ STAGE-PUNCH"
+	@echo "======================================================="
+	@$(MAKE) matrix-glitch
+	@echo "🧪 GLITCH ENCORE READY!"
+	@echo "📁 Matrix glitch + LOLcat++ Stage-Punch ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=matrix_glitch.html&stage=nyan.html"
+	@echo "🧪 Perfect for Chaos Encore with glitch bursts!"
+
+weather-mood:
+	@echo "🌦️ WEATHER MOOD - ATMOSPHERIC EFFECTS"
+	@echo "====================================="
+	@$(MAKE) weather-pack
+	@echo "🌦️ WEATHER MOOD READY!"
+	@echo "📁 All weather effects ready for atmospheric moments"
+	@echo "🎛️ FOH can layer rain/snow/fire/explosion for mood"
+	@echo "🌦️ Perfect for atmospheric interludes and dramatic moments!"
+
+# One-Button FOH Bundles (instant showlets)
+.PHONY: foh-impact-intro foh-storm-build foh-chaos-encore foh-graceful-bow foh-30sec-wow foh-weather-interlude foh-glitch-resolve
+foh-impact-intro:
+	@echo "🚀 FOH IMPACT INTRO - STARFIELD → CINEMASCOPE"
+	@echo "==========================================="
+	@$(MAKE) starfield
+	@echo "🚀 FOH IMPACT INTRO READY!"
+	@echo "📁 Starfield warp ready for impact intro"
+	@echo "🎛️ FOH can fire: out/starfield_warp.html"
+	@echo "🎛️ Then hit W (White Bloom) on first downbeat → switch to cinema.html"
+	@echo "🚀 Perfect for dramatic opening!"
+
+foh-storm-build:
+	@echo "⚡ FOH STORM BUILD - BARS + MORPH"
+	@echo "==============================="
+	@$(MAKE) audio-bars
+	@echo "⚡ FOH STORM BUILD READY!"
+	@echo "📁 Audio react bars + morph ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=audio_react_bars.html&stage=morph.html"
+	@echo "⚡ Perfect for Data Storm with metrics link ~0.6!"
+
+foh-chaos-encore:
+	@echo "🧪 FOH CHAOS ENCORE - GLITCH + LOLCAT++"
+	@echo "======================================"
+	@$(MAKE) matrix-glitch
+	@echo "🧪 FOH CHAOS ENCORE READY!"
+	@echo "📁 Matrix glitch + LOLcat++ ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=matrix_glitch.html&stage=nyan.html"
+	@echo "🧪 Perfect for 3-5s glitch burst → A/B to Stage-Punch!"
+
+foh-graceful-bow:
+	@echo "🌊 FOH GRACEFUL BOW - ASCII WATER + RESOLVE"
+	@echo "=========================================="
+	@$(MAKE) ascii-water
+	@echo "🌊 FOH GRACEFUL BOW READY!"
+	@echo "📁 ASCII water + Glass Cathedral resolve ready"
+	@echo "🎛️ FOH can fire: out/ascii_water.html?reduced=1"
+	@echo "🌊 Perfect for graceful bow with intensity glide to ~0.28!"
+
+foh-30sec-wow:
+	@echo "🎵 FOH 30-SEC WOW - RINGS + BEAT BLOOM"
+	@echo "====================================="
+	@$(MAKE) audio-rings
+	@mkdir -p out && cp scripts/snippets/beat_bloom_fixed.html out/beat_bloom_fixed.html
+	@echo "🎵 FOH 30-SEC WOW READY!"
+	@echo "📁 Audio rings + beat bloom ready"
+	@echo "🎛️ FOH can fire: stage_combine.html?bg=audio_react_rings.html&stage=cinema.html"
+	@echo "🎛️ Then open out/beat_bloom_fixed.html → allow mic"
+	@echo "🎵 Perfect for 30-second audio-reactive demo!"
+
+foh-weather-interlude:
+	@echo "🌧️ FOH WEATHER INTERLUDE - RAIN + AURORA + CINEMA"
+	@echo "==============================================="
+	@$(MAKE) rain-effect
+	@$(MAKE) aurora
+	@echo "🌧️ FOH WEATHER INTERLUDE READY!"
+	@echo "📁 Rain + Aurora + Cinemascope ready"
+	@echo "🎛️ FOH can fire: out/rain_effect.html?reduced=1"
+	@echo "🎛️ Then crossfade to Aurora Ribbons → bring in Cinemascope at 0.35 intensity"
+	@echo "🌧️ Perfect for atmospheric interlude!"
+
+foh-glitch-resolve:
+	@echo "💥 FOH GLITCH RESOLVE - MATRIX → FIREFLY + CATHEDRAL"
+	@echo "=================================================="
+	@$(MAKE) matrix-glitch
+	@$(MAKE) fireflies
+	@echo "💥 FOH GLITCH RESOLVE READY!"
+	@echo "📁 Matrix glitch + Firefly swarm + Glass Cathedral ready"
+	@echo "🎛️ FOH can fire: out/matrix_glitch.html for 3s"
+	@echo "🎛️ Then White Bloom → switch to Firefly Swarm + Glass Cathedral at 0.28 intensity"
+	@echo "💥 Perfect for glitch hit → clean resolve!"
+
+# All FOH Bundles
+.PHONY: foh-all-bundles
+foh-all-bundles:
+	@echo "🎛️ ALL FOH BUNDLES - ONE-BUTTON SHOWLETS"
+	@echo "======================================="
+	@$(MAKE) foh-impact-intro
+	@$(MAKE) foh-storm-build
+	@$(MAKE) foh-chaos-encore
+	@$(MAKE) foh-graceful-bow
+	@$(MAKE) foh-30sec-wow
+	@$(MAKE) foh-weather-interlude
+	@$(MAKE) foh-glitch-resolve
+	@echo "🎛️ ALL FOH BUNDLES READY!"
+	@echo "📁 All one-button showlets ready for FOH!"
+	@echo "🎛️ FOH can fire any bundle with single command!"
+	@echo "🚀 Perfect for professional stage operations!"
+
+# Complete VJ Desk System (all effects + showlets)
+.PHONY: vj-desk-complete
+vj-desk-complete:
+	@echo "🎬 COMPLETE VJ DESK SYSTEM - ALL EFFECTS + SHOWLETS"
+	@echo "=================================================="
+	@$(MAKE) motion-pack-all
+	@$(MAKE) beat-bloom
+	@$(MAKE) weather-pack
+	@$(MAKE) audio-bloom-storm
+	@$(MAKE) rings-cathedral
+	@$(MAKE) glitch-encore
+	@$(MAKE) weather-mood
+	@echo "🎬 COMPLETE VJ DESK SYSTEM READY!"
+	@echo "📁 All motion backdrops + audio + glitch + weather + showlets ready!"
+	@echo "🌌 Starfield Warp - hyperspace particles"
+	@echo "🌅 Aurora Ribbons - silky chroma waves"
+	@echo "🔲 Neon Grid - TRON floor + scanlines"
+	@echo "🪲 Firefly Swarm - calm, elegant drift"
+	@echo "⚡ Laser Sweeps - diagonal light bars"
+	@echo "🌊 ASCII Water Ripple - zen text waves"
+	@echo "📊 Spectrum Bars - fake audio meter"
+	@echo "🔊 Audio React Bars - spectrum meters (mic or file)"
+	@echo "🎵 Audio React Rings - polar halo rings"
+	@echo "🧪 Matrix Glitch - code-rain + timed glitch bursts"
+	@echo "📺 CRT Overlay - scanlines + vignette overlay"
+	@echo "🧷 Stage Combiner - layer any backdrop with any stage"
+	@echo "🎵 Beat Bloom - mic → touring-rig API"
+	@echo "🌧️ Rain Effect - falling drops"
+	@echo "❄️ Snow Effect - falling flakes"
+	@echo "🔥 Fire Effect - flaming particles"
+	@echo "💥 Explosion Effect - particle bursts"
+	@echo "🎛️ Complete professional VJ desk system ready for FOH!"
+	@echo "♿ All effects support ?reduced=1 for A11y compliance"
+
 # Extended Encore (Chaos Mini-Set + Tape Dream Bridge + Glass Cathedral Resolve)
 .PHONY: extended-encore
 extended-encore:
@@ -1890,6 +2347,268 @@ smoke-test:
 	make touring-rig-metrics-link STRENGTH=0.75
 	make touring-rig-status
 	@echo "💨 Smoke test complete!"
+
+# VJ Desk Complete System
+vj-desk-complete:
+	@echo "🎬 VJ DESK COMPLETE - Building All Effects..."
+	@mkdir -p out
+	@echo "🎬 Building motion backdrops..."
+	make starfield && make aurora && make neon-grid && make fireflies && make lasers && make ascii-water && make spectrum
+	@echo "🎬 Building audio-reactive effects..."
+	make audio-bars && make audio-rings
+	@echo "🎬 Building glitch effects..."
+	make matrix-glitch && make crt-overlay
+	@echo "🎬 Building weather effects..."
+	make rain-effect && make snow-effect && make fire-effect && make explosion-effect
+	@echo "🎬 Building stage combiner..."
+	@cp scripts/snippets/stage_combine.html out/stage_combine.html
+	@echo "🎬 Building beat bloom fixed..."
+	@cp scripts/snippets/beat_bloom_fixed.html out/beat_bloom_fixed.html
+	@echo "🎬 Building VJ neofetch..."
+	@cp scripts/snippets/vj_neofetch.html out/vj_neofetch.html
+	@echo "🎬 VJ Desk Complete! All effects ready in out/"
+
+# FOH One-Button Showlet Bundles
+foh-impact-intro:
+	@echo "🚀 FOH Impact Intro - Starfield → Cinemascope"
+	@echo "🚀 Opening: out/stage_combine.html?bg=starfield_warp.html&stage=cinema.html"
+	@echo "🚀 FOH Impact Intro ready!"
+
+foh-storm-build:
+	@echo "⚡ FOH Storm Build - Audio Bars + Morph"
+	@echo "⚡ Opening: out/stage_combine.html?bg=audio_react_bars.html&stage=morph.html"
+	@echo "⚡ FOH Storm Build ready!"
+
+foh-chaos-encore:
+	@echo "🌪️ FOH Chaos Encore - Matrix Glitch + LOLcat++"
+	@echo "🌪️ Opening: out/stage_combine.html?bg=matrix_glitch.html&stage=nyan.html"
+	@echo "🌪️ FOH Chaos Encore ready!"
+
+foh-graceful-bow:
+	@echo "🌙 FOH Graceful Bow - ASCII Water + Cathedral"
+	@echo "🌙 Opening: out/stage_combine.html?bg=ascii_water.html&stage=cinema.html"
+	@echo "🌙 FOH Graceful Bow ready!"
+
+foh-30sec-wow:
+	@echo "💥 FOH 30sec Wow - Rings + Beat Bloom"
+	@echo "💥 Opening: out/stage_combine.html?bg=audio_react_rings.html&stage=beat_bloom_fixed.html"
+	@echo "💥 FOH 30sec Wow ready!"
+
+foh-weather-interlude:
+	@echo "🌧️ FOH Weather Interlude - Rain → Aurora → Cinema"
+	@echo "🌧️ Opening: out/stage_combine.html?bg=rain_effect.html&stage=cinema.html"
+	@echo "🌧️ FOH Weather Interlude ready!"
+
+foh-glitch-resolve:
+	@echo "🔥 FOH Glitch Resolve - Matrix → Fireflies + Cathedral"
+	@echo "🔥 Opening: out/stage_combine.html?bg=matrix_glitch.html&stage=cinema.html"
+	@echo "🔥 FOH Glitch Resolve ready!"
+
+# All FOH Bundles
+foh-all-bundles:
+	@echo "🎛️ FOH ALL BUNDLES - Pre-generating All Showlets..."
+	make foh-impact-intro
+	make foh-storm-build
+	make foh-chaos-encore
+	make foh-graceful-bow
+	make foh-30sec-wow
+	make foh-weather-interlude
+	make foh-glitch-resolve
+	@echo "🎛️ All FOH bundles ready for showtime!"
+
+# VJ Neofetch Enhanced
+vj-neofetch:
+	@echo "🎬 VJ NEOFETCH - Enhanced System Status Display"
+	@mkdir -p out
+	@cp scripts/snippets/vj_neofetch_enhanced.html out/vj_neofetch_enhanced.html
+	@echo "✅ VJ Neofetch enhanced: out/vj_neofetch_enhanced.html"
+	@echo "🎬 Features: FPS counter, guardrail lights, compact/kiosk modes"
+	@echo "🎬 Perfect for FOH system monitoring and OBS overlays!"
+
+# VJ Neofetch Compact (OBS overlay)
+vj-neofetch-compact:
+	@echo "📺 VJ NEOFETCH COMPACT - OBS Overlay Mode"
+	@mkdir -p out
+	@cp scripts/snippets/vj_neofetch_enhanced.html out/vj_neofetch_compact.html
+	@echo "✅ VJ Neofetch compact: out/vj_neofetch_compact.html?compact=1&kiosk=1"
+	@echo "📺 Perfect for OBS corner overlay (320×180 minimum)"
+	@echo "📺 Shows: logo, FPS, guardrails, resolution only"
+
+# VJ Status Overlay (opens compact mode)
+vj-status-overlay:
+	@echo "📊 VJ STATUS OVERLAY - Opening Compact Mode for OBS"
+	@echo "📊 Opening: out/vj_neofetch_enhanced.html?compact=1&kiosk=1"
+	@echo "📊 Perfect for live system monitoring during shows!"
+	@echo "📊 Manual: Open out/vj_neofetch_enhanced.html?compact=1&kiosk=1"
+
+# VJ Neofetch Quick Reference
+vj-neofetch-quickref:
+	@echo "📋 VJ NEOFETCH QUICK REFERENCE - FOH Operator Guide"
+	@mkdir -p out
+	@cp scripts/snippets/vj_neofetch_quickref.html out/vj_neofetch_quickref.html
+	@echo "✅ VJ Neofetch quick reference: out/vj_neofetch_quickref.html"
+	@echo "📋 Complete FOH operator guide with all shortcuts and usage"
+	@echo "📋 Perfect for printing or keeping open during shows!"
+
+# Physics-Powered Visual Effects
+physics-fountain:
+	@echo "🌊 PHYSICS FOUNTAIN - Particles + Gravity + Beat Bursts"
+	@mkdir -p out
+	@cp scripts/snippets/physics_fountain.html out/physics_fountain.html
+	@echo "✅ Physics fountain: out/physics_fountain.html"
+	@echo "🌊 Real 2D physics engine with emitter bursts and attractor gravity"
+	@echo "🌊 Audio-react ready with spacebar burst and ?beat=1 auto-bursts"
+	@echo "🌊 Perfect for impact hits and dramatic moments!"
+
+physics-fountain-pro:
+	@echo "⚡ PHYSICS FOUNTAIN PRO - Showtime Polish with Beat Surges"
+	@mkdir -p out
+	@cp scripts/snippets/physics_fountain_pro.html out/physics_fountain_pro.html
+	@echo "✅ Physics fountain pro: out/physics_fountain_pro.html"
+	@echo "⚡ Beat-reactive color surges with warm hue shifts"
+	@echo "⚡ Superbloom trails with additive blending for luminous overlaps"
+	@echo "⚡ Orbit choreography with Lissajous paths for musical motion"
+	@echo "⚡ Intense color mode with Reinhard tone mapping"
+	@echo "⚡ A11y guards and auto-throttle performance protection"
+	@echo "⚡ Perfect for professional shows with dramatic visual impact!"
+
+hyperchroma-bloom:
+	@echo "🌈 HYPER-CHROMA BLOOM - Deep Color Cycling + Contrast Pulse"
+	@mkdir -p out
+	@cp scripts/snippets/hyperchroma_bloom.html out/hyperchroma_bloom.html
+	@echo "✅ Hyper-chroma bloom: out/hyperchroma_bloom.html"
+	@echo "🌈 Intense color motion with HSL hue-orbit and additive bloom"
+	@echo "🌈 Deep color science with gamma-like contrast curves"
+	@echo "🌈 Perfect for color storms and chromatic crescendos!"
+
+# Physics + Stage Combiner
+stage-physics-cinema:
+	@echo "🎬 STAGE PHYSICS CINEMA - Physics Fountain + Cinemascope"
+	@echo "🎬 Opening: out/stage_combine.html?bg=physics_fountain.html&stage=cinema.html"
+	@echo "🎬 Perfect for dramatic text with particle physics backdrop!"
+
+stage-hyperchroma-nyan:
+	@echo "🌈 STAGE HYPERCHROMA NYAN - Hyper-Chroma + LOLcat++"
+	@echo "🌈 Opening: out/stage_combine.html?bg=hyperchroma_bloom.html&stage=nyan.html"
+	@echo "🌈 Perfect for colorful chaos with intense color cycling!"
+
+# Physics Pack
+physics-pack:
+	@echo "⚡ PHYSICS PACK - Building All Physics Effects..."
+	make physics-fountain
+	make hyperchroma-bloom
+	@echo "⚡ Physics pack complete! All physics effects ready in out/"
+	@echo "⚡ Features: Real 2D physics, color science, beat reactivity"
+	@echo "⚡ Perfect for turning visuals up to 11!"
+
+# VJ Quirks System
+vj-quirks:
+	@echo "🎭 VJ QUIRKS - Platform-Specific Enhancements"
+	@mkdir -p out
+	@cp scripts/snippets/quirks.js out/quirks.js
+	@cp scripts/snippets/quirks.css out/quirks.css
+	@echo "✅ VJ Quirks system: out/quirks.js + out/quirks.css"
+	@echo "🎭 Platform-specific enhancements with A11y-first design"
+	@echo "🎭 Features: macOS Safari glass, Windows CRT, Linux ASCII, iOS touch, Android AMOLED, Edge acrylic"
+	@echo "🎭 Perfect for adding personality while respecting accessibility!"
+
+# Physics Fountain with Quirks
+physics-fountain-quirks:
+	@echo "⚡ PHYSICS FOUNTAIN QUIRKS - Platform-Enhanced Physics"
+	@mkdir -p out
+	@cp scripts/snippets/physics_fountain_quirks.html out/physics_fountain_quirks.html
+	@echo "✅ Physics fountain quirks: out/physics_fountain_quirks.html"
+	@echo "⚡ Platform-specific physics with tasteful enhancements"
+	@echo "⚡ macOS: Glassy bloom + softer motion"
+	@echo "⚡ Windows: CRT scanlines + phosphor bloom"
+	@echo "⚡ Linux: ASCII overlay + mono HUD"
+	@echo "⚡ iOS: High-contrast neon + touch-friendly"
+	@echo "⚡ Android: AMOLED true black + punchier colors"
+	@echo "⚡ Edge: Fluent acrylic blur"
+	@echo "⚡ Perfect for professional shows with platform personality!"
+
+# Quirk Demo Commands
+quirk-demo:
+	@echo "🎭 QUIRK DEMO - Testing Platform Enhancements"
+	@echo "🎭 Opening: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html"
+	@echo "🎭 Try: ?quirk=mac-safari, ?quirk=win-lcd, ?quirk=linux-ff, ?quirk=ios, ?quirk=android, ?quirk=edge"
+
+quirk-off:
+	@echo "🎭 QUIRK OFF - Disable Platform Enhancements"
+	@echo "🎭 Opening: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html&quirk=off"
+
+quirk-ios:
+	@echo "🎭 QUIRK iOS - iOS-Specific Enhancements"
+	@echo "🎭 Opening: out/stage_combine.html?bg=starfield_warp.html&stage=nyan.html&quirk=ios"
+
+# FOH Quirk Controls
+quirks-auto:
+	@echo "🎭 QUIRKS AUTO - Auto-detect Platform"
+	@echo "🎭 Opening: out/vj_neofetch_enhanced.html"
+	@open out/vj_neofetch_enhanced.html
+
+quirks-off:
+	@echo "🎭 QUIRKS OFF - Disable All Quirks"
+	@echo "🎭 Opening: out/vj_neofetch_enhanced.html?quirk=off"
+	@open out/vj_neofetch_enhanced.html?quirk=off
+
+quirks-mobile:
+	@echo "🎭 QUIRKS MOBILE - Mobile Optimizations"
+	@echo "🎭 Opening: out/physics_fountain_pro.html?quirk=ios"
+	@open out/physics_fountain_pro.html?quirk=ios
+
+quirks-a11y:
+	@echo "🎭 QUIRKS A11Y - Accessibility Mode"
+	@echo "🎭 Opening: out/stage_combine.html?reduced=1"
+	@open out/stage_combine.html?reduced=1
+
+# Quirk Validation Matrix
+quirk-test-desktop:
+	@echo "🎭 QUIRK TEST DESKTOP - Platform Validation"
+	@echo "🎭 Auto: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html"
+	@echo "🎭 Win LCD: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html&quirk=win-lcd"
+	@echo "🎭 Mac Safari: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html&quirk=mac-safari"
+	@echo "🎭 Linux FF: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html&quirk=linux-ff"
+
+quirk-test-mobile:
+	@echo "🎭 QUIRK TEST MOBILE - Mobile Validation"
+	@echo "🎭 iOS: out/stage_combine.html?bg=starfield_warp.html&stage=nyan.html&quirk=ios"
+	@echo "🎭 Android: out/stage_combine.html?bg=starfield_warp.html&stage=nyan.html&quirk=android"
+
+quirk-test-a11y:
+	@echo "🎭 QUIRK TEST A11Y - Accessibility Validation"
+	@echo "🎭 Reduced Motion: out/stage_combine.html?reduced=1"
+	@echo "🎭 A11y always wins over quirks!"
+
+# QA Matrix Launcher
+quirk-qa-matrix:
+	@echo "🎭 QUIRK QA MATRIX - 6-Tab Side-by-Side Validation"
+	@mkdir -p out
+	@cp scripts/snippets/quirk_qa_matrix.html out/quirk_qa_matrix.html
+	@echo "✅ QA Matrix: out/quirk_qa_matrix.html"
+	@echo "🎭 Click 'Open All 6 Tabs' for side-by-side comparison"
+	@echo "🎭 Perfect for pre-show validation and platform testing!"
+
+# Quick Smoke Test
+quirk-smoke-test:
+	@echo "🎭 QUIRK SMOKE TEST - 60s Platform Validation"
+	@echo "🎭 Auto-detect vs forced profiles..."
+	@echo "🎭 Opening: out/vj_neofetch_enhanced.html"
+	@echo "🎭 Opening: out/vj_neofetch_enhanced.html?quirk=off"
+	@echo "🎭 Opening: out/vj_neofetch_enhanced.html?quirk=mac-safari"
+	@echo "🎭 Opening: out/physics_fountain_pro.html?quirk=win-lcd"
+	@echo "🎭 Opening: out/stage_combine.html?bg=neon_grid.html&stage=cinema.html&quirk=android"
+	@echo "🎭 Opening: out/starfield_warp.html?reduced=1&quirk=linux-ff"
+	@echo "🎭 A11y always wins - reduced motion overrides all quirks!"
+
+# Demo Pairings
+quirk-demo-pairings:
+	@echo "🎭 QUIRK DEMO PAIRINGS - Instant Wow Combinations"
+	@echo "🎭 Win LCD × Matrix Glitch: out/matrix_glitch.html?quirk=win-lcd"
+	@echo "🎭 Mac Safari × Glass Cathedral: out/stage_combine.html?bg=aurora_ribbons.html&stage=cinema.html&quirk=mac-safari"
+	@echo "🎭 Android × Audio Rings: out/audio_react_rings.html?quirk=android"
+	@echo "🎭 Linux FF × ASCII Water: out/ascii_water.html?quirk=linux-ff"
+	@echo "🎭 Perfect for showcasing platform personality!"
 
 # FOH pocket card (print)
 foh-pocket-card:

@@ -1,0 +1,94 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<title>Physics Fountain</title><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+ html,body{margin:0;height:100%;background:#000;overflow:hidden}
+ canvas{display:block;width:100vw;height:100vh}
+ .hud{position:fixed;right:12px;bottom:10px;color:#0f0;font:12px/1.2 ui-monospace,monospace;opacity:.7;text-align:right}
+</style></head><body>
+<canvas id="c"></canvas><div class="hud" id="hud"></div>
+<script>
+const q=new URLSearchParams(location.search);
+const REDUCED = q.has("reduced");
+const COUNT   = +q.get("count") || (REDUCED? 250: 900);
+const DRAG    = +q.get("drag")  || 0.985;
+const GRAV    = +q.get("grav")  || 0.14;
+const HUE_RATE= +q.get("hue")   || 60;   // deg/sec
+const BURST   = +q.get("burst") || (REDUCED? 60: 180); // particles per beat
+const EMIT    = +q.get("emit")  || (REDUCED? 120: 260); // per second
+const TRAIL   = +q.get("trail") || (REDUCED? 0.08: 0.18); // trail alpha
+const ATTR    = q.get("attr")   || "center"; // center|orbit|mouse
+const ctx = c.getContext("2d"), dpi = () => (window.devicePixelRatio||1);
+function fit(){let d=dpi(); c.width=innerWidth*d; c.height=innerHeight*d; ctx.setTransform(d,0,0,d,0,0);}
+addEventListener("resize",fit,{passive:true}); fit();
+
+const rnd=(a=1,b=0)=>b+Math.random()*(a-b);
+const P=[]; let hue=0, t=0, mouse={x:0,y:0};
+addEventListener("pointermove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;},{passive:true});
+
+function add(n, cx,cy, spread=0.9, speed=3.3){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, s=(Math.random()**spread)*speed;
+    P.push({x:cx,y:cy, vx:Math.cos(a)*s, vy:Math.sin(a)*s-3, life: rnd(1.8,0.6)});
+  }
+}
+let last=performance.now();
+function step(now){
+  const dt=Math.min(0.066,(now-last)/1000); last=now; t+=dt; hue=(hue+HUE_RATE*dt)%360;
+  
+  // Always use true center
+  const cx = c.width / 2;
+  const cy = c.height / 2;
+  
+  // trail
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle=`rgba(0,0,0,${1-TRAIL})`; ctx.fillRect(0,0,c.width,c.height);
+
+  // auto emit from center
+  add(EMIT*dt, cx, cy, 1.2, 3.8);
+
+  // attractor locked to center unless orbit/mouse selected
+  const ax = (ATTR==="mouse") ? mouse.x*dpi() :
+             (ATTR==="orbit") ? cx + Math.cos(t*0.7)*c.width*0.25 : cx;
+  const ay = (ATTR==="mouse") ? mouse.y*dpi() :
+             (ATTR==="orbit") ? cy + Math.sin(t*0.5)*c.height*0.2 : cy;
+
+  // physics
+  ctx.globalCompositeOperation="lighter";
+  for(let i=P.length;i--;){
+    const p=P[i];
+    const dx=ax-p.x, dy=ay-p.y, d2=Math.max(60, dx*dx+dy*dy);
+    const f = GRAV*10000/d2;
+    p.vx += (dx)*f*dt; p.vy += (dy)*f*dt + GRAV*0.4; // gravity + attractor
+    p.vx *= DRAG; p.vy *= DRAG;
+    p.x  += p.vx*dpi(); p.y += p.vy*dpi();
+    p.life -= dt*0.4;
+    if(p.life<=0 || p.y>c.height+40){ P.splice(i,1); continue; }
+    const sat = 70 + 30*Math.sin((p.life)*8);
+    const light= 45 + 20*Math.cos((p.life)*4);
+    ctx.fillStyle=`hsl(${(hue+i*0.2)%360} ${sat}% ${light}%)`;
+    ctx.beginPath(); ctx.arc(p.x,p.y, REDUCED? 1.1: 1.6, 0, 6.283); ctx.fill();
+  }
+  // cap population
+  if(P.length>COUNT) P.splice(0, P.length-COUNT);
+  hud.textContent = `particles ${P.length}/${COUNT}  fps~${(1/dt|0)}  hue ${hue|0}`;
+  requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+
+// optional: spacebar = burst from center
+addEventListener("keydown",e=>{ 
+  if(e.code==="Space"){ 
+    const cx = c.width / 2;
+    const cy = c.height / 2;
+    add(BURST, cx, cy, .8, 5.2);
+  }
+});
+// optional quick beat ping via URL ?beat=1 (auto-bursts every ~0.9s)
+if(q.has("beat")){
+  setInterval(()=>{
+    const cx = c.width / 2;
+    const cy = c.height / 2;
+    add(BURST, cx, cy, .8, 5.2);
+  }, 900);
+}
+</script></body></html>

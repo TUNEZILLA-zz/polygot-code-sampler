@@ -1,0 +1,229 @@
+<!doctype html><meta charset="utf-8"><title>Beat Bloom Fixed</title>
+<style>
+html,body{margin:0;height:100%;background:#000;color:#9ef;font:12px ui-monospace;display:flex;flex-direction:column;}
+#status{position:fixed;left:10px;top:10px;opacity:.8;color:#fff;z-index:1000;}
+#level-bar-container{position:fixed;top:40px;left:10px;width:calc(100% - 20px);height:10px;background:#333;border-radius:5px;z-index:1000;}
+#level-bar{height:100%;width:0;background:#0f0;border-radius:5px;transition:width 0.05s linear;}
+#debug-log{flex-grow:1;margin-top:70px;padding:10px;overflow-y:scroll;white-space:pre-wrap;word-break:break-all;font-size:10px;line-height:1.2;}
+#bloom-overlay{position:fixed;inset:0;background:radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);opacity:0;transition:opacity 0.1s ease-out;pointer-events:none;}
+.controls{position:fixed;bottom:10px;left:10px;display:flex;gap:8px;z-index:1000;}
+button{background:#333;color:#fff;border:1px solid #555;padding:5px 10px;cursor:pointer;border-radius:3px;}
+button:hover{background:#555;}
+select,input{margin-right:8px;background:#333;color:#fff;border:1px solid #555;padding:3px 6px;}
+#device-select{min-width:200px;}
+#threshold-slider{width:100px;}
+#cooldown-slider{width:100px;}
+.device-info{position:fixed;right:10px;top:10px;background:rgba(0,0,0,0.8);padding:8px;border-radius:5px;font-size:10px;max-width:200px;}
+</style>
+<div id="status">🎵 Beat Bloom Fixed - Starting...</div>
+<div id="level-bar-container"><div id="level-bar"></div></div>
+<div id="debug-log"></div>
+<div id="bloom-overlay"></div>
+<div class="device-info">
+  <div><strong>Audio Device:</strong></div>
+  <div id="device-name">Detecting...</div>
+  <div><strong>Level:</strong> <span id="level-display">0.00%</span></div>
+  <div><strong>Threshold:</strong> <span id="threshold-display">0.05</span></div>
+  <div><strong>Cooldown:</strong> <span id="cooldown-display">200ms</span></div>
+</div>
+<div class="controls">
+    <button id="start-audio">🎤 Start Audio</button>
+    <button id="stop-audio">⏹ Stop Audio</button>
+    <select id="device-select">
+        <option value="">Select Device...</option>
+    </select>
+    <button id="test-audio">🔊 Test Audio</button>
+    <button id="manual-bloom">💥 Manual Bloom</button>
+    <input type="range" id="threshold-slider" min="0.001" max="0.1" step="0.001" value="0.05">
+    <input type="range" id="cooldown-slider" min="50" max="500" step="10" value="200">
+    <button id="reset-settings">🔄 Reset</button>
+</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+let ctx,an,buf,last=0,acc=0,th=0.05,cool=200; // ms cooldown
+let currentStream = null;
+const statusDiv = document.getElementById('status');
+const levelBar = document.getElementById('level-bar');
+const debugLog = document.getElementById('debug-log');
+const bloomOverlay = document.getElementById('bloom-overlay');
+const deviceSelect = document.getElementById('device-select');
+const deviceName = document.getElementById('device-name');
+const levelDisplay = document.getElementById('level-display');
+const thresholdDisplay = document.getElementById('threshold-display');
+const cooldownDisplay = document.getElementById('cooldown-display');
+
+function log(msg) {
+    const now = new Date().toLocaleTimeString();
+    debugLog.textContent = `${now}: ${msg}\n` + debugLog.textContent;
+}
+
+async function getAudioDevices() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices.filter(device => device.kind === 'audioinput');
+        deviceSelect.innerHTML = '<option value="">Select Device...</option>';
+        audioInputs.forEach(device => {
+            const option = document.createElement('option');
+            option.value = device.deviceId;
+            option.textContent = device.label || `Microphone ${device.deviceId.slice(0, 8)}`;
+            deviceSelect.appendChild(option);
+        });
+        log(`Found ${audioInputs.length} audio input devices`);
+    } catch (e) {
+        log(`Error enumerating devices: ${e.message}`);
+    }
+}
+
+async function startAudio(deviceId = null) {
+    try {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+        
+        const constraints = {
+            audio: {
+                deviceId: deviceId ? { exact: deviceId } : undefined,
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+            }
+        };
+        
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        currentStream = stream;
+        
+        if (ctx && ctx.state === 'suspended') {
+            await ctx.resume();
+        }
+        
+        if (!ctx) {
+            ctx = new (window.AudioContext || webkitAudioContext)();
+            an = ctx.createAnalyser();
+            an.fftSize = 512;
+            buf = new Uint8Array(an.frequencyBinCount);
+        }
+        
+        const source = ctx.createMediaStreamSource(stream);
+        source.connect(an);
+        
+        const track = stream.getAudioTracks()[0];
+        if (track) {
+            deviceName.textContent = track.label || 'Unknown Device';
+        }
+        
+        statusDiv.textContent = "🎵 Beat Bloom Fixed - Mic Ready ✅";
+        log("Audio started successfully");
+        loop();
+    } catch (e) {
+        statusDiv.textContent = `❌ Audio Error: ${e.message}`;
+        log(`❌ Audio error: ${e.name} - ${e.message}`);
+        console.error("Audio error:", e);
+    }
+}
+
+function stopAudio() {
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
+    }
+    if (ctx) {
+        ctx.close();
+        ctx = null;
+    }
+    statusDiv.textContent = "🎵 Beat Bloom Fixed - Stopped";
+    log("Audio stopped");
+}
+
+function visualBloom(ms=RED?600:900){
+    bloomOverlay.style.transitionDuration = `${ms/3}ms`;
+    bloomOverlay.style.opacity = 0.8;
+    setTimeout(() => {
+        bloomOverlay.style.opacity = 0;
+    }, ms/2);
+    log("💥 BLOOM TRIGGERED!");
+}
+
+let logCounter = 0;
+function loop(t=0){
+    requestAnimationFrame(loop);
+    if(!an) return;
+
+    an.getByteTimeDomainData(buf);
+    let e=0;
+    for(let i=0;i<buf.length;i++){
+        let v=(buf[i]-128)/128;
+        e+=v*v;
+    }
+    e/=buf.length; // RMS energy
+
+    acc = acc*0.6 + e*0.4; // Smoothed RMS
+
+    levelBar.style.width = `${Math.min(100, acc * 2000)}%`; // Scale for visibility
+    levelDisplay.textContent = `${(acc*100).toFixed(1)}%`;
+
+    const now=performance.now();
+    if(acc>th && now-last>cool){
+        last=now;
+        visualBloom();
+        log(`🎵 BEAT DETECTED! Level: ${acc.toFixed(4)} (Threshold: ${th.toFixed(4)})`);
+    }
+
+    if (logCounter % 60 === 0) { // Log every ~1 second (60 frames)
+        log(`Level: ${acc.toFixed(4)} (${(acc*100).toFixed(1)}%) Threshold: ${th.toFixed(4)}`);
+    }
+    logCounter++;
+}
+
+// Event listeners
+document.getElementById('start-audio').onclick = () => {
+    const deviceId = deviceSelect.value;
+    startAudio(deviceId);
+};
+
+document.getElementById('stop-audio').onclick = stopAudio;
+
+document.getElementById('test-audio').onclick = () => {
+    if (ctx && ctx.state === 'running') {
+        const oscillator = ctx.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+        oscillator.connect(ctx.destination);
+        oscillator.start();
+        log("🔊 Playing test tone...");
+        setTimeout(() => {
+            oscillator.stop();
+            oscillator.disconnect();
+            log("🔊 Test tone stopped.");
+        }, 500);
+    } else {
+        log("AudioContext not running. Start audio first.");
+    }
+};
+
+document.getElementById('manual-bloom').onclick = () => visualBloom();
+
+document.getElementById('threshold-slider').oninput = (e) => {
+    th = parseFloat(e.target.value);
+    thresholdDisplay.textContent = th.toFixed(3);
+    log(`Threshold set to ${th.toFixed(3)}`);
+};
+
+document.getElementById('cooldown-slider').oninput = (e) => {
+    cool = parseInt(e.target.value);
+    cooldownDisplay.textContent = `${cool}ms`;
+    log(`Cooldown set to ${cool}ms`);
+};
+
+document.getElementById('reset-settings').onclick = () => {
+    th = 0.05;
+    cool = 200;
+    document.getElementById('threshold-slider').value = th;
+    document.getElementById('cooldown-slider').value = cool;
+    thresholdDisplay.textContent = th.toFixed(3);
+    cooldownDisplay.textContent = `${cool}ms`;
+    log("Settings reset to defaults");
+};
+
+// Initialize
+getAudioDevices();
+</script>

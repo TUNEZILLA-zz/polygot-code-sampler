@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>Matrix Glitch</title>
+<style>
+  html,body{margin:0;height:100%;background:#020305;overflow:hidden}
+  canvas{display:block} .badge{position:fixed;right:12px;bottom:10px;color:#8f8;font:12px ui-monospace;opacity:.7}
+</style>
+<canvas id="rain"></canvas><div class="badge">Matrix+Glitch • ?reduced=1</div>
+<script>
+const RED=new URLSearchParams(location.search).get('reduced')==='1';
+const c=document.getElementById('rain'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight}addEventListener('resize',rs);rs();
+const chars='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const font=RED?14:18; let cols = Math.floor(W/font); let drops=new Array(cols).fill(0).map(()=>Math.random()*H/font);
+function glitch(t){x.save(); const n=RED?2:5; for(let i=0;i<n;i++){const h=10+Math.random()*40, y=Math.random()*H, sx=0, sw=W, dx=(Math.random()-.5)*12;
+x.drawImage(c,sx,y,sw,h, dx,y,sw,h);} x.globalCompositeOperation="screen";
+x.fillStyle="rgba(0,255,200,.08)"; x.fillRect(0,0,W,H); x.restore();}
+let last=0; (function loop(t){requestAnimationFrame(loop);
+x.fillStyle="rgba(2,3,5,.15)"; x.fillRect(0,0,W,H); x.fillStyle="#0f0"; x.font=`${font}px monospace`;
+for(let i=0;i<cols;i++){const txt=chars[Math.floor(Math.random()*chars.length)]; const y=drops[i]*font;
+x.fillStyle=`hsl(${120+Math.random()*40},100%,${40+Math.random()*30}%)`; x.fillText(txt,i*font,y);
+drops[i] = (y>H && Math.random()>.975) ? 0 : drops[i]+(RED?0.9:1.3);
+}
+if(t-last>(RED?1400:900)){glitch(t); last=t;}
+})();</script>

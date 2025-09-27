@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VJ Quirks QA Matrix</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #0f0;
+            font-family: ui-monospace, monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .quirk-card {
+            background: rgba(0,255,0,0.05);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .quirk-card:hover {
+            background: rgba(0,255,0,0.1);
+            border-color: #0f0;
+        }
+        .quirk-name {
+            font-weight: bold;
+            color: #0f0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .quirk-desc {
+            color: #888;
+            font-size: 10px;
+            margin-bottom: 10px;
+        }
+        .quirk-url {
+            color: #666;
+            font-size: 9px;
+            word-break: break-all;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 2px;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .btn:hover {
+            background: rgba(0,255,0,0.2);
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎭 VJ QUIRKS QA MATRIX</h1>
+        <p>Platform Personality Validation - Click any card to test that quirk</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="openAll()">🚀 Open All 6 Tabs</button>
+        <button class="btn" onclick="openDesktop()">🖥️ Desktop Only</button>
+        <button class="btn" onclick="openMobile()">📱 Mobile Only</button>
+        <button class="btn" onclick="openA11y()">♿ A11y Test</button>
+    </div>
+
+    <div class="matrix">
+        <div class="quirk-card" onclick="openQuirk('auto')">
+            <div class="quirk-name">Auto</div>
+            <div class="quirk-desc">Auto-detect platform personality</div>
+            <div class="quirk-url">?quirk=auto</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('off')">
+            <div class="quirk-name">Off</div>
+            <div class="quirk-desc">Disable all platform enhancements</div>
+            <div class="quirk-url">?quirk=off</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('mac-safari')">
+            <div class="quirk-name">Mac Safari</div>
+            <div class="quirk-desc">Glassy bloom + softer motion</div>
+            <div class="quirk-url">?quirk=mac-safari</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('win-lcd')">
+            <div class="quirk-name">Win LCD</div>
+            <div class="quirk-desc">CRT scanlines + phosphor bloom</div>
+            <div class="quirk-url">?quirk=win-lcd</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('linux-ff')">
+            <div class="quirk-name">Linux FF</div>
+            <div class="quirk-desc">ASCII overlay + mono HUD</div>
+            <div class="quirk-url">?quirk=linux-ff</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('ios')">
+            <div class="quirk-name">iOS</div>
+            <div class="quirk-desc">High-contrast neon + touch-friendly</div>
+            <div class="quirk-url">?quirk=ios</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('android')">
+            <div class="quirk-name">Android</div>
+            <div class="quirk-desc">AMOLED true black + punchier colors</div>
+            <div class="quirk-url">?quirk=android</div>
+        </div>
+
+        <div class="quirk-card" onclick="openQuirk('edge')">
+            <div class="quirk-name">Edge</div>
+            <div class="quirk-desc">Fluent acrylic blur + backdrop filters</div>
+            <div class="quirk-url">?quirk=edge</div>
+        </div>
+    </div>
+
+    <div class="status">
+        <p>🎭 Click any card to test that quirk profile</p>
+        <p>🚀 "Open All 6 Tabs" launches side-by-side comparison</p>
+        <p>♿ A11y test ensures reduced motion always wins</p>
+    </div>
+
+    <script>
+        const baseUrl = 'out/stage_combine.html?bg=neon_grid.html&stage=cinema.html';
+        
+        function openQuirk(quirk) {
+            const url = quirk === 'auto' ? baseUrl : `${baseUrl}&quirk=${quirk}`;
+            window.open(url, '_blank');
+        }
+
+        function openAll() {
+            const quirks = ['auto', 'off', 'mac-safari', 'win-lcd', 'linux-ff', 'ios', 'android', 'edge'];
+            quirks.forEach((quirk, i) => {
+                setTimeout(() => {
+                    openQuirk(quirk);
+                }, i * 200); // Stagger opens by 200ms
+            });
+        }
+
+        function openDesktop() {
+            const desktopQuirks = ['auto', 'off', 'mac-safari', 'win-lcd', 'linux-ff'];
+            desktopQuirks.forEach((quirk, i) => {
+                setTimeout(() => {
+                    openQuirk(quirk);
+                }, i * 200);
+            });
+        }
+
+        function openMobile() {
+            const mobileQuirks = ['auto', 'ios', 'android'];
+            mobileQuirks.forEach((quirk, i) => {
+                setTimeout(() => {
+                    openQuirk(quirk);
+                }, i * 200);
+            });
+        }
+
+        function openA11y() {
+            const a11yUrl = `${baseUrl}&reduced=1&quirk=linux-ff`;
+            window.open(a11yUrl, '_blank');
+        }
+
+        // Auto-detect current platform for demo
+        const ua = navigator.userAgent.toLowerCase();
+        let currentPlatform = 'auto';
+        if (ua.includes('mac') && ua.includes('safari')) currentPlatform = 'mac-safari';
+        else if (ua.includes('windows') && (ua.includes('chrome') || ua.includes('edge'))) currentPlatform = 'win-lcd';
+        else if (ua.includes('linux') && ua.includes('firefox')) currentPlatform = 'linux-ff';
+        else if (ua.includes('iphone') || ua.includes('ipad')) currentPlatform = 'ios';
+        else if (ua.includes('android')) currentPlatform = 'android';
+
+        document.title = `VJ Quirks QA - ${currentPlatform.toUpperCase()}`;
+    </script>
+</body>
+</html>

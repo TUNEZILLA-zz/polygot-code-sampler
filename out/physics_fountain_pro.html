@@ -1,0 +1,169 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<title>Physics Fountain Pro</title><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+ html,body{margin:0;height:100%;background:#000;overflow:hidden}
+ canvas{display:block;width:100vw;height:100vh}
+ .hud{position:fixed;right:12px;bottom:10px;color:#0f0;font:12px/1.2 ui-monospace,monospace;opacity:.7;text-align:right}
+</style></head><body>
+<canvas id="c"></canvas><div class="hud" id="hud"></div>
+<script>
+const q=new URLSearchParams(location.search);
+const REDUCED = q.has("reduced");
+const ORBIT = q.has("orbit");
+const INTENSITY = +q.get("intensity") || 1.0;
+const COUNT   = +q.get("count") || (REDUCED? 250: 900);
+const DRAG    = +q.get("drag")  || 0.985;
+const GRAV    = +q.get("grav")  || 0.14;
+const HUE_RATE= +q.get("hue")   || 60;   // deg/sec
+const BURST   = +q.get("burst") || (REDUCED? 60: 180); // particles per beat
+const EMIT    = +q.get("emit")  || (REDUCED? 120: 260); // per second
+const TRAIL   = +q.get("trail") || (REDUCED? 0.08: 0.18); // trail alpha
+const ATTR    = q.get("attr")   || "center"; // center|orbit|mouse
+const ctx = c.getContext("2d"), dpi = () => (window.devicePixelRatio||1);
+function fit(){let d=dpi(); c.width=innerWidth*d; c.height=innerHeight*d; ctx.setTransform(d,0,0,d,0,0);}
+addEventListener("resize",fit,{passive:true}); fit();
+
+const rnd=(a=1,b=0)=>b+Math.random()*(a-b);
+const P=[]; let hue=0, t=0, mouse={x:0,y:0};
+let surge = 0; // Beat-reactive surge 0..1
+let fps = 60; // Performance tracking
+let lastFpsUpdate = 0;
+
+addEventListener("pointermove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;},{passive:true});
+
+function add(n, cx,cy, spread=0.9, speed=3.3){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2, s=(Math.random()**spread)*speed;
+    P.push({x:cx,y:cy, vx:Math.cos(a)*s, vy:Math.sin(a)*s-3, life: rnd(1.8,0.6)});
+  }
+}
+
+// Tone mapping for intense color mode
+function tone(v){ return v/(1+v); } // Reinhard tone mapping
+function hslToRgb(h, s, l) {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h * 6) % 2 - 1));
+  const m = l - c/2;
+  let r, g, b;
+  if (h < 1/6) [r,g,b] = [c,x,0];
+  else if (h < 2/6) [r,g,b] = [x,c,0];
+  else if (h < 3/6) [r,g,b] = [0,c,x];
+  else if (h < 4/6) [r,g,b] = [0,x,c];
+  else if (h < 5/6) [r,g,b] = [x,0,c];
+  else [r,g,b] = [c,0,x];
+  return [r+m, g+m, b+m];
+}
+
+let last=performance.now();
+function step(now){
+  const dt=Math.min(0.066,(now-last)/1000); last=now; t+=dt; 
+  
+  // Performance tracking
+  fps = fps*0.9 + (1/dt)*0.1;
+  if (fps < 50) EMIT = Math.max(EMIT*0.5, EMIT*0.95); // Auto-throttle on low FPS
+  
+  // Beat-reactive surge decay
+  surge = Math.max(0, surge - dt*1.8); // ~550ms decay
+  
+  // Always use true center
+  const cx = c.width / 2;
+  const cy = c.height / 2;
+  
+  // Beat-reactive color and emission
+  const hueBase = (t*12) % 360;
+  const hue = (hueBase + surge*120) % 360;      // push toward warmer hues on beat
+  const emitMul = 1 + surge*2.0;                // more particles briefly
+  const sizeMul = 1 + surge*0.6;                // bigger for a moment
+  
+  // Superbloom trails (additive blending)
+  ctx.globalCompositeOperation = 'lighter'; // additive
+  ctx.fillStyle=`rgba(0,0,0,${1-TRAIL})`; 
+  ctx.fillRect(0,0,c.width,c.height);
+
+  // Auto emit from center with surge multiplier
+  add(EMIT*dt*emitMul*INTENSITY, cx, cy, 1.2, 3.8);
+
+  // Orbit & gravity wells (visual choreography)
+  let ax, ay;
+  if (ATTR==="mouse") {
+    ax = mouse.x*dpi();
+    ay = mouse.y*dpi();
+  } else if (ATTR==="orbit" || ORBIT) {
+    // Lissajous path for musical motion
+    ax = cx + Math.cos(t*0.7)*c.width*0.22;
+    ay = cy + Math.sin(t*0.45)*c.height*0.18;
+  } else {
+    ax = cx;
+    ay = cy;
+  }
+
+  // Physics with dual-well attraction
+  ctx.globalCompositeOperation="lighter";
+  for(let i=P.length;i--;){
+    const p=P[i];
+    
+    // Dual-well attraction (center + orbit point)
+    const fx = (cx - p.x)*0.0008 + (ax - p.x)*0.0005;
+    const fy = (cy - p.y)*0.0008 + (ay - p.y)*0.0005;
+    p.vx += fx; p.vy += fy;
+    
+    // Gravity and drag
+    p.vx *= DRAG; p.vy *= DRAG;
+    p.x += p.vx*dpi(); p.y += p.vy*dpi();
+    p.life -= dt*0.4;
+    
+    if(p.life<=0 || p.y>c.height+40){ P.splice(i,1); continue; }
+    
+    // Intense color mode with tone mapping
+    const sat = 70 + 30*Math.sin((p.life)*8);
+    const light = 45 + 20*Math.cos((p.life)*4);
+    const h = (hue+i*0.2)%360;
+    const s = sat/100;
+    const l = light/100;
+    
+    let [r,g,b] = hslToRgb(h/360, s, l);
+    r = tone(r*1.6); g = tone(g*1.6); b = tone(b*1.6);
+    
+    ctx.fillStyle = `rgba(${(r*255)|0},${(g*255)|0},${(b*255)|0},0.9)`;
+    ctx.beginPath(); 
+    ctx.arc(p.x, p.y, (REDUCED? 1.1: 1.6)*sizeMul, 0, 6.283); 
+    ctx.fill();
+  }
+  
+  // Cap population
+  if(P.length>COUNT) P.splice(0, P.length-COUNT);
+  
+  // HUD with surge indicator
+  const surgePct = (surge*100)|0;
+  hud.textContent = `particles ${P.length}/${COUNT}  fps~${(fps|0)}  surge ${surgePct}%`;
+  requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+
+// Beat-reactive spacebar burst
+addEventListener("keydown",e=>{ 
+  if(e.code==="Space"){ 
+    const cx = c.width / 2;
+    const cy = c.height / 2;
+    add(BURST, cx, cy, .85, 5.2); 
+    surge = 1; // Trigger color surge
+  }
+});
+
+// Auto-burst with surge
+if(q.has("beat")){
+  setInterval(()=>{
+    const cx = c.width / 2;
+    const cy = c.height / 2;
+    add(BURST, cx, cy, .8, 5.2);
+    surge = 1; // Trigger surge on auto-beat
+  }, 900);
+}
+
+// A11y & performance guards
+if (REDUCED) { 
+  EMIT *= 0.5; 
+  // Limit velocity and skip orbit for reduced motion
+  if (ORBIT) ORBIT = false;
+}
+</script></body></html>

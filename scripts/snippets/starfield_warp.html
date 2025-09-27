@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><title>Starfield Warp</title>
+<style>html,body{margin:0;height:100%;background:#05070b;overflow:hidden}
+canvas{display:block} .badge{position:fixed;left:12px;bottom:10px;color:#8ff;font:12px/1.2 ui-monospace,monospace;opacity:.6}
+</style><canvas id="c"></canvas><div class="badge">Starfield • ?reduced=1</div>
+<script>
+const q=new URLSearchParams(location.search),REDUCED=q.get('reduced')==='1';
+const c=document.getElementById('c'),x=c.getContext('2d');let W,H;function rs(){W=c.width=innerWidth;H=c.height=innerHeight} addEventListener('resize',rs);rs();
+const N=REDUCED?250:600, Z0=REDUCED?1.5:1, stars=[...Array(N)].map(()=>({x:(Math.random()*2-1),y:(Math.random()*2-1),z:Math.random()*2+Z0}));
+const spd=REDUCED?0.02:0.06, hueBase=200;
+function tick(t){x.fillStyle="#05070b";x.fillRect(0,0,W,H);
+for(const s of stars){s.z-=spd; if(s.z<0.05){s.x=Math.random()*2-1;s.y=Math.random()*2-1;s.z=2.5;}
+const sx=W/2 + (s.x/s.z)*W*.45, sy=H/2 + (s.y/s.z)*H*.45, sz=(1-s.z/2.5);
+x.fillStyle=`hsl(${hueBase+sz*80},100%,${40+sz*60}%)`; x.fillRect(sx,sy,2+sz*4,2+sz*4);}
+requestAnimationFrame(tick)} requestAnimationFrame(tick);
+</script>

@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>CRT Overlay</title>
+<style>
+  html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+  .scan{position:fixed;inset:0;background:
+    repeating-linear-gradient( to bottom, rgba(255,255,255,.035), rgba(255,255,255,.035) 1px, rgba(0,0,0,0) 2px );
+    mix-blend-mode:overlay; pointer-events:none; opacity:.5}
+  .vignette{position:fixed;inset:0;box-shadow:inset 0 0 160px 80px rgba(0,0,0,.55);pointer-events:none}
+</style>
+<div class="scan"></div><div class="vignette"></div>
