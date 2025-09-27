@@ -61,6 +61,14 @@ help:
 	@echo "  refraction-broken   Broken Glass Refraction"
 	@echo "  refraction-preset   Prism Rainbow Preset"
 	@echo "  refraction-html     Refraction HTML Gallery"
+	@echo "  chromatic-fx        Chromatic Aberration Text FX (RGB offset)"
+	@echo "  chromatic-fringe   Chromatic Fringe Blur"
+	@echo "  chromatic-pulse     Chromatic Pulse (LFO breathing)"
+	@echo "  chromatic-spectrum  Chromatic Broken Spectrum"
+	@echo "  chromatic-trails    Chromatic Trails (after-images)"
+	@echo "  chromatic-preset    Chromatic RGB Preset"
+	@echo "  prism-mode         Prism Mode (Refraction + Chromatic)"
+	@echo "  chromatic-html     Chromatic Aberration HTML Gallery"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -411,6 +419,47 @@ refraction-html:
 	@echo "🌈 Creating Refraction HTML Gallery..."
 	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain refraction:type=prism,rainbow_gradient,neon_fx --mode html --output out/refraction_fx.html --intensity 0.9 --seed 42
 	@echo "🌈 Refraction HTML complete! Check out/refraction_fx.html"
+
+# Chromatic Aberration Text FX targets
+chromatic-fx:
+	@echo "🌈 Running Chromatic Aberration Text FX..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain chromatic:type=rgb_offset,neon_fx --intensity 0.8 --seed 42
+	@echo "🌈 Chromatic Aberration Text FX complete!"
+
+chromatic-fringe:
+	@echo "🌈 Running Chromatic Fringe Blur..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain chromatic:type=fringe_blur,glitch_colors --intensity 0.9 --seed 42
+	@echo "🌈 Chromatic Fringe Blur complete!"
+
+chromatic-pulse:
+	@echo "🌈 Running Chromatic Pulse..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --chain chromatic:type=pulse,rainbow_gradient --intensity 0.8 --seed 42
+	@echo "🌈 Chromatic Pulse complete!"
+
+chromatic-spectrum:
+	@echo "🌈 Running Chromatic Broken Spectrum..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain chromatic:type=broken_spectrum,harmonics --intensity 0.9 --seed 42
+	@echo "🌈 Chromatic Broken Spectrum complete!"
+
+chromatic-trails:
+	@echo "🌈 Running Chromatic Trails..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain chromatic:type=trails,feedback --intensity 0.8 --seed 42
+	@echo "🌈 Chromatic Trails complete!"
+
+chromatic-preset:
+	@echo "🌈 Running Chromatic RGB Preset..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset chromatic_rgb --intensity 0.9 --seed 42
+	@echo "🌈 Chromatic RGB Preset complete!"
+
+prism-mode:
+	@echo "🌈 Running Prism Mode (Refraction + Chromatic)..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --preset prism_mode --intensity 0.9 --seed 42
+	@echo "🌈 Prism Mode complete!"
+
+chromatic-html:
+	@echo "🌈 Creating Chromatic Aberration HTML Gallery..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain chromatic:type=rgb_offset,neon_fx,rainbow_gradient --mode html --output out/chromatic_fx.html --intensity 0.9 --seed 42
+	@echo "🌈 Chromatic Aberration HTML complete! Check out/chromatic_fx.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:

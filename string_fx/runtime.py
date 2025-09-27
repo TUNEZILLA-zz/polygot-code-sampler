@@ -767,6 +767,170 @@ def _refraction_broken(text: str, intensity: float, params: Dict[str, Any]) -> s
     return result
 
 
+@fx("chromatic")
+def chromatic(text: str, params: Dict[str, Any]) -> str:
+    """Chromatic aberration effect - RGB offset with glitchy rainbow edges"""
+    intensity = params.get("intensity", 0.75)
+    chromatic_type = params.get("type", "rgb_offset")  # rgb_offset, fringe_blur, pulse, broken_spectrum, trails
+    
+    if chromatic_type == "rgb_offset":
+        return _chromatic_rgb_offset(text, intensity, params)
+    elif chromatic_type == "fringe_blur":
+        return _chromatic_fringe_blur(text, intensity, params)
+    elif chromatic_type == "pulse":
+        return _chromatic_pulse(text, intensity, params)
+    elif chromatic_type == "broken_spectrum":
+        return _chromatic_broken_spectrum(text, intensity, params)
+    elif chromatic_type == "trails":
+        return _chromatic_trails(text, intensity, params)
+    else:
+        return text
+
+
+def _chromatic_rgb_offset(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """RGB offset - split text into red, green, blue layers with slight shifts"""
+    result = ""
+    
+    # RGB colors and offsets
+    colors = ["#ff0000", "#00ff00", "#0000ff"]  # Red, Green, Blue
+    offsets = [0, 1, 2]  # Character offsets
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add each color layer
+        for j, (color, offset) in enumerate(zip(colors, offsets)):
+            if j == 0:
+                # Base layer (white)
+                if params.get("mode") == "html":
+                    result += f'<span style="color: #ffffff; font-weight: bold">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    result += f'\033[1m{char}\033[0m'  # bold white
+                else:
+                    result += char
+            else:
+                # Offset layers
+                spacing = " " * offset
+                if params.get("mode") == "html":
+                    result += f'{spacing}<span style="color: {color}; opacity: 0.8">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    ansi_color = _hex_to_ansi(color)
+                    result += f'{spacing}\033[{ansi_color}m{char}\033[0m'
+                else:
+                    result += f'{spacing}{char}'
+    
+    return result
+
+
+def _chromatic_fringe_blur(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Fringe blur - outer letters trail with colored shadows"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add fringe shadows
+        if params.get("mode") == "html":
+            result += f'<span style="text-shadow: -2px 0 #0000ff, 2px 0 #ff0000">{char}</span>'
+        else:
+            # Use combining characters for fringe effect
+            fringe_chars = ["̸", "̷", "̶", "̴", "̵"]
+            fringe_char = fringe_chars[i % len(fringe_chars)]
+            result += f'{char}{fringe_char}'
+    
+    return result
+
+
+def _chromatic_pulse(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Chromatic pulse - offsets oscillate with LFO, rainbow edges breathe"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Calculate pulse phase
+        phase = (i * 0.3) % (2 * math.pi)
+        pulse_offset = int(math.sin(phase) * intensity * 3)
+        
+        # Apply pulse spacing
+        spacing = " " * max(0, pulse_offset)
+        result += spacing + char
+    
+    return result
+
+
+def _chromatic_broken_spectrum(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Broken spectrum - each character fractured into color ghosts"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add spectrum ghosts
+        spectrum_colors = ["#ff0000", "#ff8000", "#ffff00", "#80ff00", "#00ff00", "#00ff80", "#00ffff", "#0080ff", "#0000ff", "#8000ff", "#ff00ff", "#ff0080"]
+        
+        for j, color in enumerate(spectrum_colors[:int(intensity * 3)]):
+            if j == 0:
+                # Base character
+                if params.get("mode") == "html":
+                    result += f'<span style="color: {color}">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    ansi_color = _hex_to_ansi(color)
+                    result += f'\033[{ansi_color}m{char}\033[0m'
+                else:
+                    result += char
+            else:
+                # Ghost characters
+                ghost_offset = j * 2
+                spacing = " " * ghost_offset
+                if params.get("mode") == "html":
+                    result += f'{spacing}<span style="color: {color}; opacity: 0.5">{char}</span>'
+                elif params.get("mode") == "ansi":
+                    ansi_color = _hex_to_ansi(color)
+                    result += f'{spacing}\033[{ansi_color}m{char}\033[0m'
+                else:
+                    result += f'{spacing}{char}'
+    
+    return result
+
+
+def _chromatic_trails(text: str, intensity: float, params: Dict[str, Any]) -> str:
+    """Aberration trails - words leave behind colored after-images"""
+    result = ""
+    
+    for i, char in enumerate(text):
+        if char.isspace():
+            result += char
+            continue
+        
+        # Add trail layers
+        trail_colors = ["#ff0000", "#00ff00", "#0000ff"]
+        trail_count = int(intensity * 3)
+        
+        for j in range(trail_count):
+            color = trail_colors[j % len(trail_colors)]
+            trail_offset = (j + 1) * 2
+            trail_opacity = 0.8 - (j * 0.2)
+            
+            if params.get("mode") == "html":
+                result += f'<span style="color: {color}; opacity: {trail_opacity}; position: relative; left: {trail_offset}px">{char}</span>'
+            else:
+                # Use combining characters for trail effect
+                trail_chars = ["͢", "͜", "͠", "͝", "͞"]
+                trail_char = trail_chars[j % len(trail_chars)]
+                result += f'{char}{trail_char}'
+    
+    return result
+
+
 def _tremolo_amplitude(text: str, intensity: float, rate: float, params: Dict[str, Any]) -> str:
     """Amplitude tremolo - volume-like pulses"""
     result = ""
@@ -1125,6 +1289,55 @@ def get_preset_pack() -> Dict[str, Dict[str, Any]]:
                 {"name": "neon_fx", "params": {"glow": 1.5}}
             ],
             "Prism rainbow with neon glow"
+        ),
+        "chromatic_rgb": create_preset(
+            "Chromatic RGB",
+            [
+                {"name": "chromatic", "params": {"type": "rgb_offset"}},
+                {"name": "neon_fx", "params": {"glow": 1.2}}
+            ],
+            "Chromatic RGB offset with neon glow"
+        ),
+        "chromatic_fringe": create_preset(
+            "Chromatic Fringe",
+            [
+                {"name": "chromatic", "params": {"type": "fringe_blur"}},
+                {"name": "glitch_colors", "params": {"glitch_factor": 0.6}}
+            ],
+            "Chromatic fringe blur with glitch colors"
+        ),
+        "chromatic_pulse": create_preset(
+            "Chromatic Pulse",
+            [
+                {"name": "chromatic", "params": {"type": "pulse"}},
+                {"name": "rainbow_gradient", "params": {}}
+            ],
+            "Chromatic pulse with rainbow gradient"
+        ),
+        "chromatic_spectrum": create_preset(
+            "Chromatic Spectrum",
+            [
+                {"name": "chromatic", "params": {"type": "broken_spectrum"}},
+                {"name": "harmonics", "params": {"harmonic_count": 2}}
+            ],
+            "Chromatic broken spectrum with harmonics"
+        ),
+        "chromatic_trails": create_preset(
+            "Chromatic Trails",
+            [
+                {"name": "chromatic", "params": {"type": "trails"}},
+                {"name": "feedback", "params": {"feedback_length": 3}}
+            ],
+            "Chromatic trails with feedback"
+        ),
+        "prism_mode": create_preset(
+            "Prism Mode",
+            [
+                {"name": "refraction", "params": {"type": "prism"}},
+                {"name": "chromatic", "params": {"type": "rgb_offset"}},
+                {"name": "neon_fx", "params": {"glow": 1.8}}
+            ],
+            "Prism mode: refraction + chromatic aberration"
         )
     }
 
