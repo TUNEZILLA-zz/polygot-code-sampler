@@ -32,6 +32,15 @@ help:
 	@echo "  string-fx-glitch  Glitch String FX effects"
 	@echo "  string-fx-presets String FX presets"
 	@echo "  string-fx-gallery String FX gallery"
+	@echo "  enhanced-string-fx Enhanced String FX (FX Graph Runtime)"
+	@echo "  enhanced-string-fx-preset Enhanced String FX with presets"
+	@echo "  enhanced-string-fx-html Enhanced String FX HTML output"
+	@echo "  enhanced-string-fx-list List Enhanced String FX presets"
+	@echo "  string-fx-server  String FX FastAPI server"
+	@echo "  tremolo-fx       Tremolo String FX (repetition)"
+	@echo "  tremolo-fx-wave  Tremolo Wave FX (wave + color)"
+	@echo "  tremolo-fx-preset Tremolo Rave Preset"
+	@echo "  tremolo-fx-html  Tremolo FX HTML output"
 	@echo "  code-hero         Guitar Hero for code loops (coming soon)"
 	@echo "  code-tarot        Divination system for creative coding (coming soon)"
 	@echo "  clean             Clean output directory"
@@ -228,6 +237,54 @@ string-fx-gallery:
 	@echo "🎭 Creating String FX Gallery..."
 	python3 scripts/string_fx_presets.py --text "Code Live" --gallery --output out/string_fx_gallery.html
 	@echo "🎭 String FX Gallery complete! Check out/string_fx_gallery.html"
+
+# Enhanced String FX targets (FX Graph Runtime)
+enhanced-string-fx:
+	@echo "🎭 Running Enhanced String FX..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain rainbow_gradient,neon_fx,stutter --intensity 0.8 --seed 42
+	@echo "🎭 Enhanced String FX complete!"
+
+enhanced-string-fx-preset:
+	@echo "🎭 Running Enhanced String FX Preset..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --preset neon_rave --intensity 0.9 --seed 42
+	@echo "🎭 Enhanced String FX Preset complete!"
+
+enhanced-string-fx-html:
+	@echo "🎭 Creating Enhanced String FX HTML..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain rainbow_gradient,neon_fx,stutter --mode html --output out/enhanced_string_fx.html --intensity 0.8 --seed 42
+	@echo "🎭 Enhanced String FX HTML complete! Check out/enhanced_string_fx.html"
+
+enhanced-string-fx-list:
+	@echo "🎭 Listing Enhanced String FX Presets..."
+	python3 scripts/enhanced_string_fx.py --list-presets
+	@echo "🎭 Enhanced String FX Presets listed!"
+
+# String FX Server
+string-fx-server:
+	@echo "🎭 Starting String FX Server..."
+	python3 server_strings.py
+	@echo "🎭 String FX Server started on http://localhost:8000"
+
+# Tremolo String FX targets
+tremolo-fx:
+	@echo "🎵 Running Tremolo String FX..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain tremolo:type=repetition:rate=8.0,neon_fx --intensity 0.8 --seed 42
+	@echo "🎵 Tremolo String FX complete!"
+
+tremolo-fx-wave:
+	@echo "🎵 Running Tremolo Wave FX..."
+	python3 scripts/enhanced_string_fx.py --text "Code Live" --chain tremolo:type=wave:rate=6.0,tremolo:type=color:rate=4.0 --intensity 0.9 --seed 42
+	@echo "🎵 Tremolo Wave FX complete!"
+
+tremolo-fx-preset:
+	@echo "🎵 Running Tremolo Rave Preset..."
+	python3 scripts/enhanced_string_fx.py --text "Rawtunez" --preset tremolo_rave --intensity 0.9 --seed 42
+	@echo "🎵 Tremolo Rave Preset complete!"
+
+tremolo-fx-html:
+	@echo "🎵 Creating Tremolo FX HTML..."
+	python3 scripts/enhanced_string_fx.py --text "TuneZilla" --chain tremolo:type=repetition:rate=8.0,neon_fx --mode html --output out/tremolo_fx.html --intensity 0.9 --seed 42
+	@echo "🎵 Tremolo FX HTML complete! Check out/tremolo_fx.html"
 
 # Code Hero - Guitar Hero for Loops (placeholder)
 code-hero:
