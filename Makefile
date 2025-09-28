@@ -2179,75 +2179,63 @@ osc-bridge:
 crowd-test:
 	@npm run crowd-test
 
-# Beat Bridge Integration
-beat-bridge:
-	@echo "🎵 BEAT BRIDGE - TRUE BEAT INJECTION INTO SANDBOX"
-	@echo "================================================="
-	@echo "🎬 Setting up beat injection for CodeSampler Live..."
-	@echo "📡 Beat detection → PostMessage to sandbox on downbeat"
-	@echo "🎭 Perfect for: Tight beat-sync code execution"
-	@echo "✅ Beat Bridge ready for CodeSampler Live integration"
-
-# MIDI/OSC Integration
-midi-osc-integration:
-	@echo "🎛️ MIDI/OSC INTEGRATION - LIVE CONTROLS"
-	@echo "======================================="
-	@echo "🎬 Setting up MIDI/OSC bindings for CodeSampler Live..."
-	@echo "🎹 MIDI: Novation/AKAI pad mapping for FX toggles"
-	@echo "📡 OSC: LAN-based crowd input for live shows"
-	@echo "🎭 Perfect for: Professional FOH control, audience interaction"
-	@echo "✅ MIDI/OSC ready for CodeSampler Live integration"
-
-# OSC Bridge Server
-osc-bridge:
-	@echo "📡 OSC BRIDGE - DAW/PHONE CONTROL"
-	@echo "================================="
-	@echo "🎬 Starting OSC → WebSocket bridge..."
-	@echo "📱 Send OSC to 127.0.0.1:57120"
-	@echo "🎛️ Examples: /fx/hue 0.25, /fx/intensity 0.8, /run"
-	@node scripts/osc-bridge.js
-
-# Crowd Control Test
-crowd-test:
-	@echo "👥 CROWD CONTROL - AUDIENCE PARTICIPATION"
-	@echo "========================================="
-	@echo "🎬 Starting crowd control WebSocket server..."
-	@echo "📱 Connect CodeSampler Live to ws://localhost:8765"
-	@echo "🎭 Sending demo nudges and kicks..."
-	@node scripts/crowd-nudge.js
-
-# TouchOSC Template
-touchosc-template:
-	@echo "📱 TOUCHOSC TEMPLATE - MOBILE CONTROL"
-	@echo "====================================="
-	@echo "📱 TouchOSC template: scripts/touchosc-template.xml"
-	@echo "🎛️ Import into TouchOSC app for mobile control"
-	@echo "📡 OSC target: 127.0.0.1:57120"
-	@echo "✅ TouchOSC template ready for mobile control"
-
-# Ableton Template
-ableton-template:
-	@echo "🎹 ABLETON TEMPLATE - DAW INTEGRATION"
-	@echo "====================================="
-	@echo "🎹 Ableton template: scripts/ableton-template.als"
-	@echo "🎛️ Import into Ableton Live for DAW control"
-	@echo "📡 OSC target: 127.0.0.1:57120"
-	@echo "✅ Ableton template ready for DAW integration"
-
-# Complete Performance Setup
-performance-setup:
-	@echo "🎭 PERFORMANCE SETUP - COMPLETE SHOW READY"
+# Visual Demos and Examples
+visual-demos:
+	@echo "🎨 VISUAL DEMOS - STUNNING VISUAL EXAMPLES"
 	@echo "=========================================="
-	@echo "🎬 Setting up complete performance system..."
-	@$(MAKE) code-sampler-live
-	@echo "📡 Starting OSC bridge in background..."
-	@$(MAKE) osc-bridge &
-	@echo "👥 Starting crowd control in background..."
-	@$(MAKE) crowd-test &
-	@echo "✅ Performance setup complete!"
-	@echo "🎭 CodeSampler Live + OSC Bridge + Crowd Control ready"
-	@echo "📱 Use TouchOSC template for mobile control"
-	@echo "🎹 Use Ableton template for DAW integration"
+	@echo "📁 Visual examples: scripts/visual-examples.js"
+	@echo "🚀 Quick demos: scripts/quick-demos.js"
+	@echo "🎭 Copy and paste into CodeSampler Live sandbox!"
+	@echo "✅ Visual demos ready for creative coding!"
+
+quick-demos:
+	@echo "⚡ QUICK DEMOS - INSTANT VISUAL MAGIC"
+	@echo "===================================="
+	@echo "🎨 10 ready-to-use visual demos"
+	@echo "📋 Copy individual demos into your sandbox"
+	@echo "🎵 Beat-reactive fireworks, bass waves, lightning strikes"
+	@echo "🌈 Rainbow spectrum, frequency bars, particle storms"
+	@echo "✅ Quick demos ready for immediate use!"
+
+visual-examples:
+	@echo "🌟 VISUAL EXAMPLES - COMPLETE SHOWCASE"
+	@echo "====================================="
+	@echo "🎭 Beat-reactive rainbow waves"
+	@echo "🎵 BPM-synced geometric patterns"
+	@echo "🌊 Audio-reactive wave fields"
+	@echo "⚡ Beat-driven lightning strikes"
+	@echo "🎨 Frequency-spectrum visualizer"
+	@echo "🌟 Particle trail system"
+	@echo "🎪 Performance status display"
+	@echo "✅ Complete visual showcase ready!"
+
+# Lightning Strikes Demo
+lightning-strikes:
+	@echo "⚡ LIGHTNING STRIKES - BEAT-DRIVEN LIGHTNING EFFECTS"
+	@echo "==================================================="
+	@echo "📁 Lightning examples: scripts/lightning-strikes.js"
+	@echo "⚡ Simple lightning: scripts/simple-lightning.js"
+	@echo "🎭 Copy and paste into CodeSampler Live sandbox!"
+	@echo "⚡ Beat-driven lightning flashes and bass-reactive bolts"
+	@echo "🌈 Colored lightning based on frequency bands"
+	@echo "✅ Lightning strikes ready for dramatic visuals!"
+
+simple-lightning:
+	@echo "⚡ SIMPLE LIGHTNING - EASY COPY & PASTE"
+	@echo "======================================"
+	@echo "📋 Copy this into your sandbox:"
+	@echo "⚡ Beat-driven lightning flash"
+	@echo "🌩️ Bass-reactive lightning bolts"
+	@echo "🌈 Colored lightning based on frequency"
+	@echo "⚡ Lightning status display"
+	@echo "✅ Simple lightning ready for instant magic!"
+
+# Ready-to-Run Visual Demos
+visual-demos:
+	@echo "Open scripts/quick-demos.js → copy a demo snippet."
+	@echo "In CodeSampler Live, paste the snippet into the sandbox and press Run."
+	@echo "Run stack: make performance-setup (dev + OSC bridge + crowd WS)."
+
 
 motion-pack-plus:
 	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"
