@@ -12,3 +12,5 @@ if(f.y<0||f.life<0.1||f.size<0.5){f.x=Math.random()*W;f.y=H+Math.random()*50;f.l
 const h=Math.floor(20+f.life*40);x.fillStyle=`hsla(${h},90%,${50+f.life*30}%,${f.life*0.7})`;x.beginPath();x.arc(f.x,f.y,f.size,0,7);x.fill();}
 requestAnimationFrame(tick)}requestAnimationFrame(tick);
 </script>
+
+

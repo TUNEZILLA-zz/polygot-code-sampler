@@ -12,3 +12,5 @@ if(p.life<0.1||p.size<0.5){p.x=W/2;p.y=H/2;p.vx=Math.random()*8-4;p.vy=Math.rand
 x.fillStyle=`hsla(${p.color},100%,${50+p.life*30}%,${p.life*0.8})`;x.beginPath();x.arc(p.x,p.y,p.size,0,7);x.fill();}
 requestAnimationFrame(tick)}requestAnimationFrame(tick);
 </script>
+
+

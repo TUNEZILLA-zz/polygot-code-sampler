@@ -1,0 +1,394 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Chaos++ - Enhanced CMatrix Chaos</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:ui-monospace,monospace}
+  canvas{display:block}
+  .ui{position:fixed;left:12px;bottom:10px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  .mode{position:fixed;top:12px;left:12px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  .text-prompt{position:fixed;top:12px;right:12px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  .palette{position:fixed;bottom:12px;right:12px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  button{margin-right:8px;background:#0f0;color:#000;border:none;padding:4px 8px;cursor:pointer;font:10px ui-monospace}
+  button:hover{opacity:.8}
+  input{background:#000;color:#0f0;border:1px solid #0f0;padding:2px 4px;font:10px ui-monospace;width:120px}
+  .badge{position:fixed;right:12px;bottom:10px;color:#0f0;font:12px ui-monospace;opacity:.6}
+  .midi-status{position:fixed;left:12px;top:12px;font:12px ui-monospace;color:#0f0;opacity:.8}
+</style>
+<canvas id="c"></canvas>
+<div class="midi-status" id="midiStatus">MIDI: Disconnected</div>
+<div class="mode" id="mode">Mode: RAIN</div>
+<div class="text-prompt">
+  <input id="textInput" placeholder="Enter text..." value="CHAOS">
+  <button id="updateText">Update</button>
+</div>
+<div class="palette">
+  <div>Palette: <span id="paletteName">Default</span></div>
+  <div>Keys: 5=Cyber 6=Gold 7=Emerald 8=Neon</div>
+</div>
+<div class="ui">
+  <button id="rain">🌧️ Rain</button>
+  <button id="explode">💥 Explode</button>
+  <button id="float">🕊️ Float</button>
+  <button id="swirl">🌪️ Swirl</button>
+  <button id="magnet">🧲 Magnet</button>
+  <button id="reset">🔄 Reset</button>
+  <span>• ?reduced=1</span>
+</div>
+<div class="badge">Chaos++ • ?reduced=1</div>
+
+<script>
+const REDUCED = new URLSearchParams(location.search).get('reduced') === '1';
+const STAMP = new URLSearchParams(location.search).get('stamp') === '1';
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+}
+addEventListener('resize', resize);
+resize();
+
+// CMatrix characters
+const chars = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const font = REDUCED ? 14 : 18;
+
+// Palette system
+const palettes = {
+  default: { name: 'Default', hue: 120, sat: 100, light: 50 },
+  cyberpunk: { name: 'Cyberpunk', hue: 280, sat: 100, light: 60 },
+  gold: { name: 'Gold', hue: 45, sat: 100, light: 70 },
+  emerald: { name: 'Emerald', hue: 150, sat: 100, light: 50 },
+  neon: { name: 'Neon', hue: 200, sat: 100, light: 80 }
+};
+
+let currentPalette = 'default';
+let customText = 'CHAOS';
+let beatLatch = false;
+let latchTimer = 0;
+let lastBeatTime = 0;
+
+// MIDI/OSC Bridge
+let midiAccess = null;
+let midiInputs = [];
+
+async function initMIDI() {
+  try {
+    midiAccess = await navigator.requestMIDIAccess();
+    midiInputs = Array.from(midiAccess.inputs.values());
+    
+    if (midiInputs.length > 0) {
+      document.getElementById('midiStatus').textContent = `MIDI: ${midiInputs.length} device(s)`;
+      
+      midiInputs.forEach((input, index) => {
+        input.onmidimessage = (message) => {
+          const [command, note, velocity] = message.data;
+          
+          // Map MIDI notes to chaos modes
+          if (command === 144 && velocity > 0) { // Note on
+            switch(note) {
+              case 36: // Pad 1 - Sting
+                triggerChaos('explode');
+                break;
+              case 37: // Pad 2 - Build
+                triggerChaos('swirl');
+                break;
+              case 38: // Pad 3 - Interlude
+                triggerChaos('float');
+                break;
+              case 39: // Pad 4 - Exit
+                triggerChaos('explode');
+                break;
+            }
+          }
+        });
+      });
+    } else {
+      document.getElementById('midiStatus').textContent = 'MIDI: No devices';
+    }
+  } catch (err) {
+    document.getElementById('midiStatus').textContent = 'MIDI: Not supported';
+  }
+}
+
+// Beat latch system
+function updateBeatLatch() {
+  const now = performance.now();
+  if (now - lastBeatTime < 2000) { // 2s silence threshold
+    beatLatch = true;
+    latchTimer = now;
+  } else if (beatLatch && now - latchTimer > 2000) {
+    beatLatch = false;
+    // Auto-release back to Rain
+    if (mode !== 'rain') {
+      mode = 'rain';
+      document.getElementById('mode').textContent = 'Mode: RAIN';
+    }
+  }
+}
+
+// Enhanced Glyph class with palette support
+class Glyph {
+  constructor(x, y, char) {
+    this.x = x;
+    this.y = y;
+    this.char = char;
+    this.vx = 0;
+    this.vy = 0;
+    this.life = 200 + Math.random() * 200;
+    this.maxLife = this.life;
+    this.rotation = 0;
+    this.rotSpeed = (Math.random() - 0.5) * 0.1;
+    this.gravity = 0.02;
+    this.drag = 0.98;
+    this.attraction = 0;
+    this.trail = [];
+    this.stamp = STAMP ? {
+      preset: currentPalette,
+      seed: Math.floor(Math.random() * 1000),
+      bundle: mode,
+      timestamp: Date.now()
+    } : null;
+  }
+
+  update(mode, mouseX, mouseY) {
+    this.life--;
+    
+    // Store position for trail
+    this.trail.push({x: this.x, y: this.y});
+    if (this.trail.length > 8) this.trail.shift();
+
+    switch (mode) {
+      case 'rain':
+        this.vy = 2 + Math.random() * 2;
+        this.y += this.vy;
+        if (this.y > H) {
+          this.y = -20;
+          this.x = Math.random() * W;
+          this.char = customText[Math.floor(Math.random() * customText.length)] || chars[Math.floor(Math.random() * chars.length)];
+        }
+        break;
+
+      case 'explode':
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.vx *= this.drag;
+        this.vy *= this.drag;
+        this.rotation += this.rotSpeed;
+        break;
+
+      case 'float':
+        this.vx += (Math.random() - 0.5) * 0.1;
+        this.vy += (Math.random() - 0.5) * 0.1;
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotSpeed * 0.5;
+        // Wrap around screen
+        if (this.x < 0) this.x = W;
+        if (this.x > W) this.x = 0;
+        if (this.y < 0) this.y = H;
+        if (this.y > H) this.y = 0;
+        break;
+
+      case 'swirl':
+        const centerX = W / 2;
+        const centerY = H / 2;
+        const dx = this.x - centerX;
+        const dy = this.y - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) + 0.02;
+        this.x = centerX + Math.cos(angle) * dist;
+        this.y = centerY + Math.sin(angle) * dist;
+        this.rotation += 0.05;
+        break;
+
+      case 'magnet':
+        const mx = mouseX || W / 2;
+        const my = mouseY || H / 2;
+        const mdx = mx - this.x;
+        const mdy = my - this.y;
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist > 0) {
+          const force = 0.1 / (mdist + 1);
+          this.vx += (mdx / mdist) * force;
+          this.vy += (mdy / mdist) * force;
+        }
+        this.vx *= 0.95;
+        this.vy *= 0.95;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotSpeed;
+        break;
+    }
+  }
+
+  draw(ctx) {
+    const alpha = this.life / this.maxLife;
+    const size = font * (0.8 + 0.4 * alpha);
+    
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    ctx.globalAlpha = alpha;
+    
+    // Apply palette colors
+    const palette = palettes[currentPalette];
+    const hue = palette.hue + (Math.random() - 0.5) * 20;
+    const sat = palette.sat;
+    const light = palette.light + (Math.random() - 0.5) * 20;
+    
+    ctx.fillStyle = `hsl(${hue}, ${sat}%, ${light}%)`;
+    ctx.font = `${size}px monospace`;
+    ctx.fillText(this.char, -size/2, size/2);
+    
+    // Draw trail with palette colors
+    if (this.trail.length > 1) {
+      ctx.strokeStyle = `hsla(${hue}, ${sat}%, ${light}%, ${alpha * 0.3})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(this.trail[0].x - this.x, this.trail[0].y - this.y);
+      for (let i = 1; i < this.trail.length; i++) {
+        ctx.lineTo(this.trail[i].x - this.x, this.trail[i].y - this.y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  isDead() {
+    return this.life <= 0;
+  }
+}
+
+// Initialize glyphs
+let glyphs = [];
+let mode = 'rain';
+let mouseX = W / 2;
+let mouseY = H / 2;
+
+function initGlyphs() {
+  glyphs = [];
+  const cols = Math.floor(W / font);
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < 20; j++) {
+      const glyph = new Glyph(
+        i * font,
+        j * font - H,
+        customText[Math.floor(Math.random() * customText.length)] || chars[Math.floor(Math.random() * chars.length)]
+      );
+      glyphs.push(glyph);
+    }
+  }
+}
+
+function explode() {
+  glyphs.forEach(glyph => {
+    glyph.vx = (Math.random() - 0.5) * 8;
+    glyph.vy = (Math.random() - 0.5) * 8;
+  });
+}
+
+function reset() {
+  initGlyphs();
+  mode = 'rain';
+  document.getElementById('mode').textContent = 'Mode: RAIN';
+}
+
+function triggerChaos(newMode) {
+  mode = newMode;
+  document.getElementById('mode').textContent = `Mode: ${newMode.toUpperCase()}`;
+  
+  if (newMode === 'explode') {
+    explode();
+  }
+  
+  // Update palette display
+  document.getElementById('paletteName').textContent = palettes[currentPalette].name;
+}
+
+// Event listeners
+document.getElementById('rain').onclick = () => triggerChaos('rain');
+document.getElementById('explode').onclick = () => triggerChaos('explode');
+document.getElementById('float').onclick = () => triggerChaos('float');
+document.getElementById('swirl').onclick = () => triggerChaos('swirl');
+document.getElementById('magnet').onclick = () => triggerChaos('magnet');
+document.getElementById('reset').onclick = reset;
+
+// Text input
+document.getElementById('updateText').onclick = () => {
+  customText = document.getElementById('textInput').value || 'CHAOS';
+  initGlyphs();
+};
+
+// Mouse tracking for magnet mode
+addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// Keyboard controls
+addEventListener('keydown', (e) => {
+  switch(e.key.toLowerCase()) {
+    case 'r': triggerChaos('rain'); break;
+    case 'e': triggerChaos('explode'); break;
+    case 'f': triggerChaos('float'); break;
+    case 's': triggerChaos('swirl'); break;
+    case 'm': triggerChaos('magnet'); break;
+    case ' ': reset(); break;
+    case '5': currentPalette = 'cyberpunk'; document.getElementById('paletteName').textContent = 'Cyberpunk'; break;
+    case '6': currentPalette = 'gold'; document.getElementById('paletteName').textContent = 'Gold'; break;
+    case '7': currentPalette = 'emerald'; document.getElementById('paletteName').textContent = 'Emerald'; break;
+    case '8': currentPalette = 'neon'; document.getElementById('paletteName').textContent = 'Neon'; break;
+  }
+});
+
+// Initialize
+initMIDI();
+initGlyphs();
+
+// Animation loop
+function animate() {
+  // Clear with fade
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, W, H);
+  
+  // Update beat latch
+  updateBeatLatch();
+  
+  // Update and draw glyphs
+  glyphs.forEach(glyph => {
+    glyph.update(mode, mouseX, mouseY);
+    if (!glyph.isDead()) {
+      glyph.draw(ctx);
+    }
+  });
+  
+  // Remove dead glyphs and add new ones
+  glyphs = glyphs.filter(glyph => !glyph.isDead());
+  
+  // Add new glyphs for rain mode
+  if (mode === 'rain' && glyphs.length < 200) {
+    const cols = Math.floor(W / font);
+    for (let i = 0; i < cols; i++) {
+      if (Math.random() < 0.1) {
+        const glyph = new Glyph(
+          i * font,
+          -20,
+          customText[Math.floor(Math.random() * customText.length)] || chars[Math.floor(Math.random() * chars.length)]
+        );
+        glyphs.push(glyph);
+      }
+    }
+  }
+  
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+

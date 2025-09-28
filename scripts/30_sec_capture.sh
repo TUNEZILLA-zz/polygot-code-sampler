@@ -48,3 +48,5 @@ echo "✅ 30-second screen record generated!"
 echo ""
 echo "🚀 Ready for release notes!"
 
+
+

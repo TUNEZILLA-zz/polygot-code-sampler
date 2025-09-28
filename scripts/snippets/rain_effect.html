@@ -12,3 +12,5 @@ if(d.y>H||d.x<0||d.x>W||d.life<0.1){d.x=Math.random()*W;d.y=-10;d.life=1;}
 x.strokeStyle=`hsla(200,80%,70%,${d.life*0.6})`;x.lineWidth=1+d.life;x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-d.vx*2,d.y-d.vy*2);x.stroke();}
 requestAnimationFrame(tick)}requestAnimationFrame(tick);
 </script>
+
+

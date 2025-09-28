@@ -1818,7 +1818,7 @@ matrix-rain-live:
 	@echo "🌧️ Matrix rain complete!"
 
 # Motion Backdrop Pack (cmatrix-style but on-brand)
-.PHONY: starfield aurora neon-grid motion-pack
+.PHONY: starfield aurora neon-grid motion-pack cmatrix-chaos cmatrix-chaos-swirl cmatrix-chaos-explode cmatrix-chaos-float cmatrix-chaos-vortex foh-chaos-sting foh-glitch-sting foh-chaos-build foh-chaos-interlude foh-chaos-exit foh-chaos-interactive foh-chaos-complete chaos-plus chaos-plus-sting chaos-plus-build chaos-plus-interlude chaos-plus-interactive particles-unified particles-confetti particles-fountain particles-text foh-particle-sting particles-motion-safe particles-explode particles-orbit particles-reform particles-audio foh-particle-explode particles-complete particles-macbook-safe particles-emergency-safe
 starfield:
 	@echo "🌌 STARFIELD WARP - HYPERSPACE PARTICLES"
 	@echo "========================================"
@@ -1883,6 +1883,268 @@ spectrum:
 	@mkdir -p out && cp scripts/snippets/spectrum_bars.html out/spectrum_bars.html
 	@echo "✅ Spectrum bars: out/spectrum_bars.html"
 	@echo "📊 Perfect for Data Storm and techno vibes!"
+
+cmatrix-chaos:
+	@echo "🌪️ CMATRIX CHAOS - PARTICLE CHAOS MODE"
+	@echo "======================================"
+	@mkdir -p out && cp scripts/snippets/cmatrix_chaos.html out/cmatrix_chaos.html
+	@echo "✅ CMatrix Chaos: out/cmatrix_chaos.html"
+	@echo "🎛️ Controls: [R]ain [E]xplode [F]loat [S]wirl [M]agnet [Space]Reset"
+	@echo "🎭 FOH: Perfect for chaos transitions and beat-reactive explosions!"
+
+# CMatrix Chaos FOH Presets
+cmatrix-chaos-swirl:
+	@echo "🌪️ CMATRIX CHAOS - SWIRL VORTEX MODE"
+	@echo "====================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening swirl mode with rainbow colors..."
+	@open "out/cmatrix_chaos.html?mode=swirl&rainbow=1" || echo "🌪️ CMatrix Chaos Swirl ready: out/cmatrix_chaos.html?mode=swirl&rainbow=1"
+
+cmatrix-chaos-explode:
+	@echo "💥 CMATRIX CHAOS - EXPLODE IMPACT MODE"
+	@echo "====================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening explode mode with IMPACT text..."
+	@open "out/cmatrix_chaos.html?mode=explode&text=IMPACT" || echo "💥 CMatrix Chaos Explode ready: out/cmatrix_chaos.html?mode=explode&text=IMPACT"
+
+cmatrix-chaos-float:
+	@echo "🕊️ CMATRIX CHAOS - FLOAT ZEN MODE"
+	@echo "=================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening float mode with zen vibes..."
+	@open "out/cmatrix_chaos.html?mode=float&text=moonlight&hue=150&speed=0.6&density=0.45" || echo "🕊️ CMatrix Chaos Float ready: out/cmatrix_chaos.html?mode=float&text=moonlight&hue=150&speed=0.6&density=0.45"
+
+cmatrix-chaos-vortex:
+	@echo "🌪️ CMATRIX CHAOS - VORTEX BUILD MODE"
+	@echo "====================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening vortex build with Code Live..."
+	@open "out/cmatrix_chaos.html?mode=swirl&text=Code+Live&rainbow=1&speed=1.2&density=0.8" || echo "🌪️ CMatrix Chaos Vortex ready: out/cmatrix_chaos.html?mode=swirl&text=Code+Live&rainbow=1&speed=1.2&density=0.8"
+
+# FOH Chaos Sting (beat-reactive)
+foh-chaos-sting:
+	@echo "⚡ FOH CHAOS STING - BEAT-REACTIVE EXPLOSION"
+	@echo "==========================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening chaos sting with beat-reactive explode..."
+	@open "out/cmatrix_chaos.html?mode=explode&text=IMPACT&speed=1.4&density=0.7&rainbow=1" || echo "⚡ FOH Chaos Sting ready: out/cmatrix_chaos.html?mode=explode&text=IMPACT&speed=1.4&density=0.7&rainbow=1"
+
+# FOH Glitch Sting (layered with stage)
+foh-glitch-sting:
+	@echo "🎭 FOH GLITCH STING - LAYERED CHAOS"
+	@echo "=================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening glitch sting with layered chaos..."
+	@open "out/stage_combine.html?bg=cmatrix_chaos.html?mode=explode&stage=nyan.html" || echo "🎭 FOH Glitch Sting ready: out/stage_combine.html?bg=cmatrix_chaos.html?mode=explode&stage=nyan.html"
+
+# FOH Chaos Bundles (One-Button FOH Workflow)
+foh-chaos-build:
+	@echo "🌪️ FOH CHAOS BUILD - VORTEX TENSION"
+	@echo "===================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening chaos build with vortex tension..."
+	@open "out/cmatrix_chaos.html?mode=swirl&text=BUILD&rainbow=1&speed=1.2&density=0.8" || echo "🌪️ FOH Chaos Build ready: out/cmatrix_chaos.html?mode=swirl&text=BUILD&rainbow=1&speed=1.2&density=0.8"
+	@echo "🎭 Perfect for: Tension builds, crescendos, pre-drop moments"
+
+foh-chaos-interlude:
+	@echo "🕊️ FOH CHAOS INTERLUDE - ZEN FLOAT"
+	@echo "=================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening chaos interlude with zen float..."
+	@open "out/cmatrix_chaos.html?mode=float&text=moonlight&hue=150&speed=0.6&density=0.45" || echo "🕊️ FOH Chaos Interlude ready: out/cmatrix_chaos.html?mode=float&text=moonlight&hue=150&speed=0.6&density=0.45"
+	@echo "🎭 Perfect for: Calm moments, interludes, palate cleansers"
+
+foh-chaos-exit:
+	@echo "💥 FOH CHAOS EXIT - EXPLOSIVE FINALE"
+	@echo "===================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening chaos exit with explosive finale..."
+	@open "out/cmatrix_chaos.html?mode=explode&text=EXIT&speed=1.4&density=0.7&rainbow=1" || echo "💥 FOH Chaos Exit ready: out/cmatrix_chaos.html?mode=explode&text=EXIT&speed=1.4&density=0.7&rainbow=1"
+	@echo "🎭 Perfect for: Finale moments, explosive endings, impact hits"
+
+foh-chaos-interactive:
+	@echo "🧲 FOH CHAOS INTERACTIVE - MAGNET MODE"
+	@echo "====================================="
+	@$(MAKE) cmatrix-chaos
+	@echo "🎬 Opening chaos interactive with magnet mode..."
+	@open "out/cmatrix_chaos.html?mode=magnet&text=INTERACT&hue=200&speed=1.0&density=0.6" || echo "🧲 FOH Chaos Interactive ready: out/cmatrix_chaos.html?mode=magnet&text=INTERACT&hue=200&speed=1.0&density=0.6"
+	@echo "🎭 Perfect for: Audience engagement, interactive moments, mouse control"
+
+# FOH Chaos Complete Bundle
+foh-chaos-complete:
+	@echo "🌪️ FOH CHAOS COMPLETE - ALL CHAOS MODES"
+	@echo "======================================="
+	@echo "🎬 Building all chaos modes..."
+	@$(MAKE) foh-chaos-build
+	@$(MAKE) foh-chaos-interlude
+	@$(MAKE) foh-chaos-exit
+	@$(MAKE) foh-chaos-interactive
+	@echo "✅ FOH Chaos Complete! All chaos modes ready for touring!"
+	@echo "🎭 Available: Build, Interlude, Exit, Interactive, Sting, Glitch"
+
+# Chaos++ Enhanced System
+chaos-plus:
+	@echo "🚀 CHAOS++ - ENHANCED CMATRIX CHAOS"
+	@echo "==================================="
+	@mkdir -p out && cp scripts/snippets/chaos_plus.html out/chaos_plus.html
+	@echo "✅ Chaos++ Enhanced: out/chaos_plus.html"
+	@echo "🎛️ Features: MIDI/OSC, Beat Latch, Text Prompt, Palette Keys, Stamp"
+	@echo "🎭 FOH: One-button chaos with professional enhancements!"
+
+# Chaos++ FOH Presets
+chaos-plus-sting:
+	@echo "⚡ CHAOS++ STING - ENHANCED BEAT-REACTIVE"
+	@echo "======================================="
+	@$(MAKE) chaos-plus
+	@echo "🎬 Opening Chaos++ with enhanced beat-reactive explode..."
+	@open "out/chaos_plus.html?mode=explode&text=IMPACT&stamp=1" || echo "⚡ Chaos++ Sting ready: out/chaos_plus.html?mode=explode&text=IMPACT&stamp=1"
+
+chaos-plus-build:
+	@echo "🌪️ CHAOS++ BUILD - ENHANCED VORTEX"
+	@echo "=================================="
+	@$(MAKE) chaos-plus
+	@echo "🎬 Opening Chaos++ with enhanced vortex build..."
+	@open "out/chaos_plus.html?mode=swirl&text=BUILD&stamp=1" || echo "🌪️ Chaos++ Build ready: out/chaos_plus.html?mode=swirl&text=BUILD&stamp=1"
+
+chaos-plus-interlude:
+	@echo "🕊️ CHAOS++ INTERLUDE - ENHANCED ZEN"
+	@echo "==================================="
+	@$(MAKE) chaos-plus
+	@echo "🎬 Opening Chaos++ with enhanced zen float..."
+	@open "out/chaos_plus.html?mode=float&text=moonlight&stamp=1" || echo "🕊️ Chaos++ Interlude ready: out/chaos_plus.html?mode=float&text=moonlight&stamp=1"
+
+chaos-plus-interactive:
+	@echo "🧲 CHAOS++ INTERACTIVE - ENHANCED MAGNET"
+	@echo "======================================="
+	@$(MAKE) chaos-plus
+	@echo "🎬 Opening Chaos++ with enhanced magnet mode..."
+	@open "out/chaos_plus.html?mode=magnet&text=INTERACT&stamp=1" || echo "🧲 Chaos++ Interactive ready: out/chaos_plus.html?mode=magnet&text=INTERACT&stamp=1"
+
+# Particles Unified System
+particles-unified:
+	@echo "✨ PARTICLES UNIFIED - CONFETTI / FOUNTAIN / TEXT"
+	@echo "==============================================="
+	@mkdir -p out && cp scripts/snippets/particles_unified.html out/particles_unified.html
+	@echo "✅ Particles Unified: out/particles_unified.html"
+	@echo "🎛️ Modes: [1]Confetti [2]Fountain [3]Text [E]Explode [M]Magnet [Space]Burst"
+	@echo "🎭 FOH: Professional particle effects for touring rig!"
+
+# Particles FOH Presets
+particles-confetti:
+	@echo "🎊 PARTICLES CONFETTI - RAIN-LIKE PARTICLES"
+	@echo "=========================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening confetti mode with neon colors..."
+	@open "out/particles_unified.html?mode=confetti&density=0.8&speed=1.1" || echo "🎊 Particles Confetti ready: out/particles_unified.html?mode=confetti&density=0.8&speed=1.1"
+
+particles-fountain:
+	@echo "⛲ PARTICLES FOUNTAIN - CENTER BURST WITH GRAVITY"
+	@echo "==============================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening fountain mode with warm colors..."
+	@open "out/particles_unified.html?mode=fountain&hue=38&density=0.6" || echo "⛲ Particles Fountain ready: out/particles_unified.html?mode=fountain&hue=38&density=0.6"
+
+particles-text:
+	@echo "💥 PARTICLES TEXT - TEXT SHATTER EFFECT"
+	@echo "======================================"
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening text shatter with CODE LIVE..."
+	@open "out/particles_unified.html?mode=text&text=CODE%20LIVE&hue=190&density=0.9" || echo "💥 Particles Text ready: out/particles_unified.html?mode=text&text=CODE%20LIVE&hue=190&density=0.9"
+
+# FOH Particle Sting (beat-reactive)
+foh-particle-sting:
+	@echo "⚡ FOH PARTICLE STING - BEAT-REACTIVE BURST"
+	@echo "========================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening particle sting with center burst..."
+	@open "out/particles_unified.html?mode=fountain&density=0.8&speed=1.2" || echo "⚡ FOH Particle Sting ready: out/particles_unified.html?mode=fountain&density=0.8&speed=1.2"
+	@echo "🎭 FOH: Hit Space for timed burst on beat!"
+
+# Particles Motion-Safe
+particles-motion-safe:
+	@echo "🛡️ PARTICLES MOTION-SAFE - A11Y COMPLIANT"
+	@echo "========================================"
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening motion-safe particles..."
+	@open "out/particles_unified.html?mode=confetti&reduced=1&density=0.4&speed=0.6" || echo "🛡️ Particles Motion-Safe ready: out/particles_unified.html?mode=confetti&reduced=1&density=0.4&speed=0.6"
+	@echo "🎭 Perfect for: A11y compliance, motion-sensitive audiences"
+
+# Extended Particle Modes
+particles-explode:
+	@echo "💥 PARTICLES EXPLODE - FIREWORKS / BASS DROP BURST"
+	@echo "================================================"
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening explode mode with radial burst..."
+	@open "out/particles_unified.html?mode=explode&density=0.8&speed=1.2" || echo "💥 Particles Explode ready: out/particles_unified.html?mode=explode&density=0.8&speed=1.2"
+	@echo "🎭 Perfect for: Beat drops, encore opens, impact moments"
+
+particles-orbit:
+	@echo "🌌 PARTICLES ORBIT - PLANETARY / GALAXY SWARM"
+	@echo "============================================"
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening orbit mode with planetary physics..."
+	@open "out/particles_unified.html?mode=orbit&density=0.6&speed=0.8" || echo "🌌 Particles Orbit ready: out/particles_unified.html?mode=orbit&density=0.6&speed=0.8"
+	@echo "🎭 Perfect for: Calm interludes, cosmic themes, Aurora pairing"
+
+particles-reform:
+	@echo "🔄 PARTICLES REFORM - SHATTER → REFORM CYCLE"
+	@echo "==========================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening reform mode with shatter/reform cycle..."
+	@open "out/particles_unified.html?mode=reform&text=CODE%20LIVE&density=0.7&speed=1.0" || echo "🔄 Particles Reform ready: out/particles_unified.html?mode=reform&text=CODE%20LIVE&density=0.7&speed=1.0"
+	@echo "🎭 Perfect for: CODE LIVE → CHAOS ENCORE transitions"
+
+particles-audio:
+	@echo "🎵 PARTICLES AUDIO - AUDIO-REACTIVE SPARKS"
+	@echo "========================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening audio-reactive mode with bass detection..."
+	@open "out/particles_unified.html?mode=audio&density=0.8&speed=1.1" || echo "🎵 Particles Audio ready: out/particles_unified.html?mode=audio&density=0.8&speed=1.1"
+	@echo "🎭 Perfect for: Data Storm, techno vibes, live audio input"
+
+# FOH Extended Particle Sting
+foh-particle-explode:
+	@echo "⚡ FOH PARTICLE EXPLODE - BEAT-REACTIVE FIREWORKS"
+	@echo "================================================"
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening particle explode with beat-reactive fireworks..."
+	@open "out/particles_unified.html?mode=explode&density=0.9&speed=1.4" || echo "⚡ FOH Particle Explode ready: out/particles_unified.html?mode=explode&density=0.9&speed=1.4"
+	@echo "🎭 FOH: Hit Space for radial burst on beat!"
+
+# Particles Complete Bundle
+particles-complete:
+	@echo "✨ PARTICLES COMPLETE - ALL PARTICLE MODES"
+	@echo "========================================="
+	@echo "🎬 Building all particle modes..."
+	@$(MAKE) particles-confetti
+	@$(MAKE) particles-fountain
+	@$(MAKE) particles-text
+	@$(MAKE) particles-explode
+	@$(MAKE) particles-orbit
+	@$(MAKE) particles-reform
+	@$(MAKE) particles-audio
+	@echo "✅ Particles Complete! All particle modes ready for touring!"
+	@echo "🎭 Available: Confetti, Fountain, Text, Explode, Orbit, Reform, Audio"
+
+# MacBook-Safe Particle Testing
+particles-macbook-safe:
+	@echo "🛡️ MACBOOK-SAFE PARTICLES - FPS GOVERNOR ACTIVE"
+	@echo "=============================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening MacBook-safe particles with FPS Governor..."
+	@open "out/particles_unified.html?mode=confetti&density=0.4&speed=0.6&reduced=1" || echo "🛡️ MacBook-Safe Particles ready: out/particles_unified.html?mode=confetti&density=0.4&speed=0.6&reduced=1"
+	@echo "🎭 FPS Governor: Auto-throttles based on performance"
+	@echo "⌘+Shift+S: Emergency safe mode toggle"
+
+# Emergency Safe Mode
+particles-emergency-safe:
+	@echo "🚨 EMERGENCY SAFE MODE - MAXIMUM THROTTLE"
+	@echo "========================================="
+	@$(MAKE) particles-unified
+	@echo "🎬 Opening emergency safe mode (25% power)..."
+	@open "out/particles_unified.html?mode=confetti&density=0.2&speed=0.3&reduced=1" || echo "🚨 Emergency Safe Mode ready: out/particles_unified.html?mode=confetti&density=0.2&speed=0.3&reduced=1"
+	@echo "🎭 Emergency mode: 25% particles, 30% speed, reduced motion"
+	@echo "🛡️ Perfect for: MacBook testing, emergency situations"
 
 motion-pack-plus:
 	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"
@@ -2353,7 +2615,7 @@ vj-desk-complete:
 	@echo "🎬 VJ DESK COMPLETE - Building All Effects..."
 	@mkdir -p out
 	@echo "🎬 Building motion backdrops..."
-	make starfield && make aurora && make neon-grid && make fireflies && make lasers && make ascii-water && make spectrum
+	make starfield && make aurora && make neon-grid && make fireflies && make lasers && make ascii-water && make spectrum && make cmatrix-chaos
 	@echo "🎬 Building audio-reactive effects..."
 	make audio-bars && make audio-rings
 	@echo "🎬 Building glitch effects..."

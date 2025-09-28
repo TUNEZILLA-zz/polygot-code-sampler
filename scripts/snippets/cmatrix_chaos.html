@@ -1,0 +1,266 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CMatrix Chaos Mode</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:ui-monospace,monospace}
+  canvas{display:block}
+  .ui{position:fixed;left:12px;bottom:10px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  .mode{position:fixed;top:12px;left:12px;font:12px ui-monospace;color:#0f0;opacity:.8}
+  button{margin-right:8px;background:#0f0;color:#000;border:none;padding:4px 8px;cursor:pointer;font:10px ui-monospace}
+  button:hover{opacity:.8}
+  .badge{position:fixed;right:12px;bottom:10px;color:#0f0;font:12px ui-monospace;opacity:.6}
+</style>
+<canvas id="c"></canvas>
+<div class="mode" id="mode">Mode: RAIN</div>
+<div class="ui">
+  <button id="rain">🌧️ Rain</button>
+  <button id="explode">💥 Explode</button>
+  <button id="float">🕊️ Float</button>
+  <button id="swirl">🌪️ Swirl</button>
+  <button id="magnet">🧲 Magnet</button>
+  <button id="reset">🔄 Reset</button>
+  <span>• ?reduced=1</span>
+</div>
+<div class="badge">CMatrix Chaos • ?reduced=1</div>
+
+<script>
+const REDUCED = new URLSearchParams(location.search).get('reduced') === '1';
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+}
+addEventListener('resize', resize);
+resize();
+
+// CMatrix characters
+const chars = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const font = REDUCED ? 14 : 18;
+
+// Glyph particle class
+class Glyph {
+  constructor(x, y, char) {
+    this.x = x;
+    this.y = y;
+    this.char = char;
+    this.vx = 0;
+    this.vy = 0;
+    this.life = 200 + Math.random() * 200;
+    this.maxLife = this.life;
+    this.rotation = 0;
+    this.rotSpeed = (Math.random() - 0.5) * 0.1;
+    this.gravity = 0.02;
+    this.drag = 0.98;
+    this.attraction = 0;
+    this.trail = [];
+  }
+
+  update(mode, mouseX, mouseY) {
+    this.life--;
+    
+    // Store position for trail
+    this.trail.push({x: this.x, y: this.y});
+    if (this.trail.length > 8) this.trail.shift();
+
+    switch (mode) {
+      case 'rain':
+        this.vy = 2 + Math.random() * 2;
+        this.y += this.vy;
+        if (this.y > H) {
+          this.y = -20;
+          this.x = Math.random() * W;
+        }
+        break;
+
+      case 'explode':
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.vx *= this.drag;
+        this.vy *= this.drag;
+        this.rotation += this.rotSpeed;
+        break;
+
+      case 'float':
+        this.vx += (Math.random() - 0.5) * 0.1;
+        this.vy += (Math.random() - 0.5) * 0.1;
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotSpeed * 0.5;
+        // Wrap around screen
+        if (this.x < 0) this.x = W;
+        if (this.x > W) this.x = 0;
+        if (this.y < 0) this.y = H;
+        if (this.y > H) this.y = 0;
+        break;
+
+      case 'swirl':
+        const centerX = W / 2;
+        const centerY = H / 2;
+        const dx = this.x - centerX;
+        const dy = this.y - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) + 0.02;
+        this.x = centerX + Math.cos(angle) * dist;
+        this.y = centerY + Math.sin(angle) * dist;
+        this.rotation += 0.05;
+        break;
+
+      case 'magnet':
+        const mx = mouseX || W / 2;
+        const my = mouseY || H / 2;
+        const mdx = mx - this.x;
+        const mdy = my - this.y;
+        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist > 0) {
+          const force = 0.1 / (mdist + 1);
+          this.vx += (mdx / mdist) * force;
+          this.vy += (mdy / mdist) * force;
+        }
+        this.vx *= 0.95;
+        this.vy *= 0.95;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotSpeed;
+        break;
+    }
+  }
+
+  draw(ctx) {
+    const alpha = this.life / this.maxLife;
+    const size = font * (0.8 + 0.4 * alpha);
+    
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `hsl(120, 100%, ${50 + 30 * alpha}%)`;
+    ctx.font = `${size}px monospace`;
+    ctx.fillText(this.char, -size/2, size/2);
+    
+    // Draw trail
+    if (this.trail.length > 1) {
+      ctx.strokeStyle = `hsla(120, 100%, 50%, ${alpha * 0.3})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(this.trail[0].x - this.x, this.trail[0].y - this.y);
+      for (let i = 1; i < this.trail.length; i++) {
+        ctx.lineTo(this.trail[i].x - this.x, this.trail[i].y - this.y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  isDead() {
+    return this.life <= 0;
+  }
+}
+
+// Initialize glyphs
+let glyphs = [];
+let mode = 'rain';
+let mouseX = W / 2;
+let mouseY = H / 2;
+
+function initGlyphs() {
+  glyphs = [];
+  const cols = Math.floor(W / font);
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < 20; j++) {
+      const glyph = new Glyph(
+        i * font,
+        j * font - H,
+        chars[Math.floor(Math.random() * chars.length)]
+      );
+      glyphs.push(glyph);
+    }
+  }
+}
+
+function explode() {
+  glyphs.forEach(glyph => {
+    glyph.vx = (Math.random() - 0.5) * 8;
+    glyph.vy = (Math.random() - 0.5) * 8;
+  });
+}
+
+function reset() {
+  initGlyphs();
+  mode = 'rain';
+  document.getElementById('mode').textContent = 'Mode: RAIN';
+}
+
+// Event listeners
+document.getElementById('rain').onclick = () => { mode = 'rain'; document.getElementById('mode').textContent = 'Mode: RAIN'; };
+document.getElementById('explode').onclick = () => { mode = 'explode'; explode(); document.getElementById('mode').textContent = 'Mode: EXPLODE'; };
+document.getElementById('float').onclick = () => { mode = 'float'; document.getElementById('mode').textContent = 'Mode: FLOAT'; };
+document.getElementById('swirl').onclick = () => { mode = 'swirl'; document.getElementById('mode').textContent = 'Mode: SWIRL'; };
+document.getElementById('magnet').onclick = () => { mode = 'magnet'; document.getElementById('mode').textContent = 'Mode: MAGNET'; };
+document.getElementById('reset').onclick = reset;
+
+// Mouse tracking for magnet mode
+addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// Keyboard controls
+addEventListener('keydown', (e) => {
+  switch(e.key.toLowerCase()) {
+    case 'r': document.getElementById('rain').click(); break;
+    case 'e': document.getElementById('explode').click(); break;
+    case 'f': document.getElementById('float').click(); break;
+    case 's': document.getElementById('swirl').click(); break;
+    case 'm': document.getElementById('magnet').click(); break;
+    case ' ': reset(); break;
+  }
+});
+
+// Initialize
+initGlyphs();
+
+// Animation loop
+function animate() {
+  // Clear with fade
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, W, H);
+  
+  // Update and draw glyphs
+  glyphs.forEach(glyph => {
+    glyph.update(mode, mouseX, mouseY);
+    if (!glyph.isDead()) {
+      glyph.draw(ctx);
+    }
+  });
+  
+  // Remove dead glyphs and add new ones
+  glyphs = glyphs.filter(glyph => !glyph.isDead());
+  
+  // Add new glyphs for rain mode
+  if (mode === 'rain' && glyphs.length < 200) {
+    const cols = Math.floor(W / font);
+    for (let i = 0; i < cols; i++) {
+      if (Math.random() < 0.1) {
+        const glyph = new Glyph(
+          i * font,
+          -20,
+          chars[Math.floor(Math.random() * chars.length)]
+        );
+        glyphs.push(glyph);
+      }
+    }
+  }
+  
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+

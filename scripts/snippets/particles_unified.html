@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Particles Unified — Confetti / Fountain / Text</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;overflow:hidden;}
+  #hud{position:fixed;left:12px;bottom:10px;font:12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;color:#8cffc7;opacity:.9}
+  #hud b{color:#fff}
+  .badge{position:fixed;right:12px;top:12px;padding:4px 8px;border-radius:999px;
+         background:#0a0; color:#000; font:11px/1 ui-monospace; opacity:.85}
+  .mono *{font-variant-numeric:tabular-nums}
+  /* Optional: quirks overlays if quirks.js is loaded */
+  body.win-lcd::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(transparent,transparent 1px,rgba(255,255,255,.05) 2px);mix-blend-mode:overlay;pointer-events:none}
+  body.mac-safari #hud{filter:drop-shadow(0 6px 12px rgba(0,255,170,.25));backdrop-filter:blur(2px)}
+</style>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"></div>
+<div class="badge" id="badge" hidden>PARTICLES</div>
+
+<script>
+// --- URL params --------------------------------------------------------------
+const Q = new URLSearchParams(location.search);
+const MODE   = (Q.get("mode") || "confetti").toLowerCase(); // confetti|fountain|text|explode|orbit|reform|audio
+const TEXT   = Q.get("text") || "CODE LIVE";
+const DENS   = Math.max(0, Math.min(1, +Q.get("density") || 0.7));    // 0..1
+const SPEED  = Math.max(0.1, Math.min(2, +Q.get("speed")   || 1.0));  // 0.1..2
+const HUE    = +Q.get("hue") || null;  // base hue, or null for rainbow
+const REDUCED= Q.get("reduced")==="1" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// --- Canvas setup ------------------------------------------------------------
+const cvs = document.getElementById("c");
+const ctx = cvs.getContext("2d");
+let DPR = Math.max(1, devicePixelRatio || 1);
+function fit(){cvs.width=innerWidth*DPR; cvs.height=innerHeight*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);}
+addEventListener("resize",fit,{passive:true}); fit();
+
+// --- FPS Governor Integration ------------------------------------------------
+// Load FPS Governor for auto-throttling
+const fpsScript = document.createElement('script');
+fpsScript.src = 'scripts/fps_governor.js';
+document.head.appendChild(fpsScript);
+
+// Load Safe Mode Toggle for emergency safety
+const safeScript = document.createElement('script');
+safeScript.src = 'scripts/safe_mode_toggle.js';
+document.head.appendChild(safeScript);
+
+// Optional quirks.js integration
+if (window.QuirkProfile){
+  const p = QuirkProfile.applyParams({amoled:false, scanlines:0, asciiOverlay:0});
+  if (p.amoled) document.body.style.background="#000";
+  if (p.scanlines) document.body.classList.add("win-lcd");
+  document.body.classList.toggle("mono", !!p.asciiOverlay);
+}
+
+// --- Particle system ---------------------------------------------------------
+const TAU = Math.PI*2;
+const rand = (a=1,b=0)=>Math.random()*(a-b)+b;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+
+const cfg = {
+  max: Math.floor( (REDUCED?300:1000) * DENS ),
+  drag: 0.985,
+  gravity: {confetti: 320, fountain: 220, text: 60, explode: 0, orbit: 0, reform: 0, audio: 0},
+  size: {min: 1.5, max: 4.5},
+  text: {  // settings for text shatter
+    font: 160, sample: 4, // px; sample step (lower = denser)
+    spread: 420,
+  },
+  orbit: {  // settings for orbit mode
+    centerX: innerWidth/2, centerY: innerHeight/2,
+    radius: Math.min(innerWidth, innerHeight) * 0.3,
+    speed: 0.02
+  },
+  audio: {  // settings for audio-reactive
+    threshold: 0.1,
+    maxBurst: 50,
+    bassRange: [0, 20] // frequency range for bass detection
+  }
+};
+
+// --- FPS Governor Integration ------------------------------------------------
+// Wait for FPS Governor to load, then apply throttling
+setTimeout(() => {
+  if (window.fpsGovernor) {
+    // Apply FPS Governor throttling
+    cfg.max = window.fpsGovernor.getParticleCount(cfg.max);
+    SPEED = window.fpsGovernor.getSpeedMultiplier(SPEED);
+    DENS = window.fpsGovernor.getDensityMultiplier(DENS);
+    
+    console.log(`🎛️ FPS Governor: ${cfg.max} particles, speed ${SPEED.toFixed(2)}, density ${DENS.toFixed(2)}`);
+  }
+}, 100);
+
+let particles = [];
+let mode = MODE;  // current mode
+let mouse = {x: innerWidth/2, y: innerHeight/2, down:false, magnet:false};
+let audioContext = null;
+let analyser = null;
+let audioData = null;
+let reformPhase = 0; // 0 = normal, 1 = shatter, 2 = reform
+let reformTimer = 0;
+
+// Particle object
+function spawn(x,y, vx,vy, life=rand(1.2,0.6), hueOverride=null, targetX=null, targetY=null){
+  if (particles.length >= cfg.max) return;
+  const s = rand(cfg.size.max, cfg.size.min);
+  particles.push({
+    x, y, vx, vy, life, age:0, size:s,
+    hue: hueOverride ?? (HUE ?? rand(360)),
+    sat: 72, lit: 60, rot: rand(TAU),
+    targetX, targetY, // for reform mode
+    originalX: x, originalY: y // for reform mode
+  });
+}
+
+// Emitters by mode
+function emit_confetti(dt){
+  const rate = (REDUCED?120:300) * DENS;
+  const n = (rate * dt)|0;
+  for(let i=0;i<n;i++){
+    const x = rand(innerWidth), y = -10;
+    const vx= rand(60,-60)*SPEED, vy= rand(30,120)*SPEED;
+    spawn(x,y,vx,vy, rand(1.6,0.9));
+  }
+}
+
+function emit_fountain(dt){
+  const cx=innerWidth/2, cy=innerHeight*0.8;
+  const rate = (REDUCED?100:230) * DENS;
+  const n = (rate * dt)|0;
+  for(let i=0;i<n;i++){
+    const ang = rand(Math.PI-0.8, Math.PI-2.34); // upward fan
+    const spd = rand(220,420)*SPEED;
+    spawn(cx,cy, Math.cos(ang)*spd, Math.sin(ang)*spd, rand(1.4,0.8));
+  }
+}
+
+// Pre-sampled text points for shatter
+let textPoints = null;
+function sampleTextPoints(){
+  const off = document.createElement("canvas");
+  const f = Math.min(innerWidth*0.9, cfg.text.font);
+  off.width = innerWidth; off.height = innerHeight;
+  const octx = off.getContext("2d");
+  octx.fillStyle="#fff";
+  octx.textAlign="center"; octx.textBaseline="middle";
+  octx.font = `bold ${f}px ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial`;
+  octx.fillText(TEXT, innerWidth/2, innerHeight/2);
+  const step = clamp(Math.round(cfg.text.sample * (1/DENS)), 2, 8);
+  const pts=[];
+  const img = octx.getImageData(0,0,off.width,off.height).data;
+  for(let y=0;y<off.height;y+=step){
+    for(let x=0;x<off.width;x+=step){
+      const i=(y*off.width + x)*4+3; // alpha
+      if(img[i]>32) pts.push({x,y});
+    }
+  }
+  textPoints=pts;
+}
+function emit_text(dt){
+  if (!textPoints) sampleTextPoints();
+  // Emit from text points (slow leak), explode on key
+  const rate = (REDUCED?60:140) * DENS;
+  const n = (rate * dt)|0;
+  for(let i=0;i<n;i++){
+    const p = textPoints[(Math.random()*textPoints.length)|0];
+    const jitter=rand(2,-2);
+    spawn(p.x+jitter,p.y+jitter, rand(40,-40)*SPEED, rand(20,-20)*SPEED, rand(1.2,0.7), HUE ?? 160);
+  }
+}
+
+// New particle modes
+function emit_explode(dt){
+  // Only emit on trigger (Space key)
+  // This is handled by the burst() function
+}
+
+function emit_orbit(dt){
+  const rate = (REDUCED?80:200) * DENS;
+  const n = (rate * dt)|0;
+  for(let i=0;i<n;i++){
+    const angle = rand(TAU);
+    const radius = rand(cfg.orbit.radius * 0.8, cfg.orbit.radius * 1.2);
+    const x = cfg.orbit.centerX + Math.cos(angle) * radius;
+    const y = cfg.orbit.centerY + Math.sin(angle) * radius;
+    const vx = -Math.sin(angle) * 100 * SPEED;
+    const vy = Math.cos(angle) * 100 * SPEED;
+    spawn(x, y, vx, vy, rand(3.0, 2.0), HUE ?? rand(360));
+  }
+}
+
+function emit_reform(dt){
+  if (reformPhase === 0) {
+    // Normal text emission
+    emit_text(dt);
+  } else if (reformPhase === 1) {
+    // Shatter phase - explode all particles
+    if (reformTimer === 0) {
+      // Trigger shatter
+      for(let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const angle = Math.random() * TAU;
+        const force = rand(300, 150) * SPEED;
+        p.vx = Math.cos(angle) * force;
+        p.vy = Math.sin(angle) * force;
+      }
+      reformTimer = 2.0; // 2 seconds to shatter
+    }
+    reformTimer -= dt;
+    if (reformTimer <= 0) {
+      reformPhase = 2; // Start reform
+      reformTimer = 3.0; // 3 seconds to reform
+    }
+  } else if (reformPhase === 2) {
+    // Reform phase - particles return to text
+    if (reformTimer <= 0) {
+      reformPhase = 0; // Back to normal
+      reformTimer = 0;
+    }
+    reformTimer -= dt;
+  }
+}
+
+function emit_audio(dt){
+  if (!audioContext || !analyser) return;
+  
+  analyser.getByteFrequencyData(audioData);
+  const bassLevel = audioData.slice(cfg.audio.bassRange[0], cfg.audio.bassRange[1])
+    .reduce((a, b) => a + b, 0) / (cfg.audio.bassRange[1] - cfg.audio.bassRange[0]) / 255;
+  
+  if (bassLevel > cfg.audio.threshold) {
+    const burstCount = Math.floor(bassLevel * cfg.audio.maxBurst * DENS);
+    for(let i = 0; i < burstCount; i++) {
+      const angle = Math.random() * TAU;
+      const speed = rand(200, 400) * SPEED;
+      const x = innerWidth/2 + rand(20, -20);
+      const y = innerHeight/2 + rand(20, -20);
+      spawn(x, y, Math.cos(angle) * speed, Math.sin(angle) * speed, rand(1.5, 0.8), HUE ?? rand(360));
+    }
+  }
+}
+
+// Physics update
+let last=performance.now();
+function tick(now){
+  const dt = Math.min(0.033, (now-last)/1000); last=now;
+
+  // Emit
+  if(mode==="confetti") emit_confetti(dt);
+  else if(mode==="fountain") emit_fountain(dt);
+  else if(mode==="text") emit_text(dt);
+  else if(mode==="explode") emit_explode(dt);
+  else if(mode==="orbit") emit_orbit(dt);
+  else if(mode==="reform") emit_reform(dt);
+  else if(mode==="audio") emit_audio(dt);
+
+  // Update
+  const g = cfg.gravity[mode] || 200;
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    
+    // Special physics for different modes
+    if(mode === "orbit") {
+      // Orbital physics
+      const dx = p.x - cfg.orbit.centerX;
+      const dy = p.y - cfg.orbit.centerY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const force = cfg.orbit.speed * SPEED;
+      
+      // Centripetal force
+      p.vx += (-dx / dist) * force * dt;
+      p.vy += (-dy / dist) * force * dt;
+      
+      // Tangential velocity
+      p.vx += (-dy / dist) * force * 0.5 * dt;
+      p.vy += (dx / dist) * force * 0.5 * dt;
+    } else if(mode === "reform" && reformPhase === 2) {
+      // Reform physics - particles return to text
+      if(p.targetX !== null && p.targetY !== null) {
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist > 5) {
+          const force = 200 * SPEED;
+          p.vx += (dx / dist) * force * dt;
+          p.vy += (dy / dist) * force * dt;
+        }
+      }
+    } else {
+      // Standard physics
+      p.vx *= cfg.drag; p.vy = p.vy*cfg.drag + g*dt;
+    }
+    
+    if(mouse.magnet){
+      const dx = (mouse.x - p.x), dy = (mouse.y - p.y);
+      const d2 = Math.max(64, dx*dx+dy*dy);
+      const f  = 160000 / d2; // gentle magnet
+      p.vx += (dx/Math.sqrt(d2))*f*dt;
+      p.vy += (dy/Math.sqrt(d2))*f*dt;
+    }
+    // integrate
+    p.x += p.vx*dt; p.y += p.vy*dt; p.age += dt;
+    // wrap / cull
+    if(mode==="confetti"){
+      if(p.y > innerHeight+12 || p.x<-20 || p.x>innerWidth+20 || p.age>3) {particles.splice(i,1); continue;}
+    } else if(mode==="fountain"){
+      if(p.y > innerHeight+12 || p.age>2.5) {particles.splice(i,1); continue;}
+    } else if(mode==="orbit"){
+      if(p.age>5) {particles.splice(i,1); continue;}
+    } else if(mode==="reform"){
+      if(p.age>6) {particles.splice(i,1); continue;}
+    } else if(mode==="audio"){
+      if(p.age>2) {particles.splice(i,1); continue;}
+    } else { // text, explode
+      if(p.x<-20 || p.x>innerWidth+20 || p.y<-20 || p.y>innerHeight+20 || p.age>3) {particles.splice(i,1); continue;}
+    }
+  }
+
+  // Render
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "rgba(0,0,0," + (mode==="text"? 0.15 : 0.25) + ")";
+  ctx.fillRect(0,0,innerWidth,innerHeight);
+
+  ctx.globalCompositeOperation="lighter";
+  for(const p of particles){
+    const a = 1 - (p.age / (p.life+0.0001));
+    if (a<=0) continue;
+    const h = Math.floor( (HUE ?? p.hue) % 360 );
+    ctx.fillStyle = `hsla(${h} ${p.sat}% ${p.lit}%, ${Math.max(0,a)})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, TAU);
+    ctx.fill();
+  }
+
+  hud();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// --- HUD & badge -------------------------------------------------------------
+const HUD = document.getElementById("hud");
+function hud(){
+  const fpsStatus = window.fpsGovernor ? window.fpsGovernor.getStatus() : null;
+  const safeStatus = window.safeModeToggle ? window.safeModeToggle.isSafeMode() : false;
+  
+  HUD.innerHTML =
+   `<b>Particles</b> | mode=<b>${mode}</b> | n=${particles.length} / ${cfg.max} | ` +
+   `density=${DENS} | speed=${SPEED}${REDUCED?" | <b>reduced</b>":""} ` +
+   `${fpsStatus ? ` | FPS: ${fpsStatus.fps.toFixed(1)}` : ""}` +
+   `${safeStatus ? " | <b>🛡️ SAFE</b>" : ""}` +
+   `| keys: [1]Confetti [2]Fountain [3]Text [4]Explode [5]Orbit [6]Reform [7]Audio [E]Explode [M]Magnet [Space]Burst | ⌘+Shift+S Safe`;
+}
+const badge = document.getElementById("badge");
+badge.hidden=false; setTimeout(()=>badge.hidden=true, 1800);
+
+// --- Controls ----------------------------------------------------------------
+addEventListener("mousemove", e=>{mouse.x=e.clientX; mouse.y=e.clientY; }, {passive:true});
+addEventListener("mousedown", ()=>mouse.down=true);
+addEventListener("mouseup",   ()=>mouse.down=false);
+
+function burst(){
+  const cx=innerWidth/2, cy=innerHeight/2;
+  const N = REDUCED?120:280;
+  for(let i=0;i<N;i++){
+    const ang = Math.random()*TAU;
+    const spd = rand(220,520)*SPEED;
+    spawn(cx,cy, Math.cos(ang)*spd, Math.sin(ang)*spd, rand(1.4,0.8));
+  }
+}
+function setMode(m){ 
+  mode=m; 
+  if(m==="text" || m==="reform") sampleTextPoints(); 
+  if(m==="audio") initAudio();
+}
+
+// Audio initialization
+async function initAudio(){
+  if(audioContext) return;
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const source = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    audioData = new Uint8Array(analyser.frequencyBinCount);
+    source.connect(analyser);
+  } catch(err) {
+    console.log("Audio not available:", err);
+  }
+}
+
+addEventListener("keydown", (e)=>{
+  if(e.key==="1") setMode("confetti");
+  if(e.key==="2") setMode("fountain");
+  if(e.key==="3") setMode("text");
+  if(e.key==="4") setMode("explode");
+  if(e.key==="5") setMode("orbit");
+  if(e.key==="6") setMode("reform");
+  if(e.key==="7") setMode("audio");
+  if(e.key.toLowerCase()==="m") mouse.magnet = !mouse.magnet;
+  if(e.key.toLowerCase()==="e") burst();
+  if(e.code==="Space"){ e.preventDefault(); burst(); }
+});
+
+// --- Start in requested mode -------------------------------------------------
+setMode(mode);
+</script>
+</body>
+</html>
