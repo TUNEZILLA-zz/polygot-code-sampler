@@ -1,0 +1,38 @@
+{
+  "name": "codesampler-live-performance",
+  "version": "1.0.0",
+  "description": "Complete performance system with BeatBridge + MIDI + OSC + TouchOSC + Ableton integration",
+  "main": "scripts/osc-bridge.js",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Build complete - static files ready'",
+    "preview": "python3 -m http.server 8000",
+    "performance-setup": "concurrently \"npm:dev\" \"npm:osc-bridge\" \"npm:crowd-test\"",
+    "osc-bridge": "node scripts/osc-bridge.js",
+    "crowd-test": "node scripts/crowd-nudge.js",
+    "start": "node scripts/osc-bridge.js",
+    "crowd": "node scripts/crowd-nudge.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "osc": "^2.4.1",
+    "ws": "^8.14.2",
+    "tone": "^14.8.49"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "keywords": [
+    "osc",
+    "websocket",
+    "performance",
+    "live-coding",
+    "audio-reactive",
+    "beatbridge",
+    "midi",
+    "touchosc",
+    "ableton"
+  ],
+  "author": "RawTunez Media",
+  "license": "MIT"
+}

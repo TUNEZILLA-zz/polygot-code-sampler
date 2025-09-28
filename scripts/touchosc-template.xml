@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <oscSettings>
+    <osc targetPort="57120" targetAddress="127.0.0.1" localPort="8000"/>
+  </oscSettings>
+  <layout version="18" mode="phone" orientation="vertical">
+    <tabpage name="CodeSampler" scalef="1.0">
+      <fader name="Hue" x="0" y="0" w="0.48" h="0.4" color="green" osc_cs="/fx/hue" />
+      <fader name="Intensity" x="0.52" y="0" w="0.48" h="0.4" color="yellow" osc_cs="/fx/intensity" />
+      <push name="Run" x="0" y="0.45" w="0.48" h="0.2" color="blue" osc_cs="/run" />
+      <push name="Kick" x="0.52" y="0.45" w="0.48" h="0.2" color="red" osc_cs="/crowd/kick" />
+    </tabpage>
+  </layout>
+</interface>

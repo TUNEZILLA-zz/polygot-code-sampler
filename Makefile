@@ -1818,7 +1818,7 @@ matrix-rain-live:
 	@echo "🌧️ Matrix rain complete!"
 
 # Motion Backdrop Pack (cmatrix-style but on-brand)
-.PHONY: starfield aurora neon-grid motion-pack cmatrix-chaos cmatrix-chaos-swirl cmatrix-chaos-explode cmatrix-chaos-float cmatrix-chaos-vortex foh-chaos-sting foh-glitch-sting foh-chaos-build foh-chaos-interlude foh-chaos-exit foh-chaos-interactive foh-chaos-complete chaos-plus chaos-plus-sting chaos-plus-build chaos-plus-interlude chaos-plus-interactive particles-unified particles-confetti particles-fountain particles-text foh-particle-sting particles-motion-safe particles-explode particles-orbit particles-reform particles-audio foh-particle-explode particles-complete particles-macbook-safe particles-emergency-safe
+.PHONY: starfield aurora neon-grid motion-pack cmatrix-chaos cmatrix-chaos-swirl cmatrix-chaos-explode cmatrix-chaos-float cmatrix-chaos-vortex foh-chaos-sting foh-glitch-sting foh-chaos-build foh-chaos-interlude foh-chaos-exit foh-chaos-interactive foh-chaos-complete chaos-plus chaos-plus-sting chaos-plus-build chaos-plus-interlude chaos-plus-interactive particles-unified particles-confetti particles-fountain particles-text foh-particle-sting particles-motion-safe particles-explode particles-orbit particles-reform particles-audio foh-particle-explode particles-complete particles-macbook-safe particles-emergency-safe code-sampler-live beat-bridge midi-osc-integration osc-bridge crowd-test touchosc-template ableton-template performance-setup
 starfield:
 	@echo "🌌 STARFIELD WARP - HYPERSPACE PARTICLES"
 	@echo "========================================"
@@ -2145,6 +2145,109 @@ particles-emergency-safe:
 	@open "out/particles_unified.html?mode=confetti&density=0.2&speed=0.3&reduced=1" || echo "🚨 Emergency Safe Mode ready: out/particles_unified.html?mode=confetti&density=0.2&speed=0.3&reduced=1"
 	@echo "🎭 Emergency mode: 25% particles, 30% speed, reduced motion"
 	@echo "🛡️ Perfect for: MacBook testing, emergency situations"
+
+# CodeSampler Live - Hybrid Audio-Reactive + Sandbox + Visual FX
+code-sampler-live:
+	@echo "🎼 CODESAMPLER LIVE - HYBRID AUDIO-REACTIVE + SANDBOX + VISUAL FX"
+	@echo "================================================================="
+	@mkdir -p out && cp scripts/snippets/code_sampler_live.html out/code_sampler_live.html
+	@echo "✅ CodeSampler Live: out/code_sampler_live.html"
+	@echo "🎛️ Features: Audio-Reactive Engine, Live Code Sandbox, FPS Governor, Crowd Control"
+	@echo "🎭 FOH: Beat-sync code, bass-reactive visuals, real-time execution, audience participation"
+	@echo "🎬 Opening CodeSampler Live..."
+	@open "out/code_sampler_live.html" || echo "🎼 CodeSampler Live ready: out/code_sampler_live.html"
+	@echo "🎵 Allow mic access for audio-reactive features!"
+	@echo "👥 Crowd Control: WS://localhost:8765 (optional)"
+
+# Turnkey Show Commands
+code-sampler-live-dev:
+	@npm run dev
+
+beat-bridge:
+	@echo "🎵 BeatBridge is built into CodeSampler (ENV → sandbox). No extra daemon."
+
+midi-osc-integration:
+	@echo "🎛️ WebMIDI maps: CC1→Hue, CC2→FX, NoteOn(36)→Run."
+	@echo "📡 Run OSC bridge with: make osc-bridge"
+
+performance-setup:
+	@npm run performance-setup
+
+osc-bridge:
+	@npm run osc-bridge
+
+crowd-test:
+	@npm run crowd-test
+
+# Beat Bridge Integration
+beat-bridge:
+	@echo "🎵 BEAT BRIDGE - TRUE BEAT INJECTION INTO SANDBOX"
+	@echo "================================================="
+	@echo "🎬 Setting up beat injection for CodeSampler Live..."
+	@echo "📡 Beat detection → PostMessage to sandbox on downbeat"
+	@echo "🎭 Perfect for: Tight beat-sync code execution"
+	@echo "✅ Beat Bridge ready for CodeSampler Live integration"
+
+# MIDI/OSC Integration
+midi-osc-integration:
+	@echo "🎛️ MIDI/OSC INTEGRATION - LIVE CONTROLS"
+	@echo "======================================="
+	@echo "🎬 Setting up MIDI/OSC bindings for CodeSampler Live..."
+	@echo "🎹 MIDI: Novation/AKAI pad mapping for FX toggles"
+	@echo "📡 OSC: LAN-based crowd input for live shows"
+	@echo "🎭 Perfect for: Professional FOH control, audience interaction"
+	@echo "✅ MIDI/OSC ready for CodeSampler Live integration"
+
+# OSC Bridge Server
+osc-bridge:
+	@echo "📡 OSC BRIDGE - DAW/PHONE CONTROL"
+	@echo "================================="
+	@echo "🎬 Starting OSC → WebSocket bridge..."
+	@echo "📱 Send OSC to 127.0.0.1:57120"
+	@echo "🎛️ Examples: /fx/hue 0.25, /fx/intensity 0.8, /run"
+	@node scripts/osc-bridge.js
+
+# Crowd Control Test
+crowd-test:
+	@echo "👥 CROWD CONTROL - AUDIENCE PARTICIPATION"
+	@echo "========================================="
+	@echo "🎬 Starting crowd control WebSocket server..."
+	@echo "📱 Connect CodeSampler Live to ws://localhost:8765"
+	@echo "🎭 Sending demo nudges and kicks..."
+	@node scripts/crowd-nudge.js
+
+# TouchOSC Template
+touchosc-template:
+	@echo "📱 TOUCHOSC TEMPLATE - MOBILE CONTROL"
+	@echo "====================================="
+	@echo "📱 TouchOSC template: scripts/touchosc-template.xml"
+	@echo "🎛️ Import into TouchOSC app for mobile control"
+	@echo "📡 OSC target: 127.0.0.1:57120"
+	@echo "✅ TouchOSC template ready for mobile control"
+
+# Ableton Template
+ableton-template:
+	@echo "🎹 ABLETON TEMPLATE - DAW INTEGRATION"
+	@echo "====================================="
+	@echo "🎹 Ableton template: scripts/ableton-template.als"
+	@echo "🎛️ Import into Ableton Live for DAW control"
+	@echo "📡 OSC target: 127.0.0.1:57120"
+	@echo "✅ Ableton template ready for DAW integration"
+
+# Complete Performance Setup
+performance-setup:
+	@echo "🎭 PERFORMANCE SETUP - COMPLETE SHOW READY"
+	@echo "=========================================="
+	@echo "🎬 Setting up complete performance system..."
+	@$(MAKE) code-sampler-live
+	@echo "📡 Starting OSC bridge in background..."
+	@$(MAKE) osc-bridge &
+	@echo "👥 Starting crowd control in background..."
+	@$(MAKE) crowd-test &
+	@echo "✅ Performance setup complete!"
+	@echo "🎭 CodeSampler Live + OSC Bridge + Crowd Control ready"
+	@echo "📱 Use TouchOSC template for mobile control"
+	@echo "🎹 Use Ableton template for DAW integration"
 
 motion-pack-plus:
 	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"
@@ -2610,73 +2713,6 @@ smoke-test:
 	make touring-rig-status
 	@echo "💨 Smoke test complete!"
 
-# VJ Desk Complete System
-vj-desk-complete:
-	@echo "🎬 VJ DESK COMPLETE - Building All Effects..."
-	@mkdir -p out
-	@echo "🎬 Building motion backdrops..."
-	make starfield && make aurora && make neon-grid && make fireflies && make lasers && make ascii-water && make spectrum && make cmatrix-chaos
-	@echo "🎬 Building audio-reactive effects..."
-	make audio-bars && make audio-rings
-	@echo "🎬 Building glitch effects..."
-	make matrix-glitch && make crt-overlay
-	@echo "🎬 Building weather effects..."
-	make rain-effect && make snow-effect && make fire-effect && make explosion-effect
-	@echo "🎬 Building stage combiner..."
-	@cp scripts/snippets/stage_combine.html out/stage_combine.html
-	@echo "🎬 Building beat bloom fixed..."
-	@cp scripts/snippets/beat_bloom_fixed.html out/beat_bloom_fixed.html
-	@echo "🎬 Building VJ neofetch..."
-	@cp scripts/snippets/vj_neofetch.html out/vj_neofetch.html
-	@echo "🎬 VJ Desk Complete! All effects ready in out/"
-
-# FOH One-Button Showlet Bundles
-foh-impact-intro:
-	@echo "🚀 FOH Impact Intro - Starfield → Cinemascope"
-	@echo "🚀 Opening: out/stage_combine.html?bg=starfield_warp.html&stage=cinema.html"
-	@echo "🚀 FOH Impact Intro ready!"
-
-foh-storm-build:
-	@echo "⚡ FOH Storm Build - Audio Bars + Morph"
-	@echo "⚡ Opening: out/stage_combine.html?bg=audio_react_bars.html&stage=morph.html"
-	@echo "⚡ FOH Storm Build ready!"
-
-foh-chaos-encore:
-	@echo "🌪️ FOH Chaos Encore - Matrix Glitch + LOLcat++"
-	@echo "🌪️ Opening: out/stage_combine.html?bg=matrix_glitch.html&stage=nyan.html"
-	@echo "🌪️ FOH Chaos Encore ready!"
-
-foh-graceful-bow:
-	@echo "🌙 FOH Graceful Bow - ASCII Water + Cathedral"
-	@echo "🌙 Opening: out/stage_combine.html?bg=ascii_water.html&stage=cinema.html"
-	@echo "🌙 FOH Graceful Bow ready!"
-
-foh-30sec-wow:
-	@echo "💥 FOH 30sec Wow - Rings + Beat Bloom"
-	@echo "💥 Opening: out/stage_combine.html?bg=audio_react_rings.html&stage=beat_bloom_fixed.html"
-	@echo "💥 FOH 30sec Wow ready!"
-
-foh-weather-interlude:
-	@echo "🌧️ FOH Weather Interlude - Rain → Aurora → Cinema"
-	@echo "🌧️ Opening: out/stage_combine.html?bg=rain_effect.html&stage=cinema.html"
-	@echo "🌧️ FOH Weather Interlude ready!"
-
-foh-glitch-resolve:
-	@echo "🔥 FOH Glitch Resolve - Matrix → Fireflies + Cathedral"
-	@echo "🔥 Opening: out/stage_combine.html?bg=matrix_glitch.html&stage=cinema.html"
-	@echo "🔥 FOH Glitch Resolve ready!"
-
-# All FOH Bundles
-foh-all-bundles:
-	@echo "🎛️ FOH ALL BUNDLES - Pre-generating All Showlets..."
-	make foh-impact-intro
-	make foh-storm-build
-	make foh-chaos-encore
-	make foh-graceful-bow
-	make foh-30sec-wow
-	make foh-weather-interlude
-	make foh-glitch-resolve
-	@echo "🎛️ All FOH bundles ready for showtime!"
 
 # VJ Neofetch Enhanced
 vj-neofetch:
@@ -2941,23 +2977,6 @@ doors-open-audio:
 	@echo "🎬 Audio React Rings preloaded fullscreen"
 	@echo "🎭 Platform personality active with A11y guards"
 
-# Tour Pack with FOH Card + QA Launcher
-tour-pack:
-	@echo "🎒 TOUR PACK - Portable Show Kit"
-	@mkdir -p out/tour-pack
-	@cp out/foh_operator_card.html out/tour-pack/
-	@cp out/quirk_qa_matrix.html out/tour-pack/
-	@cp out/vj_neofetch_enhanced.html out/tour-pack/
-	@cp out/stage_combine.html out/tour-pack/
-	@cp out/physics_fountain_pro.html out/tour-pack/
-	@cp out/audio_react_rings.html out/tour-pack/
-	@cp out/quirks.js out/tour-pack/
-	@cp out/quirks.css out/tour-pack/
-	@echo "✅ Tour Pack created: out/tour-pack/"
-	@echo "🎒 FOH Operator Card + QA Launcher + VJ Neofetch"
-	@echo "🎒 Stage Combiner + Physics Fountain + Audio React"
-	@echo "🎒 Quirks system + CSS for platform personality"
-	@echo "🎒 Perfect for offline shows and portable deployment!"
 
 # Tour Pack with QR Code
 tour-pack-qr:

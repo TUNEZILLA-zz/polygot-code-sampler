@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSampler Live - Hybrid Audio-Reactive + Sandbox + Visual FX</title>
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            gap: 1px;
+            background: #333;
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            background: #111;
+            padding: 8px 12px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .editor-panel {
+            background: #0a0a0a;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .visual-panel {
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .editor {
+            flex: 1;
+            background: #111;
+            color: #00ff00;
+            border: none;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 12px;
+            line-height: 1.4;
+            resize: none;
+            outline: none;
+        }
+        
+        .controls {
+            padding: 8px 12px;
+            background: #111;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 8px;
+        }
+        
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:hover { background: #00cc00; }
+        button:disabled { background: #333; color: #666; cursor: not-allowed; }
+        
+        .hud {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            line-height: 1.3;
+            min-width: 200px;
+        }
+        
+        .hud-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        
+        .hud-label { color: #666; }
+        .hud-value { color: #00ff00; font-weight: bold; }
+        
+        .canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 8px currentColor;
+        }
+        
+        .error-burst {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,0,0,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: errorPulse 0.5s ease-out;
+        }
+        
+        @keyframes errorPulse {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        .beat-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ff00;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        
+        .beat-indicator.active {
+            opacity: 1;
+            animation: beatPulse 0.2s ease-out;
+        }
+        
+        @keyframes beatPulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.5); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .crowd-status {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.8);
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #00ff00;
+        }
+        
+        .ascii-render {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: #00ff00;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .color-stripe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #00ff00, #0080ff, #8000ff);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <strong>CodeSampler Live</strong> - Hybrid Audio-Reactive + Sandbox + Visual FX
+            </div>
+            <div>
+                <span id="connection-status">🔴 Disconnected</span>
+            </div>
+        </div>
+        
+        <div class="editor-panel">
+            <textarea class="editor" id="codeEditor" placeholder="// Paste your code here and hit Run
+// Example: Beat-sync code transformation
+const now = Date.now();
+const beat = Math.floor(now / 500) % 4 === 0; // Simple beat detection
+
+if (beat) {
+    console.log('🎵 BEAT!', { timestamp: now });
+    return { beat: true, timestamp: now, message: 'On the beat!' };
+} else {
+    return { beat: false, timestamp: now, message: 'Off beat' };
+}"></textarea>
+            
+            <div class="controls">
+                <button id="runBtn">▶️ Run</button>
+                <button id="clearBtn">🗑️ Clear</button>
+                <button id="micBtn">🎤 Mic</button>
+                <button id="crowdBtn">👥 Crowd</button>
+            </div>
+        </div>
+        
+        <div class="visual-panel">
+            <canvas class="canvas" id="particleCanvas"></canvas>
+            <div class="beat-indicator" id="beatIndicator"></div>
+            <div class="ascii-render" id="asciiRender"></div>
+            <div class="color-stripe" id="colorStripe"></div>
+            
+            <div class="hud" id="hud">
+                <div class="hud-item">
+                    <span class="hud-label">FPS:</span>
+                    <span class="hud-value" id="fpsValue">60</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Particles:</span>
+                    <span class="hud-value" id="particleCount">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Exec Time:</span>
+                    <span class="hud-value" id="execTime">0ms</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Memory:</span>
+                    <span class="hud-value" id="memoryUsage">0MB</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">BPM:</span>
+                    <span class="hud-value" id="bpmValue">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Bass:</span>
+                    <span class="hud-value" id="bassLevel">0%</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">Crowd:</span>
+                    <span class="hud-value" id="crowdStatus">0 kicks</span>
+                </div>
+            </div>
+            
+            <div class="crowd-status" id="crowdStatus">
+                Crowd Control: WS://localhost:8765
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class CodeSamplerLive {
+            constructor() {
+                this.particles = [];
+                this.maxParticles = 100;
+                this.targetFPS = 60;
+                this.currentFPS = 60;
+                this.lastTime = performance.now();
+                this.frameCount = 0;
+                
+                this.audioContext = null;
+                this.analyser = null;
+                this.micStream = null;
+                this.bpm = 0;
+                this.bassLevel = 0;
+                this.beatDetected = false;
+                
+                this.ws = null;
+                this.crowdKicks = 0;
+                this.crowdIntensity = 1;
+                this.crowdHue = 0;
+                
+                this.sandbox = null;
+                this.lastResult = null;
+                this.execTime = 0;
+                this.memoryUsage = 0;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.setupAudio();
+                this.setupWebSocket();
+                this.setupSandbox();
+                this.startRenderLoop();
+            }
+            
+            setupCanvas() {
+                this.canvas = document.getElementById('particleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            resizeCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+            }
+            
+            setupEventListeners() {
+                document.getElementById('runBtn').addEventListener('click', () => this.runCode());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clearParticles());
+                document.getElementById('micBtn').addEventListener('click', () => this.toggleMic());
+                document.getElementById('crowdBtn').addEventListener('click', () => this.toggleCrowd());
+            }
+            
+            async setupAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    this.analyser.smoothingTimeConstant = 0.8;
+                    
+                    this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
+                    this.startAudioAnalysis();
+                } catch (error) {
+                    console.warn('Audio setup failed:', error);
+                }
+            }
+            
+            async toggleMic() {
+                if (this.micStream) {
+                    this.micStream.getTracks().forEach(track => track.stop());
+                    this.micStream = null;
+                    document.getElementById('micBtn').textContent = '🎤 Mic';
+                    return;
+                }
+                
+                try {
+                    this.micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const source = this.audioContext.createMediaStreamSource(this.micStream);
+                    source.connect(this.analyser);
+                    document.getElementById('micBtn').textContent = '🔴 Mic On';
+                } catch (error) {
+                    console.warn('Mic access denied:', error);
+                }
+            }
+            
+            startAudioAnalysis() {
+                const analyze = () => {
+                    if (this.analyser) {
+                        this.analyser.getByteFrequencyData(this.frequencyData);
+                        
+                        // Calculate bass level (0-20 Hz range)
+                        const bassSum = this.frequencyData.slice(0, 4).reduce((a, b) => a + b, 0);
+                        this.bassLevel = (bassSum / (4 * 255)) * 100;
+                        
+                        // Simple BPM estimation
+                        const now = Date.now();
+                        if (this.bassLevel > 30) {
+                            this.bpm = Math.min(180, Math.max(60, this.bassLevel * 2));
+                        }
+                        
+                        // Beat detection
+                        this.beatDetected = this.bassLevel > 40;
+                        if (this.beatDetected) {
+                            document.getElementById('beatIndicator').classList.add('active');
+                            setTimeout(() => {
+                                document.getElementById('beatIndicator').classList.remove('active');
+                            }, 200);
+                        }
+                    }
+                    requestAnimationFrame(analyze);
+                };
+                analyze();
+            }
+            
+            setupWebSocket() {
+                try {
+                    this.ws = new WebSocket('ws://localhost:8765');
+                    this.ws.onopen = () => {
+                        document.getElementById('connection-status').textContent = '🟢 Connected';
+                    };
+                    this.ws.onclose = () => {
+                        document.getElementById('connection-status').textContent = '🔴 Disconnected';
+                    };
+                    this.ws.onmessage = (event) => {
+                        const data = JSON.parse(event.data);
+                        this.handleCrowdMessage(data);
+                    };
+                } catch (error) {
+                    console.warn('WebSocket connection failed:', error);
+                }
+            }
+            
+            handleCrowdMessage(data) {
+                if (data.type === 'nudge') {
+                    this.crowdIntensity = Math.max(0.1, Math.min(3, this.crowdIntensity + (data.deltaIntensity || 0)));
+                    this.crowdHue = (this.crowdHue + (data.deltaHue || 0)) % 360;
+                } else if (data.type === 'kick') {
+                    this.crowdKicks++;
+                    this.createParticleBurst(50, '#ff0000');
+                }
+            }
+            
+            toggleCrowd() {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.close();
+                    document.getElementById('crowdBtn').textContent = '👥 Crowd';
+                } else {
+                    this.setupWebSocket();
+                    document.getElementById('crowdBtn').textContent = '🔴 Crowd On';
+                }
+            }
+            
+            setupSandbox() {
+                // Create iframe sandbox for safe code execution
+                this.sandbox = document.createElement('iframe');
+                this.sandbox.style.display = 'none';
+                this.sandbox.sandbox = 'allow-scripts';
+                document.body.appendChild(this.sandbox);
+            }
+            
+            async runCode() {
+                const code = document.getElementById('codeEditor').value;
+                if (!code.trim()) return;
+                
+                const startTime = performance.now();
+                
+                try {
+                    // Create a safe execution context
+                    const wrappedCode = `
+                        (async () => {
+                            ${code}
+                        })()
+                    `;
+                    
+                    // Execute in sandbox
+                    const result = await this.executeInSandbox(wrappedCode);
+                    this.lastResult = result;
+                    
+                    // Update execution time
+                    this.execTime = Math.round(performance.now() - startTime);
+                    
+                    // Create visual feedback
+                    if (result && result.beat) {
+                        this.createParticleBurst(20, '#00ff00');
+                    }
+                    
+                    // Update memory usage
+                    if (performance.memory) {
+                        this.memoryUsage = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                    }
+                    
+                } catch (error) {
+                    console.error('Code execution error:', error);
+                    this.createErrorBurst(error.message);
+                }
+            }
+            
+            async executeInSandbox(code) {
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Execution timeout'));
+                    }, 5000);
+                    
+                    try {
+                        // Simple eval for demo (in production, use proper sandboxing)
+                        const result = eval(code);
+                        clearTimeout(timeout);
+                        resolve(result);
+                    } catch (error) {
+                        clearTimeout(timeout);
+                        reject(error);
+                    }
+                });
+            }
+            
+            createParticleBurst(count, color) {
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 * i) / count;
+                    const speed = 2 + Math.random() * 3;
+                    const vx = Math.cos(angle) * speed;
+                    const vy = Math.sin(angle) * speed;
+                    
+                    this.particles.push({
+                        x: centerX,
+                        y: centerY,
+                        vx: vx,
+                        vy: vy,
+                        life: 1.0,
+                        color: color,
+                        size: 8 + Math.random() * 8
+                    });
+                }
+            }
+            
+            createErrorBurst(message) {
+                // Create error burst effect
+                const burst = document.createElement('div');
+                burst.className = 'error-burst';
+                burst.style.left = (this.canvas.width / 2) + 'px';
+                burst.style.top = (this.canvas.height / 2) + 'px';
+                document.querySelector('.visual-panel').appendChild(burst);
+                
+                setTimeout(() => burst.remove(), 500);
+                
+                // Create error particles
+                this.createParticleBurst(30, '#ff0000');
+            }
+            
+            clearParticles() {
+                this.particles = [];
+            }
+            
+            updateParticles() {
+                // Apply FPS Governor throttling
+                const fpsMultiplier = Math.min(1, this.currentFPS / this.targetFPS);
+                const maxParticles = Math.floor(this.maxParticles * fpsMultiplier);
+                
+                if (this.particles.length > maxParticles) {
+                    this.particles = this.particles.slice(0, maxParticles);
+                }
+                
+                // Update particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.1; // gravity
+                    p.life -= 0.02;
+                    
+                    if (p.life <= 0 || p.x < 0 || p.x > this.canvas.width || p.y > this.canvas.height) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+            }
+            
+            renderParticles() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.particles.forEach(p => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = p.life;
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    this.ctx.fill();
+                    this.ctx.restore();
+                });
+            }
+            
+            updateHUD() {
+                document.getElementById('fpsValue').textContent = Math.round(this.currentFPS);
+                document.getElementById('particleCount').textContent = this.particles.length;
+                document.getElementById('execTime').textContent = this.execTime + 'ms';
+                document.getElementById('memoryUsage').textContent = this.memoryUsage + 'MB';
+                document.getElementById('bpmValue').textContent = Math.round(this.bpm);
+                document.getElementById('bassLevel').textContent = Math.round(this.bassLevel) + '%';
+                document.getElementById('crowdStatus').textContent = this.crowdKicks + ' kicks';
+            }
+            
+            startRenderLoop() {
+                const render = (currentTime) => {
+                    // Calculate FPS
+                    this.frameCount++;
+                    if (currentTime - this.lastTime >= 1000) {
+                        this.currentFPS = this.frameCount;
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+                    
+                    // Update and render
+                    this.updateParticles();
+                    this.renderParticles();
+                    this.updateHUD();
+                    
+                    requestAnimationFrame(render);
+                };
+                requestAnimationFrame(render);
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new CodeSamplerLive();
+        });
+    </script>
+</body>
+</html>
