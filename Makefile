@@ -2335,6 +2335,70 @@ status-demo:
 	@echo "🎛️ Perfect for testing crowd UI without main app"
 	@node scripts/status-demo.js
 
+# Production Deployment
+deploy:
+	@echo "🚀 PRODUCTION DEPLOYMENT"
+	@echo "========================"
+	@echo "📦 Deploying CodeSampler Live to production..."
+	@echo "🔧 Using PM2 ecosystem configuration"
+	@echo "🧪 Running smoke tests..."
+	@./scripts/deploy.sh
+
+# Smoke Tests
+smoke-tests:
+	@echo "🧪 SMOKE TESTS - PRE-SHOW HEALTH CHECKS"
+	@echo "======================================"
+	@echo "🔍 Testing WebSocket auth + messages"
+	@echo "🌐 Testing app reachability"
+	@echo "📡 Testing OSC bridge connectivity"
+	@node scripts/smoke-tests.js
+
+# PM2 Management
+pm2-start:
+	@echo "🔄 PM2 START - PRODUCTION SERVICES"
+	@echo "=================================="
+	@echo "🎭 Starting CodeSampler Live services..."
+	@pm2 start ecosystem.config.cjs
+	@pm2 save
+	@pm2 status
+
+pm2-stop:
+	@echo "🛑 PM2 STOP - SHUTDOWN SERVICES"
+	@echo "==============================="
+	@echo "🔄 Stopping all services..."
+	@pm2 stop all
+	@pm2 delete all
+
+pm2-restart:
+	@echo "🔄 PM2 RESTART - RELOAD SERVICES"
+	@echo "==============================="
+	@echo "🔄 Restarting all services..."
+	@pm2 restart all
+
+pm2-logs:
+	@echo "📋 PM2 LOGS - SERVICE MONITORING"
+	@echo "==============================="
+	@echo "📊 Showing live logs from all services..."
+	@pm2 logs
+
+# Nginx Setup
+nginx-setup:
+	@echo "🌐 NGINX SETUP - REVERSE PROXY"
+	@echo "=============================="
+	@echo "📋 Copy nginx.conf to /etc/nginx/sites-available/codesampler"
+	@echo "🔗 Link: sudo ln -s /etc/nginx/sites-available/codesampler /etc/nginx/sites-enabled/"
+	@echo "🧪 Test: sudo nginx -t && sudo systemctl reload nginx"
+	@echo "🔒 TLS: sudo certbot --nginx -d your-domain.com"
+
+# Show Checklist
+show-checklist:
+	@echo "🎭 SHOW CHECKLIST - PRE-SHOW SETUP"
+	@echo "=================================="
+	@echo "📋 Open SHOW-CHECKLIST.md for complete pre-show guide"
+	@echo "🚀 Quick start: make pm2-start && make smoke-tests"
+	@echo "🎛️ Test crowd UI: http://localhost:5173/crowd/"
+	@echo "📱 Generate QR: make qr-share"
+
 
 motion-pack-plus:
 	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"
