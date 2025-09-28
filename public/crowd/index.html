@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CodeSampler Crowd Controller</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#6ee7b7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Crowd Control">
+  <style>
+    :root { color-scheme: dark; --bg:#0b0b10; --panel:#14141c; --accent:#6ee7b7; --text:#e5e7eb; }
+    body { margin:0; font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto; background:var(--bg); color:var(--text); }
+    .wrap { max-width:720px; margin:0 auto; padding:20px; }
+    .card { background:var(--panel); border:1px solid #ffffff1a; border-radius:16px; padding:16px; box-shadow:0 8px 30px #0006; }
+    h1 { font-size:20px; margin:0 0 10px; }
+    .row { display:flex; gap:12px; align-items:center; margin:10px 0; }
+    .col { flex:1; }
+    .btn { background:#1f2937; color:#fff; border:1px solid #ffffff22; border-radius:12px; padding:10px 14px; cursor:pointer; }
+    .btn:hover { filter:brightness(1.15); }
+    .btn.danger { background:#dc2626; }
+    .stat { font-size:12px; opacity:.8; }
+    input[type="range"] { width:100%; }
+    .pill { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:#111827; border:1px solid #ffffff22; }
+    .ok { color:#34d399; }
+    .bad { color:#f87171; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>🎭 CodeSampler Crowd Controller</h1>
+      <div class="row">
+        <div class="pill">WS: <span id="ws-url"></span> <span id="ws-state" class="ok">● connected</span></div>
+      </div>
+
+      <!-- Live Status Bar -->
+      <div class="row" id="status-bar" style="display:none;">
+        <div class="pill">
+          <span>FPS: <span id="fps">--</span></span>
+          <span>Cap: <span id="cap">--</span></span>
+          <span>BPM: <span id="bpm">--</span></span>
+          <span>Gov: <span id="gov-status">auto</span></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="hue">Hue (0–360)</label>
+          <input id="hue" type="range" min="0" max="360" step="1" value="200">
+        </div>
+        <div style="width:110px" class="stat">Δ sent: <span id="hue-delta">0</span></div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="intensity">Intensity (0–1)</label>
+          <input id="intensity" type="range" min="0" max="1" step="0.01" value="0.5">
+        </div>
+        <div style="width:110px" class="stat">Δ sent: <span id="int-delta">0</span></div>
+      </div>
+
+      <div class="row" id="pin-row" style="display:none;">
+        <input id="pin" placeholder="Enter PIN" class="col" />
+        <button class="btn" id="btn-pin">Unlock</button>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="btn-run">▶ Run</button>
+        <button class="btn" id="btn-kick">👟 Kick</button>
+        <button class="btn" id="btn-rand">🎲 Randomize</button>
+        <button class="btn danger" id="btn-reset">↺ Reset</button>
+      </div>
+
+      <!-- Presets -->
+      <div class="row">
+        <button class="btn" data-scene="chill">🌊 Chill</button>
+        <button class="btn" data-scene="bloom">🌸 Bloom</button>
+        <button class="btn" data-scene="club">🎛 Club</button>
+        <button class="btn" data-scene="matrix">🟩 Matrix</button>
+      </div>
+
+      <!-- Governor cap (0..1) -->
+      <div class="row">
+        <div class="col">
+          <label for="gov">Governor Cap (0–1)</label>
+          <input id="gov" type="range" min="0" max="1" step="0.01" value="0.7">
+        </div>
+        <div style="width:110px" class="stat">cap: <span id="gov-val">0.70</span></div>
+      </div>
+
+      <div class="stat">
+        Tip: share <code>http://YOUR-IP:5173/crowd/</code> (or whatever port your dev server runs on) with the audience.
+        Append <code>?server=ws://YOUR-IP:8765</code> if needed.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Config / URL param for server ---
+    const urlParam = new URLSearchParams(location.search).get("server");
+    const WS_URL = urlParam || "ws://" + location.hostname + ":8765";
+    document.getElementById("ws-url").textContent = WS_URL;
+
+    // --- State for deltas (we send 'nudge' deltas so the app doesn't need changes) ---
+    let lastHue = 200;
+    let lastInt = 0.5;
+
+    // --- Connection ---
+    const wsState = document.getElementById("ws-state");
+    const pinRow = document.getElementById("pin-row");
+    let ws;
+    function connect() {
+      ws = new WebSocket(WS_URL);
+    ws.onopen = () => { 
+      wsState.textContent = "● connected"; 
+      wsState.className="ok"; 
+      showStatusBar();
+      startStatusUpdates();
+    };
+    ws.onclose = () => { 
+      wsState.textContent = "● disconnected"; 
+      wsState.className="bad"; 
+      stopStatusUpdates();
+      setTimeout(connect, 1000); 
+    };
+    ws.onerror = () => { 
+      wsState.textContent = "● error"; 
+      wsState.className="bad"; 
+      stopStatusUpdates();
+    };
+    ws.onmessage = (ev) => {
+      try {
+        const m = JSON.parse(ev.data);
+        if (m.type === "auth") pinRow.style.display = m.ok ? "none" : "block";
+        if (m.type === "hello") pinRow.style.display = "block";
+        if (m.type === "status") updateStatus(m);
+      } catch {}
+    };
+    }
+    connect();
+
+    function send(obj) {
+      if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
+    }
+
+    // --- Controls → 'nudge' messages (compatible with current app) ---
+    const hueEl = document.getElementById("hue");
+    const intEl = document.getElementById("intensity");
+    const hueDeltaEl = document.getElementById("hue-delta");
+    const intDeltaEl = document.getElementById("int-delta");
+
+    hueEl.addEventListener("input", () => {
+      const h = parseFloat(hueEl.value);
+      let dh = h - lastHue;
+      // scale delta down so small slider moves become smooth
+      const deltaHue = dh / 5; // tweak sensitivity as you like
+      hueDeltaEl.textContent = deltaHue.toFixed(2);
+      lastHue = h;
+      send({ type: "nudge", deltaHue });
+    });
+
+    intEl.addEventListener("input", () => {
+      const x = parseFloat(intEl.value);
+      let di = x - lastInt;
+      const deltaIntensity = di; // already 0..1 range; feels fine raw
+      intDeltaEl.textContent = deltaIntensity.toFixed(2);
+      lastInt = x;
+      send({ type: "nudge", deltaIntensity });
+    });
+
+    // --- Buttons ---
+    document.getElementById("btn-pin").onclick = () => {
+      const pin = document.getElementById("pin").value.trim();
+      if (pin) send({ type: "auth", pin });
+    };
+    document.getElementById("btn-run").onclick  = () => send({ type: "run" });
+    document.getElementById("btn-kick").onclick = () => send({ type: "kick" });
+    document.getElementById("btn-rand").onclick = () => {
+      const rndHue = Math.floor(Math.random() * 360);
+      const rndInt = Math.random();
+      const dh = (rndHue - lastHue) / 5;
+      const di = (rndInt - lastInt);
+      lastHue = rndHue; lastInt = rndInt;
+      hueEl.value = rndHue; intEl.value = rndInt.toFixed(2);
+      hueDeltaEl.textContent = dh.toFixed(2);
+      intDeltaEl.textContent = di.toFixed(2);
+      send({ type: "nudge", deltaHue: dh, deltaIntensity: di });
+    };
+    document.getElementById("btn-reset").onclick = () => {
+      lastHue = 200; lastInt = 0.5; hueEl.value = 200; intEl.value = 0.5;
+      hueDeltaEl.textContent = "0"; intDeltaEl.textContent = "0";
+      // small negative nudge to ease back toward baseline
+      send({ type: "nudge", deltaHue: 0, deltaIntensity: -0.1 });
+    };
+
+    // Scene presets → absolute "set" (works with your app's handler below)
+    const SCENES = {
+      chill:  { hue: 190, intensity: 0.35 },
+      bloom:  { hue: 120, intensity: 0.90 },
+      club:   { hue: 300, intensity: 0.75 },
+      matrix: { hue: 140, intensity: 0.60 },
+    };
+    document.querySelectorAll('[data-scene]').forEach(btn => {
+      btn.onclick = () => {
+        const s = SCENES[btn.dataset.scene];
+        if (!s) return;
+        // Update local sliders to reflect the scene
+        hueEl.value = s.hue;  intEl.value = s.intensity;
+        lastHue = s.hue;       lastInt = s.intensity;
+        hueDeltaEl.textContent = "—"; intDeltaEl.textContent = "—";
+        send({ type: "set", hue: s.hue, intensity: s.intensity });
+      };
+    });
+
+    // Governor cap slider → {type:"gov", cap:0..1}
+    const govEl = document.getElementById("gov");
+    const govVal = document.getElementById("gov-val");
+    govEl.addEventListener("input", () => {
+      const cap = parseFloat(govEl.value);
+      govVal.textContent = cap.toFixed(2);
+      send({ type: "gov", cap });
+    });
+
+    // Status bar updates
+    const statusBar = document.getElementById("status-bar");
+    const fpsEl = document.getElementById("fps");
+    const capEl = document.getElementById("cap");
+    const bpmEl = document.getElementById("bpm");
+    const govStatusEl = document.getElementById("gov-status");
+
+    // Show status bar when connected
+    function showStatusBar() {
+      statusBar.style.display = "block";
+    }
+
+    // Update status from server messages
+    function updateStatus(data) {
+      if (data.fps !== undefined) {
+        fpsEl.textContent = Math.round(data.fps);
+        fpsEl.style.color = data.fps >= 55 ? "#34d399" : data.fps >= 45 ? "#fbbf24" : "#f87171";
+      }
+      if (data.cap !== undefined) {
+        capEl.textContent = data.cap;
+      }
+      if (data.bpm !== undefined) {
+        bpmEl.textContent = Math.round(data.bpm);
+      }
+      if (data.govCap !== undefined) {
+        govStatusEl.textContent = data.govCap === null ? "auto" : `${Math.round(data.govCap * 100)}%`;
+        govStatusEl.style.color = data.govCap === null ? "#6b7280" : "#3b82f6";
+      }
+    }
+
+    // Request status updates every 2 seconds
+    let statusInterval;
+    function startStatusUpdates() {
+      statusInterval = setInterval(() => {
+        if (ws && ws.readyState === 1) {
+          send({ type: "status" });
+        }
+      }, 2000);
+    }
+
+    function stopStatusUpdates() {
+      if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+      }
+    }
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('[SW] Registered:', registration);
+          })
+          .catch((error) => {
+            console.log('[SW] Registration failed:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

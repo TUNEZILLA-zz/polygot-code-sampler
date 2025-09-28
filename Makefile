@@ -2236,6 +2236,105 @@ visual-demos:
 	@echo "In CodeSampler Live, paste the snippet into the sandbox and press Run."
 	@echo "Run stack: make performance-setup (dev + OSC bridge + crowd WS)."
 
+# Crowd Web UI
+crowd-ui:
+	@echo "🌐 CROWD WEB UI - AUDIENCE PARTICIPATION"
+	@echo "========================================"
+	@echo "Open: http://localhost:5173/crowd/  (or your dev port)"
+	@echo "Alt:  http://YOUR-IP:5173/crowd/?server=ws://YOUR-IP:8765"
+	@echo "📱 Share with audience for live participation!"
+	@echo "🎛️ Audience can nudge hue/intensity and trigger kicks/runs"
+
+# Broadcast Crowd Server
+crowd-server:
+	@echo "👥 CROWD SERVER - BROADCAST CAPABLE"
+	@echo "==================================="
+	@echo "🎬 Starting broadcast crowd server..."
+	@echo "📡 Relays audience messages to all clients"
+	@echo "🎭 Compatible with existing nudge/kick/run flow"
+	@node scripts/crowd-server.js
+
+# Secure Crowd Server (with PIN)
+crowd-secure:
+	@echo "🔒 CROWD SERVER - SECURE WITH PIN"
+	@echo "================================="
+	@echo "🎬 Starting secure crowd server with PIN protection..."
+	@echo "📡 Rate limited: 60 msgs / 10s per IP"
+	@echo "🔐 PIN: 9462 (set CROWD_PIN env var to customize)"
+	@CROWD_PIN=9462 node scripts/crowd-server.js
+
+# QR Code Generator
+qr-share:
+	@echo "📱 QR CODE GENERATOR - AUDIENCE SHARING"
+	@echo "======================================="
+	@node scripts/qr-share.js
+
+# PWA Support
+pwa-on:
+	@echo "📱 PWA SUPPORT - INSTALL ON PHONES"
+	@echo "==================================="
+	@echo "✅ Manifest: public/manifest.webmanifest"
+	@echo "✅ Service Worker: public/sw.js"
+	@echo "✅ Icons: public/icons/icon-192.png, icon-512.png"
+	@echo "📱 Open /crowd/ in mobile Chrome/Safari → Install"
+	@echo "🎛️ Add to Home Screen for native app experience"
+
+pwa-off:
+	@echo "📱 PWA DISABLED - WEB ONLY"
+	@echo "=========================="
+	@echo "Remove manifest link from /crowd/index.html"
+	@echo "Remove service worker registration"
+	@echo "Crowd UI will work as regular web page"
+
+# Scene Presets
+crowd-presets:
+	@echo "🎭 CROWD PRESETS - SCENE BUTTONS"
+	@echo "================================="
+	@echo "✅ Scene buttons: chill/bloom/club/matrix"
+	@echo "🌊 Chill: hue=190, intensity=0.35"
+	@echo "🌸 Bloom: hue=120, intensity=0.90"
+	@echo "🎛 Club: hue=300, intensity=0.75"
+	@echo "🟩 Matrix: hue=140, intensity=0.60"
+	@echo "🎛️ Tap buttons for instant scene changes"
+
+# Governor Cap Control
+gov-cap:
+	@echo "🎛️ GOVERNOR CAP CONTROL - FPS MANAGEMENT"
+	@echo "======================================"
+	@echo "✅ Use Crowd UI slider or OSC /gov/cap 0..1"
+	@echo "🎛️ Override particle cap safely (0=low, 1=high)"
+	@echo "📡 OSC: /gov/cap 0.6 → sets cap to 60% of max"
+	@echo "🎭 Live FPS management during shows"
+
+# Live Status Bar
+status-bar:
+	@echo "📊 LIVE STATUS BAR - REAL-TIME MONITORING"
+	@echo "========================================"
+	@echo "✅ FPS: Live frame rate (green=good, yellow=ok, red=low)"
+	@echo "✅ Cap: Current particle count"
+	@echo "✅ BPM: Live tempo detection"
+	@echo "✅ Gov: Governor status (auto or override %)"
+	@echo "📱 Crowd UI shows live performance metrics"
+	@echo "🎛️ Professional monitoring for FOH"
+
+# Status Bridge
+status-bridge:
+	@echo "📊 STATUS BRIDGE - LIVE DATA FORWARDING"
+	@echo "======================================"
+	@echo "🔗 Connects CodeSampler Live → Crowd Server"
+	@echo "📡 Forwards real-time FPS, cap, BPM, governor"
+	@echo "🎛️ Run this alongside your main app for live status"
+	@node scripts/status-bridge.js
+
+# Status Demo
+status-demo:
+	@echo "📊 STATUS DEMO - MOCK LIVE DATA"
+	@echo "==============================="
+	@echo "🎭 Simulates realistic performance metrics"
+	@echo "📡 Sends mock FPS, cap, BPM, governor data"
+	@echo "🎛️ Perfect for testing crowd UI without main app"
+	@node scripts/status-demo.js
+
 
 motion-pack-plus:
 	@echo "🎬 MOTION PACK PLUS - 4 ADDITIONAL EFFECTS"

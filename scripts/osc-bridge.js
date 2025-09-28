@@ -25,13 +25,15 @@ udp.on("ready", () => console.log(`✅ [OSC→WS] UDP listening on ${UDP_HOST}:$
 udp.on("message", (msg) => {
   // msg = { address: "/fx/hue", args:[0.42] }
   console.log(`📨 OSC: ${msg.address} ${msg.args.join(' ')}`);
-  
-  const payload = JSON.stringify({ 
-    address: msg.address, 
-    args: msg.args,
-    timestamp: Date.now()
-  });
-  
+
+  let out = { address: msg.address, args: msg.args };
+  // For convenience, also emit a normalized WS message for the app (if it connects here):
+  if (msg.address === "/gov/cap" && msg.args && typeof msg.args[0] === "number") {
+    out = { type: "gov", cap: Math.max(0, Math.min(1, msg.args[0])) };
+  }
+
+  const payload = JSON.stringify(out);
+
   wss.clients.forEach((c) => {
     if (c.readyState === 1) {
       c.send(payload);
