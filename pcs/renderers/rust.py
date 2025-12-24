@@ -117,4 +117,4 @@ def render_rust(
 
     lines.append("}")
 
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"

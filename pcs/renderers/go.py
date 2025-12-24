@@ -247,4 +247,4 @@ def render_go(
         lines.append("    return nil")
 
     lines.append("}")
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"

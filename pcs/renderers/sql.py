@@ -108,4 +108,4 @@ SELECT {gen.var} FROM range"""
         lines.append("-- Complex nested comprehension - simplified for demo")
         lines.append("SELECT 0")
 
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"

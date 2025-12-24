@@ -159,4 +159,4 @@ def render_csharp(
     lines.append("    }")
     lines.append("}")
 
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"

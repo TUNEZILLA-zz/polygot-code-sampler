@@ -434,8 +434,10 @@ def _lower_collection(
     elif ir.kind == "group_by":
         return _lower_group_by(jl, ir, gen, source_sym, mode, parallel_flavor, unsafe)
     else:
+        # Convert parallel_flavor to boolean for _lower_list_comprehension
+        parallel = parallel_flavor != "none"
         return _lower_list_comprehension(
-            jl, ir, gen, source_sym, mode, parallel_flavor, unsafe
+            jl, ir, gen, source_sym, mode, parallel
         )
 
 

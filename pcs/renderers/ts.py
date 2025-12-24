@@ -107,7 +107,7 @@ def render_ts(ir: IRComp, func_name: str = "program", parallel: bool = False) ->
 
     lines.append("}")
 
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 def _render_ts_parallel(ir: IRComp, func_name: str, return_type: str) -> str:
@@ -184,4 +184,4 @@ self.onmessage = function(e) {{
     lines.append("    });")
     lines.append("}")
 
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
