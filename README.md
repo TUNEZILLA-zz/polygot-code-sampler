@@ -6,7 +6,9 @@
 
 **Dashboards:** [Production](https://tunezilla-zz.github.io/polyglot-code-sampler/) · [Demo](https://tunezilla-zz.github.io/polyglot-code-sampler/?demo=1)
 
-> 🚀 **NEW**: Enterprise-Grade Performance Monitoring Platform! See [LAUNCH_POST.md](LAUNCH_POST.md) for the complete feature overview and [VALIDATION_REPORT.md](VALIDATION_REPORT.md) for validation results.
+> **Write once (Python intent) → compile into many (runtime-specific implementations)**
+
+Polyglot Code Sampler turns compact Python "intent" (comprehensions + common patterns) into readable equivalents across multiple targets. Teams rarely share one language—data work, backend services, analytics, and tooling split across stacks. This project is a **translation layer**.
 
 ## 🎯 What is Polyglot Code Sampler?
 
@@ -34,6 +36,17 @@ pcs "sum(i*i for i in range(1,100) if i%3==0)" --target sql --dialect postgresql
 # Parallel Julia with broadcast mode
 pcs "[x+y for x in range(10) for y in range(5)]" --target julia --mode broadcast --parallel
 ```
+
+## 📁 Examples
+
+See `examples/` for real-world domains:
+
+- **[Data Analytics](examples/data_analytics/)** - Time series, aggregations, anomaly detection
+- **[Security Logs](examples/security_logs/)** - Threat detection, authentication analysis, network filtering
+- **[Game Logic](examples/game_logic/)** - Entity systems, scoring, inventory management
+- **[Music Theory](examples/music_theory/)** - Chord analysis, frequency processing, beat patterns
+
+Each domain shows Python intent → multi-language output for practical use cases.
 
 ## 🎛️ Live Code Mixer
 
