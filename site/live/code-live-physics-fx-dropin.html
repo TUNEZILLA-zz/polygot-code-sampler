@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Live - Physics FX Drop-in Integration</title>
+    <style>
+        :root {
+            --theme-primary: #667eea;
+            --theme-secondary: #764ba2;
+            --theme-accent: #ff6b6b;
+            --theme-background: #1a1a2e;
+            --theme-surface: #2a2a4a;
+            --theme-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            background: var(--theme-background);
+            color: var(--theme-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Physics Canvas */
+        .physics-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 100px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .main-subtitle {
+            font-size: 24px;
+            color: var(--theme-text);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .demo-section {
+            background: var(--theme-surface);
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--theme-accent);
+        }
+
+        .section-description {
+            color: var(--theme-text);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Controls */
+        .controls-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .control-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .control-button:hover {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        .control-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Mode Switches */
+        .mode-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .mode-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 0 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .mode-button.active {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Performance Info */
+        .performance-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--theme-text);
+        }
+
+        .metric-value {
+            font-size: 12px;
+            color: var(--theme-accent);
+            font-weight: bold;
+        }
+
+        /* Test Scenes */
+        .test-scenes {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .test-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--theme-text);
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 10px;
+        }
+
+        .test-button:hover {
+            background: var(--theme-primary);
+            border-color: var(--theme-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+
+            .main-subtitle {
+                font-size: 18px;
+            }
+
+            .controls-overlay {
+                top: 10px;
+                right: 10px;
+                padding: 10px;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .physics-canvas {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Physics Canvas -->
+    <canvas class="physics-canvas" id="physics-fx-canvas"></canvas>
+
+    <!-- Mode Switches -->
+    <div class="mode-switch">
+        <button class="mode-button" data-mode="off">Off</button>
+        <button class="mode-button" data-mode="lite">Lite</button>
+        <button class="mode-button active" data-mode="full">Full</button>
+    </div>
+
+    <!-- Controls Overlay -->
+    <div class="controls-overlay">
+        <h3>🎛️ Physics FX Controls</h3>
+
+        <div class="control-group">
+            <button class="control-button" id="togglePhysics">Toggle Physics</button>
+            <button class="control-button" id="toggleBoids">Toggle Boids</button>
+            <button class="control-button" id="toggleSprings">Toggle Springs</button>
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="resetPhysics">Reset Physics</button>
+            <button class="control-button" id="randomizeForces">Randomize Forces</button>
+        </div>
+
+        <div class="control-group">
+            <button class="control-button" id="loadSweep">Load Sweep</button>
+            <button class="control-button" id="latencySpike">Latency Spike</button>
+            <button class="control-button" id="errorBurst">Error Burst</button>
+            <button class="control-button" id="fallbackStorm">Fallback Storm</button>
+        </div>
+    </div>
+
+    <!-- Performance Info -->
+    <div class="performance-info">
+        <div class="performance-metric">
+            <span class="metric-label">Request Rate:</span>
+            <span class="metric-value" id="requestRate">12.4</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Success Rate:</span>
+            <span class="metric-value" id="successRate">85.8%</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">P95 Latency:</span>
+            <span class="metric-value" id="p95Latency">45ms</span>
+        </div>
+        <div class="performance-metric">
+            <span class="metric-label">Julia Active:</span>
+            <span class="metric-value" id="juliaActive">Yes</span>
+        </div>
+    </div>
+
+    <!-- Test Scenes -->
+    <div class="test-scenes">
+        <div style="font-size: 10px; color: var(--theme-text); margin-bottom: 5px;">Test Scenes:</div>
+        <button class="test-button" id="testLoadSweep">Load Sweep</button>
+        <button class="test-button" id="testLatencySpike">Latency Spike</button>
+        <button class="test-button" id="testErrorBurst">Error Burst</button>
+        <button class="test-button" id="testFallbackStorm">Fallback Storm</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="main-title">Code Live Physics FX</h1>
+        <p class="main-subtitle">Production-Hardened Physics FX with Quality Scaling, Reduced-Motion, and Drop-in Integration</p>
+
+        <!-- Demo Sections -->
+        <div class="demo-section">
+            <h2 class="section-title">🚀 Production Hardening Wins</h2>
+            <p class="section-description">
+                Quality scaler: drop particle cap when FPS < 45; restore at 60.
+                Kill-switch & modes: ?fx=off|lite|full URL param + UI toggle.
+                Metrics adapter: debounce to 10–20 Hz; clamp outliers; fallback to demo generator if /metrics is unreachable.
+            </p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">♿ A11y & Motion</h2>
+            <p class="section-description">
+                Respect prefers-reduced-motion; hide FX from screen readers; pause on tab blur.
+                Theme & legend: fixed color keys per backend; small legend overlay.
+                Perf budget: keep FX thread under ~6–8 ms/frame; avoid layout thrash.
+            </p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🔧 Error Fences</h2>
+            <p class="section-description">
+                Try/catch around shader init; re-init on WebGL context loss.
+                Mobile posture: OffscreenCanvas if available; halve resolution on DPR>1.5.
+                Telemetry: emit fx_frame_ms, fx_quality_level, fx_backpressure_events to Prometheus.
+            </p>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">🎯 Test Scenes</h2>
+            <p class="section-description">
+                Load sweep: simulate QPS 0→120→0; check particle birth/decay feels natural.
+                Latency spike: set p95 40→220 ms; confirm motion "heavies" and recovers smoothly.
+                Error burst: errorRate 0→0.2 for 10s; see turbulence + opacity pulse; boids disorganize.
+                Fallback storm: fallbackRatio > 0.15; verify warning tint and legend notice.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initPhysicsFX } from '../scripts/physics-fx-production.js';
+
+        class CodeLivePhysicsFXDemo {
+            constructor() {
+                this.physicsFX = null;
+                this.metricsAdapter = null;
+                this.testScenes = {
+                    loadSweep: false,
+                    latencySpike: false,
+                    errorBurst: false,
+                    fallbackStorm: false
+                };
+
+                this.initialize();
+            }
+
+            initialize() {
+                this.initializePhysicsFX();
+                this.initializeControls();
+                this.initializeModeSwitches();
+                this.initializeTestScenes();
+                this.startMetricsSimulation();
+            }
+
+            initializePhysicsFX() {
+                // Get mode from URL params or reduced motion
+                const urlParams = new URLSearchParams(window.location.search);
+                const mode = urlParams.get('fx') || (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'lite' : 'full');
+
+                if (mode === 'off') {
+                    return;
+                }
+
+                // Initialize physics FX
+                this.physicsFX = initPhysicsFX({
+                    canvas: document.getElementById('physics-fx-canvas'),
+                    mode,
+                    metricsSource: '/metrics/snapshot', // Your lightweight endpoint
+                    debounceMs: 100 // 10Hz
+                });
+
+                if (this.physicsFX) {
+                    this.metricsAdapter = this.physicsFX.metricsAdapter;
+                }
+            }
+
+            initializeControls() {
+                // Toggle buttons
+                document.getElementById('togglePhysics').addEventListener('click', () => {
+                    if (this.physicsFX) {
+                        this.physicsFX.physicsFX.setMode(this.physicsFX.physicsFX.mode === 'off' ? 'full' : 'off');
+                    }
+                });
+
+                document.getElementById('toggleBoids').addEventListener('click', () => {
+                    // Toggle boids behavior
+                    console.log('Boids toggled');
+                });
+
+                document.getElementById('toggleSprings').addEventListener('click', () => {
+                    // Toggle spring timeline
+                    console.log('Springs toggled');
+                });
+
+                document.getElementById('resetPhysics').addEventListener('click', () => {
+                    if (this.physicsFX) {
+                        this.physicsFX.destroy();
+                        this.initializePhysicsFX();
+                    }
+                });
+
+                document.getElementById('randomizeForces').addEventListener('click', () => {
+                    // Randomize physics forces
+                    console.log('Forces randomized');
+                });
+            }
+
+            initializeModeSwitches() {
+                const modeButtons = document.querySelectorAll('.mode-button');
+
+                modeButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        modeButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+
+                        const mode = button.dataset.mode;
+                        if (this.physicsFX) {
+                            this.physicsFX.physicsFX.setMode(mode);
+                        }
+                    });
+                });
+            }
+
+            initializeTestScenes() {
+                // Test scene buttons
+                document.getElementById('testLoadSweep').addEventListener('click', () => {
+                    this.runLoadSweep();
+                });
+
+                document.getElementById('testLatencySpike').addEventListener('click', () => {
+                    this.runLatencySpike();
+                });
+
+                document.getElementById('testErrorBurst').addEventListener('click', () => {
+                    this.runErrorBurst();
+                });
+
+                document.getElementById('testFallbackStorm').addEventListener('click', () => {
+                    this.runFallbackStorm();
+                });
+            }
+
+            startMetricsSimulation() {
+                setInterval(() => {
+                    // Simulate performance metrics
+                    const requestRate = 5 + Math.random() * 15;
+                    const successRate = 80 + Math.random() * 20;
+                    const p95Latency = 10 + Math.random() * 50;
+                    const juliaActive = Math.random() > 0.5;
+
+                    // Update performance info
+                    document.getElementById('requestRate').textContent = requestRate.toFixed(1);
+                    document.getElementById('successRate').textContent = successRate.toFixed(1) + '%';
+                    document.getElementById('p95Latency').textContent = p95Latency.toFixed(0) + 'ms';
+                    document.getElementById('juliaActive').textContent = juliaActive ? 'Yes' : 'No';
+
+                    // Update physics metrics
+                    if (this.metricsAdapter) {
+                        this.metricsAdapter.latest = {
+                            qps: requestRate,
+                            p95: p95Latency,
+                            errorRate: (100 - successRate) / 100,
+                            fallbackRatio: Math.random() * 0.1,
+                            perBackend: {
+                                rust: 0.9,
+                                ts: 0.8,
+                                go: 0.7,
+                                csharp: 0.6,
+                                sql: 0.5,
+                                julia: 0.4
+                            }
+                        };
+                    }
+                }, 1000);
+            }
+
+            // Test Scenes
+            runLoadSweep() {
+                console.log('Running Load Sweep: QPS 0→120→0');
+                this.testScenes.loadSweep = true;
+
+                let qps = 0;
+                let direction = 1;
+                const interval = setInterval(() => {
+                    qps += direction * 2;
+                    if (qps >= 120) {
+                        direction = -1;
+                    } else if (qps <= 0) {
+                        direction = 1;
+                    }
+
+                    if (this.metricsAdapter) {
+                        this.metricsAdapter.latest.qps = qps;
+                    }
+
+                    if (!this.testScenes.loadSweep) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    this.testScenes.loadSweep = false;
+                }, 10000);
+            }
+
+            runLatencySpike() {
+                console.log('Running Latency Spike: P95 40→220ms');
+                this.testScenes.latencySpike = true;
+
+                let p95 = 40;
+                let direction = 1;
+                const interval = setInterval(() => {
+                    p95 += direction * 10;
+                    if (p95 >= 220) {
+                        direction = -1;
+                    } else if (p95 <= 40) {
+                        direction = -1;
+                    }
+
+                    if (this.metricsAdapter) {
+                        this.metricsAdapter.latest.p95 = p95;
+                    }
+
+                    if (!this.testScenes.latencySpike) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    this.testScenes.latencySpike = false;
+                }, 10000);
+            }
+
+            runErrorBurst() {
+                console.log('Running Error Burst: ErrorRate 0→0.2 for 10s');
+                this.testScenes.errorBurst = true;
+
+                let errorRate = 0;
+                let direction = 1;
+                const interval = setInterval(() => {
+                    errorRate += direction * 0.02;
+                    if (errorRate >= 0.2) {
+                        direction = -1;
+                    } else if (errorRate <= 0) {
+                        direction = 1;
+                    }
+
+                    if (this.metricsAdapter) {
+                        this.metricsAdapter.latest.errorRate = errorRate;
+                    }
+
+                    if (!this.testScenes.errorBurst) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    this.testScenes.errorBurst = false;
+                }, 10000);
+            }
+
+            runFallbackStorm() {
+                console.log('Running Fallback Storm: FallbackRatio > 0.15');
+                this.testScenes.fallbackStorm = true;
+
+                let fallbackRatio = 0;
+                let direction = 1;
+                const interval = setInterval(() => {
+                    fallbackRatio += direction * 0.01;
+                    if (fallbackRatio >= 0.3) {
+                        direction = -1;
+                    } else if (fallbackRatio <= 0) {
+                        direction = 1;
+                    }
+
+                    if (this.metricsAdapter) {
+                        this.metricsAdapter.latest.fallbackRatio = fallbackRatio;
+                    }
+
+                    if (!this.testScenes.fallbackStorm) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+
+                setTimeout(() => {
+                    this.testScenes.fallbackStorm = false;
+                }, 10000);
+            }
+        }
+
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', () => {
+            new CodeLivePhysicsFXDemo();
+        });
+    </script>
+</body>
+</html>

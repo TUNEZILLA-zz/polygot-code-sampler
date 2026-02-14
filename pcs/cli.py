@@ -12,7 +12,7 @@ from .renderer_api import render as render_generic
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
-        description="Polyglot Code Sampler - Transform Python comprehensions across 5 ecosystems",
+        description="Polyglot Code Sampler - Transform Python comprehensions across 6 ecosystems",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

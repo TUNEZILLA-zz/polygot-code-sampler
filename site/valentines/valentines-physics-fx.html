@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Physics FX - Polyglot Code Sampler</title>
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            .physics-canvas { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a0a0f 0%, #2d1b2e 50%, #1a0a0f 100%);
+            color: #ffe4ec;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+        .physics-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .overlay {
+            position: fixed;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+        .title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(135deg, #ff6b9d, #ffb6c1, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(255, 105, 180, 0.3);
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            color: rgba(255, 228, 236, 0.8);
+            text-align: center;
+        }
+        .legend {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: rgba(255, 228, 236, 0.9);
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+        }
+        .legend span { color: #ff69b4; }
+    </style>
+</head>
+<body>
+    <canvas class="physics-canvas" id="canvas"></canvas>
+    <div class="overlay">
+        <h1 class="title">💕 Valentine's Physics 💕</h1>
+        <p class="subtitle">Write once (Python intent) → compile into many</p>
+        <p class="subtitle">Polyglot Code Sampler · Hearts + Matter.js</p>
+    </div>
+    <div class="legend"><span>♥</span> Physics-driven hearts · Matter.js</div>
+
+    <script type="module">
+        import { Engine, Bodies, Composite, Body, Vector, Runner, Constraint } from 'https://cdn.skypack.dev/matter-js@0.19.0';
+
+        const HEART_CHARS = ['♥', '💕', '💖', '💗', '💓', '💝', '❤', '💘', '💞'];
+        const COLORS = ['#ff6b9d', '#ff69b4', '#ff1493', '#ffb6c1', '#ff85a1', '#e91e63', '#f8bbd9'];
+
+        class ValentinePhysicsFX {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.fitCanvas();
+                window.addEventListener('resize', () => this.fitCanvas());
+
+                this.engine = Engine.create();
+                this.engine.gravity.y = 0.02;
+                this.engine.gravity.x = 0;
+
+                const W = this.canvas.width, H = this.canvas.height;
+                this.center = Vector.create(W / 2, H / 2);
+                this.pool = [];
+                this.springs = [];
+                this.MAX = 80;
+                this.lastSpawn = 0;
+                this.windPhase = 0;
+                this.springInterval = 0;
+
+                // Bounds
+                const walls = [
+                    Bodies.rectangle(W/2, -15, W + 40, 30, { isStatic: true, render: { visible: false } }),
+                    Bodies.rectangle(W/2, H + 15, W + 40, 30, { isStatic: true, render: { visible: false } }),
+                    Bodies.rectangle(-15, H/2, 30, H + 40, { isStatic: true, render: { visible: false } }),
+                    Bodies.rectangle(W + 15, H/2, 30, H + 40, { isStatic: true, render: { visible: false } }),
+                ];
+                Composite.add(this.engine.world, walls);
+
+                Runner.run(Runner.create(), this.engine);
+                this.tick();
+            }
+
+            fitCanvas() {
+                const dpr = Math.min(2, window.devicePixelRatio || 1);
+                const w = window.innerWidth, h = window.innerHeight;
+                this.canvas.width = w * dpr;
+                this.canvas.height = h * dpr;
+                this.canvas.style.width = w + 'px';
+                this.canvas.style.height = h + 'px';
+                this.ctx.scale(dpr, dpr);
+                this.W = w;
+                this.H = h;
+                this.center = Vector.create(w / 2, h / 2);
+            }
+
+            spawnHeart() {
+                const W = this.W, H = this.H;
+                const x = W * 0.2 + Math.random() * W * 0.6;
+                const y = H * 0.2 + Math.random() * H * 0.6;
+                const r = 8 + Math.random() * 6;
+                const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                const heart = Bodies.circle(x, y, r, {
+                    restitution: 0.4,
+                    friction: 0.01,
+                    frictionAir: 0.008,
+                    density: 0.001,
+                });
+                heart.__color = color;
+                heart.__char = HEART_CHARS[Math.floor(Math.random() * HEART_CHARS.length)];
+                heart.__size = r * 2;
+                this.pool.push(heart);
+                Composite.add(this.engine.world, heart);
+
+                // Spring constraint: connect to a random nearby heart (cloth-like)
+                if (this.pool.length >= 2) {
+                    const other = this.pool[Math.floor(Math.random() * (this.pool.length - 1))];
+                    if (other !== heart) {
+                        const spring = Constraint.create({
+                            bodyA: heart,
+                            bodyB: other,
+                            stiffness: 0.02,
+                            damping: 0.1,
+                            length: 60 + Math.random() * 40,
+                            render: { visible: false }
+                        });
+                        this.springs.push(spring);
+                        Composite.add(this.engine.world, spring);
+                    }
+                }
+
+                if (this.pool.length > this.MAX) {
+                    const old = this.pool.shift();
+                    const toRemove = this.springs.filter(s => s.bodyA === old || s.bodyB === old);
+                    toRemove.forEach(s => Composite.remove(this.engine.world, s));
+                    this.springs = this.springs.filter(s => s.bodyA !== old && s.bodyB !== old);
+                    Composite.remove(this.engine.world, old);
+                }
+            }
+
+            tick() {
+                const now = performance.now();
+                const W = this.W, H = this.H;
+
+                // Spawn hearts
+                if (now - this.lastSpawn > 200) {
+                    this.spawnHeart();
+                    this.lastSpawn = now;
+                }
+
+                // Gentle wind (spring-like oscillation)
+                this.windPhase += 0.02;
+                const windX = Math.sin(this.windPhase) * 0.0008;
+                const windY = Math.cos(this.windPhase * 0.7) * 0.0005;
+
+                // Per-heart: attraction to center + wind + boids-like cohesion
+                for (const b of this.pool) {
+                    const toCenter = Vector.sub(this.center, b.position);
+                    const dist = Vector.magnitude(toCenter);
+                    const pull = Math.min(0.00015, 2 / (dist + 50));
+                    const dir = Vector.normalise(toCenter);
+                    Body.applyForce(b, b.position, Vector.mult(dir, pull));
+
+                    Body.applyForce(b, b.position, Vector.create(windX, windY));
+
+                    // Soft repulsion from other hearts (separation)
+                    let sepX = 0, sepY = 0;
+                    for (const o of this.pool) {
+                        if (o === b) continue;
+                        const dx = b.position.x - o.position.x;
+                        const dy = b.position.y - o.position.y;
+                        const d = Math.sqrt(dx * dx + dy * dy);
+                        if (d < 40 && d > 0) {
+                            const f = (40 - d) / 40;
+                            sepX += (dx / d) * f * 0.0003;
+                            sepY += (dy / d) * f * 0.0003;
+                        }
+                    }
+                    Body.applyForce(b, b.position, Vector.create(sepX, sepY));
+                }
+
+                // Custom draw: hearts
+                this.ctx.fillStyle = 'rgba(26, 10, 15, 0.15)';
+                this.ctx.fillRect(0, 0, W, H);
+
+                this.ctx.font = 'bold 24px Georgia';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+
+                // Draw spring connections (subtle pink lines)
+                this.ctx.strokeStyle = 'rgba(255, 105, 180, 0.2)';
+                this.ctx.lineWidth = 1;
+                for (const s of this.springs) {
+                    if (s.bodyA && s.bodyB) {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(s.bodyA.position.x, s.bodyA.position.y);
+                        this.ctx.lineTo(s.bodyB.position.x, s.bodyB.position.y);
+                        this.ctx.stroke();
+                    }
+                }
+
+                for (const b of this.pool) {
+                    this.ctx.save();
+                    this.ctx.translate(b.position.x, b.position.y);
+                    this.ctx.rotate(b.angle);
+                    const scale = 0.8 + 0.2 * Math.sin(now * 0.003 + b.id);
+                    this.ctx.scale(scale, scale);
+                    this.ctx.fillStyle = b.__color;
+                    this.ctx.shadowColor = b.__color;
+                    this.ctx.shadowBlur = 12;
+                    this.ctx.fillText(b.__char, 0, 0);
+                    this.ctx.restore();
+                }
+
+                // Center glow
+                this.ctx.save();
+                this.ctx.globalAlpha = 0.3 + 0.2 * Math.sin(now * 0.002);
+                const g = this.ctx.createRadialGradient(
+                    this.center.x, this.center.y, 0,
+                    this.center.x, this.center.y, 120
+                );
+                g.addColorStop(0, '#ff69b4');
+                g.addColorStop(0.5, 'rgba(255, 105, 180, 0.2)');
+                g.addColorStop(1, 'transparent');
+                this.ctx.fillStyle = g;
+                this.ctx.beginPath();
+                this.ctx.arc(this.center.x, this.center.y, 120, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.restore();
+
+                requestAnimationFrame(() => this.tick());
+            }
+        }
+
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            new ValentinePhysicsFX();
+        }
+    </script>
+</body>
+</html>

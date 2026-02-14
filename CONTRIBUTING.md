@@ -49,6 +49,7 @@ pre-commit install
 python -c "import pcs; print('✅ Installation successful')"
 
 ## 🚀 First Commit? Quick Setup
+
 ```bash
 # Install pre-commit (if not already installed)
 pipx install pre-commit
@@ -58,7 +59,6 @@ pre-commit install --hook-type pre-commit --hook-type pre-push
 
 # Run on all files to fix any issues
 pre-commit run --all-files
-```
 ```
 
 ### Backend Setup

@@ -1,2 +1,0 @@
--- Complex nested comprehension - simplified for demo
-SELECT 0

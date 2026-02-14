@@ -65,7 +65,7 @@ fi
 
 # Test 5: Static files
 echo "5. Testing static files..."
-if curl -fsS http://localhost:8787/site/code-live.html > /dev/null; then
+if curl -fsS http://localhost:8787/site/live/code-live.html > /dev/null; then
     echo "✅ Static files served"
 else
     echo "❌ Static files failed"
@@ -76,8 +76,9 @@ echo ""
 echo "🎉 All smoke tests passed!"
 echo ""
 echo "🌐 Access Code Live:"
-echo "   • Code Live: http://localhost:8787/site/code-live.html"
-echo "   • Code DAW: http://localhost:8787/site/code-daw.html"
-echo "   • Code Motion: http://localhost:8787/site/code-motion.html"
-echo "   • Code Mixer: http://localhost:8787/site/code-mixer.html"
-echo "   • Playground: http://localhost:8787/site/playground.html"
+echo "   • Site Index: http://localhost:8787/site/"
+echo "   • Code Live: http://localhost:8787/site/live/code-live.html"
+echo "   • Code DAW: http://localhost:8787/site/demos/code-daw.html"
+echo "   • Code Motion: http://localhost:8787/site/demos/code-motion.html"
+echo "   • Code Mixer: http://localhost:8787/site/mixer/code-mixer.html"
+echo "   • Playground: http://localhost:8787/site/demos/playground.html"

@@ -18,11 +18,12 @@ curl -fsS -X POST http://localhost:8787/render/batch \
   -d '{"tracks":[{"backend":"rust","code":"sum(i*i for i in range(10))","parallel":true}]}'
 
 # Open interfaces
-open http://localhost:8787/site/code-live.html
-open http://localhost:8787/site/code-daw.html
-open http://localhost:8787/site/code-motion.html
-open http://localhost:8787/site/code-mixer.html
-open http://localhost:8787/site/playground.html
+open http://localhost:8787/site/
+open http://localhost:8787/site/live/code-live.html
+open http://localhost:8787/site/demos/code-daw.html
+open http://localhost:8787/site/demos/code-motion.html
+open http://localhost:8787/site/mixer/code-mixer.html
+open http://localhost:8787/site/demos/playground.html
 ```
 
 ### **Production (One-Box)**
@@ -150,7 +151,7 @@ docker-compose down && docker-compose up -d
 ```
 
 ### **Monitoring Dashboards**
-- **Code Live**: http://localhost:8787/site/code-live.html
+- **Code Live**: http://localhost:8787/site/live/code-live.html
 - **Prometheus**: http://localhost:9090
 - **Grafana**: http://localhost:3000 (admin/admin)
 - **Health**: http://localhost:8787/health

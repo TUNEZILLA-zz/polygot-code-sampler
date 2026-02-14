@@ -77,34 +77,34 @@ perf:
 physics-fx:
   - scripts/physics-fx*.js
   - scripts/metrics-adapter.js
-  - site/code-live-physics-fx*.html
+  - site/live/code-live-physics-fx*.html
   - scripts/fx-physics.js
 
 # Visual effects
 visual-fx:
   - scripts/math_visuals.js
   - scripts/techno_creative_fx.js
-  - site/code-live-visual-effects.html
-  - site/code-live-math-visuals.html
+  - site/live/code-live-visual-effects.html
+  - site/live/code-live-math-visuals.html
 
 # Audio features
 audio:
   - scripts/synth/**/*
-  - site/code-audio-simulator.html
+  - site/demos/code-audio-simulator.html
   - server_audio_simulator.py
 
 # AI/ML features
 ai-ml:
   - scripts/ai_data_collector.py
   - server_ai_plugins.py
-  - site/code-ai-plugins.html
+  - site/demos/code-ai-plugins.html
   - AI_PLUGINS_TRAINING_GUIDE.md
 
 # Lolcat features
 lolcat:
   - scripts/lolcat_fx.py
   - server_lolcat*.py
-  - site/code-lolcat-fx.html
+  - site/demos/code-lolcat-fx.html
   - LOLCAT_FX_RACK_GUIDE.md
 
 # Experiment branches

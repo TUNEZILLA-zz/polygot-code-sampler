@@ -1,6 +1,0 @@
-use std::collections::{HashMap, HashSet};
-
-pub fn max_nested_products() -> i32 {
-    // Complex nested comprehension - simplified for demo
-    vec![]
-}

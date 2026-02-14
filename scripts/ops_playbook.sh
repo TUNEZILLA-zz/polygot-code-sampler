@@ -27,7 +27,7 @@ check_health() {
     fi
 
     # Static files
-    if curl -fsS http://localhost:8787/site/code-live.html > /dev/null; then
+    if curl -fsS http://localhost:8787/site/live/code-live.html > /dev/null; then
         echo "✅ Static files served"
     else
         echo "❌ Static files failed"
@@ -163,11 +163,12 @@ check_alerts() {
 # Function to show dashboard URLs
 show_dashboards() {
     echo "🌐 Dashboard URLs:"
-    echo "   • Code Live: http://localhost:8787/site/code-live.html"
-    echo "   • Code DAW: http://localhost:8787/site/code-daw.html"
-    echo "   • Code Motion: http://localhost:8787/site/code-motion.html"
-    echo "   • Code Mixer: http://localhost:8787/site/code-mixer.html"
-    echo "   • Playground: http://localhost:8787/site/playground.html"
+    echo "   • Site Index: http://localhost:8787/site/"
+    echo "   • Code Live: http://localhost:8787/site/live/code-live.html"
+    echo "   • Code DAW: http://localhost:8787/site/demos/code-daw.html"
+    echo "   • Code Motion: http://localhost:8787/site/demos/code-motion.html"
+    echo "   • Code Mixer: http://localhost:8787/site/mixer/code-mixer.html"
+    echo "   • Playground: http://localhost:8787/site/demos/playground.html"
     echo "   • Prometheus: http://localhost:9090"
     echo "   • Grafana: http://localhost:3000 (admin/admin)"
     echo "   • Health: http://localhost:8787/health"

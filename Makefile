@@ -150,7 +150,36 @@ quickstart: build start
 	@echo "🎉 Code Live is ready!"
 	@echo "🌐 Access at: http://localhost:8787"
 	@echo "📱 Interfaces:"
-	@echo "   • Code Live: http://localhost:8787/site/code-live.html"
-	@echo "   • Code DAW: http://localhost:8787/site/code-daw.html"
-	@echo "   • Code Motion: http://localhost:8787/site/code-motion.html"
-	@echo "   • Playground: http://localhost:8787/site/playground.html"
+	@echo "   • Site Index: http://localhost:8787/site/"
+	@echo "   • Code Live: http://localhost:8787/site/live/code-live.html"
+	@echo "   • Code Mixer: http://localhost:8787/site/mixer/code-mixer.html"
+	@echo "   • Playground: http://localhost:8787/site/demos/playground.html"
+
+# ========== Local development (no Docker) ==========
+
+# Run all tests locally
+test-local:
+	@echo "🧪 Running tests..."
+	python3 -m pytest tests/ -v
+
+# Run all benchmarks
+bench-all:
+	@echo "⚡ Running benchmarks..."
+	python3 scripts/bench_all.py
+
+# Run lint locally
+lint-local:
+	@echo "🔍 Running lint..."
+	ruff check pcs/ pcs_step3_ts.py tests/
+	black --check pcs/ pcs_step3_ts.py tests/
+	mypy pcs/
+
+# Format code locally
+format-local:
+	black pcs/ pcs_step3_ts.py tests/
+	isort pcs/ pcs_step3_ts.py tests/
+
+# Start dev server locally
+serve:
+	@echo "🚀 Starting server..."
+	python3 server_prod.py

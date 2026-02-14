@@ -34,7 +34,7 @@
 # Physics FX system
 /scripts/physics-fx-production.js @TUNEZILLA-zz @physics-teammate
 /scripts/metrics-adapter.js @TUNEZILLA-zz @physics-teammate
-/site/code-live-physics-fx-dropin.html @TUNEZILLA-zz @physics-teammate
+/site/live/code-live-physics-fx-dropin.html @TUNEZILLA-zz @physics-teammate
 
 # Experiment branches (require extra review)
 /fx-*/              @TUNEZILLA-zz @experiment-reviewer

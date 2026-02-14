@@ -1,8 +1,0 @@
-func go_simple_list() []int {
-    result := make([]int, 0)
-    for i := 0; i < 10; i += 1 {
-        if !(i % 2 == 0) { continue }
-        result = append(result, i * 2)
-    }
-    return result
-}
